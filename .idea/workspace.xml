@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="51334fea-a382-4fb5-933f-b986423ae62e" name="更改" comment="更改" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="3CyXF4VI1ypc15vthML96bper5J" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Maven.saas-framework [clean].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "Spring Boot.SaasFrameworkApplication.executor": "Run",
+    "WebServerToolWindowFactoryState": "false",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "G:/gongshixiangmu/saas/saas",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "spring.configuration.checksum": "9d7f02e4f3b6eb2bdbabf1d249816293",
+    "ts.external.directory.path": "F:\\IDEA\\IntelliJ IDEA 2025.1.1.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mysql"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="G:\gongshixiangmu\saas框架\saas框架\uploads" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Spring Boot.SaasFrameworkApplication">
+    <configuration name="start-all" type="BatchConfigurationType" factoryName="Batch" temporary="true">
+      <module name="saas框架" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="WORKING_DIRECTORY" value="D:\桌面文件\b\saas框架\saas-framework" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SCRIPT_NAME" value="start-all.bat" />
+      <option name="PARAMETERS" value="" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="start-frontend" type="BatchConfigurationType" factoryName="Batch" temporary="true">
+      <module name="saas框架" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="WORKING_DIRECTORY" value="D:\桌面文件\b\saas框架\saas-framework" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SCRIPT_NAME" value="start-frontend.bat" />
+      <option name="PARAMETERS" value="" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="init.sql" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
+      <script-file value="$PROJECT_DIR$/saas-framework/docs/init.sql" />
+      <script-mode>FILE</script-mode>
+      <method v="2" />
+    </configuration>
+    <configuration name="SaasFrameworkApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="saas-framework" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.saas.framework.SaasFrameworkApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Database Script.init.sql" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.25410.129" />
+        <option value="bundled-js-predefined-d6986cc7102b-6a121458b545-JavaScript-IU-251.25410.129" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
+  <component name="StructureViewState">
+    <option name="selectedTab" value="Logical" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="51334fea-a382-4fb5-933f-b986423ae62e" name="更改" comment="" />
+      <created>1777358677730</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1777358677730</updated>
+      <workItem from="1777358678607" duration="127000" />
+      <workItem from="1777360706438" duration="1282000" />
+      <workItem from="1777970212439" duration="216000" />
+      <workItem from="1778028822301" duration="501000" />
+      <workItem from="1778031954961" duration="5000" />
+      <workItem from="1778293583397" duration="2541000" />
+      <workItem from="1778296186575" duration="52000" />
+      <workItem from="1778296608233" duration="892000" />
+      <workItem from="1778304689567" duration="1540000" />
+      <workItem from="1778307467980" duration="216000" />
+      <workItem from="1778460368606" duration="3000" />
+      <workItem from="1778461549572" duration="340000" />
+      <workItem from="1778559389888" duration="3072000" />
+      <workItem from="1778566245587" duration="7000" />
+      <workItem from="1778571748849" duration="1733000" />
+      <workItem from="1778574684854" duration="408000" />
+      <workItem from="1778575274050" duration="63000" />
+      <workItem from="1778575387893" duration="95000" />
+      <workItem from="1778632931373" duration="156000" />
+      <workItem from="1778638760952" duration="1567000" />
+      <workItem from="1778641898416" duration="1797000" />
+      <workItem from="1778650594660" duration="3220000" />
+      <workItem from="1778655847258" duration="267000" />
+      <workItem from="1778728059146" duration="1008000" />
+      <workItem from="1778732596981" duration="731000" />
+      <workItem from="1778733388620" duration="230000" />
+      <workItem from="1778733632384" duration="238000" />
+      <workItem from="1778806800130" duration="1819000" />
+      <workItem from="1778809470122" duration="827000" />
+      <workItem from="1778819817817" duration="5304000" />
+      <workItem from="1778826947317" duration="4790000" />
+      <workItem from="1779068436221" duration="137000" />
+      <workItem from="1779073354006" duration="1000" />
+      <workItem from="1779073716082" duration="6000" />
+      <workItem from="1779080146417" duration="887000" />
+      <workItem from="1779081051024" duration="237000" />
+      <workItem from="1779083076889" duration="623000" />
+      <workItem from="1779085107861" duration="478000" />
+      <workItem from="1779087155734" duration="95000" />
+      <workItem from="1779090254032" duration="145000" />
+      <workItem from="1779094399888" duration="369000" />
+      <workItem from="1779151461004" duration="253000" />
+      <workItem from="1779153610501" duration="325000" />
+      <workItem from="1779155575698" duration="1270000" />
+      <workItem from="1779169830171" duration="5637000" />
+      <workItem from="1779323933792" duration="12544000" />
+      <workItem from="1779340262932" duration="753000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-core" />
+    <option featureType="dependencySupport" implementationName="executable:docker" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.validation:jakarta.validation-api" />
+    <option featureType="dependencySupport" implementationName="javascript:npm:vite" />
+    <option featureType="dependencySupport" implementationName="executable:kubectl" />
+    <option featureType="dependencySupport" implementationName="java:org.hibernate.validator:hibernate-validator" />
+    <option featureType="dependencySupport" implementationName="javascript:npm:vue" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot" />
+    <option featureType="com.intellij.configurationType" implementationName="BatchConfigurationType" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-webmvc" />
+    <option featureType="dependencySupport" implementationName="java:org.projectlombok:lombok" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

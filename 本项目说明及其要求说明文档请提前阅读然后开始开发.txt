@@ -1,0 +1,172 @@
+请在当前空文件夹中创建一个完整的 SaaS 多租户教学框架，项目名称为 saas-framework。技术栈为 Spring Boot 2.7.x + MyBatis-Plus 3.5.x + MySQL 8.0 + JWT + BCrypt，前端 Vue 3 + Vite + Element Plus + Vue Router + Pinia + Axios。框架需满足以下所有要求，并确保代码结构清晰、无编译错误、可直接在 IDE 中运行。
+数据库：root,1234,saaslearn这个库里面没用表要你自己创建，每个表的属性都要有中文说明注释
+## 一、业务功能需求
+
+1. **三层账户体系**：超级账户（平台），租户（公司），租户员工。
+2. **无需公开注册**：超级账户创建租户时自动生成租户管理员账号；租户管理员创建本租户员工。
+3. **租户隔离**：所有业务表（包括用户、角色、学生等）必须有 `tenant_id` 列。插入时自动从当前登录用户上下文填充，查询时自动追加 `tenant_id = ?` 条件（超级账户可查看所有，不加条件）。
+4. **权限继承与限制**：
+   - 超级账户拥有全部权限，可为租户管理员分配角色（该角色决定租户管理员的最大权限集合）。
+   - 租户管理员给本租户员工分配角色时，只能选择所有权限都在自己权限范围内的角色。
+5. **基础管理功能**：
+   - 登录（JWT，支持用户名/密码）。
+   - 角色管理：CRUD + 为角色分配权限（权限树）。
+   - 租户管理：仅超级账户可见，可创建/编辑/禁用租户，创建租户时自动生成租户ID并创建一个租户管理员账号（用户名：租户代码+admin，随机密码，展示给超级账户）。
+   - 员工管理：租户管理员可增删改查本租户员工，并为员工绑定角色（角色列表需过滤：只显示权限不超出管理员权限的角色）。
+   - 学生管理（教学示例）：完整的增删改查模块，字段：姓名、学号、年级、联系电话。演示权限控制（`student:list`, `student:add`, `student:edit`, `student:delete`），所有操作自动带租户隔离。
+6. **默认数据**：提供一个默认超级账户 `admin` / `123456`，初始化所有基础权限和超级角色。
+
+## 二、技术实现强制规范
+
+### 后端规范
+- 分层：`controller` → `service`（接口+实现）→ `mapper` → `entity`。禁止跨层调用。
+- 使用 MyBatis-Plus 的 `LambdaQueryWrapper` 和 `BaseMapper`。
+- 统一返回类 `Result<T>`：包含 `code`, `msg`, `data`。分页响应格式 `{ records: [], total: 0, size: 10, current: 1 }`。
+- 全局异常处理 `GlobalExceptionHandler`，返回与 `Result` 一致格式。
+- 日志：接口入口使用 `@Slf4j`，打印请求参数和关键操作。
+- 参数校验：使用 `@Valid` + JSR303 注解，错误时返回明确提示（第一个错误信息放 `msg` 中）。
+- 权限校验：自定义注解 `@RequirePermission`，用 AOP 实现，校验当前用户是否有指定权限（从数据库或缓存获取）。
+- 租户隔离：MyBatis-Plus 多租户插件（`TenantLineInnerInterceptor`），配置忽略超级账户的租户条件（`tenant_id = 0` 时不追加）。同时提供 `TenantContext`（ThreadLocal）存储当前租户ID，用于插入时自动填充。
+- 密码加密：BCrypt。
+- JWT：过期时间 2 小时，登录成功后返回 token。
+- 数据库连接池：HikariCP。
+- 注释：关键类、复杂逻辑、租户插件、权限校验必须有详细中文注释。
+
+### 数据库规范
+- 字符集 `utf8mb4`，引擎 InnoDB。
+- 表名：前辍 `sys_`（系统表），`biz_`（业务表）。
+- 字段：`id` bigint 自增，`create_time` datetime，`update_time` datetime，`deleted` tinyint(1) 逻辑删除（默认0）。
+- 所有业务表必有 `tenant_id` bigint not null，并且建立普通索引。
+- 示例表：
+  - `sys_user` (id, username, password, role_id, tenant_id, real_name, status, create_time, update_time, deleted)
+  - `sys_role` (id, name, tenant_id, create_time, update_time, deleted)
+  - `sys_permission` (id, name, code, type, parent_id, sort, create_time, update_time)
+  - `sys_role_permission` (role_id, permission_id)
+  - `sys_tenant` (id, name, code, status, admin_user_id, admin_password, create_time, update_time) — 租户信息表
+  - `biz_student` (id, name, student_no, grade, phone, tenant_id, create_time, update_time, deleted)
+
+### 前端规范
+- 目录结构：`src/views/` 页面组件，`src/components/` 可复用组件，`src/api/` API 封装，`src/router/` 路由，`src/store/` 状态管理（Pinia），`src/directives/` 自定义指令。
+- API 封装：每个模块一个 js 文件，使用 axios 实例，自动携带 `Authorization: Bearer token`，响应拦截器统一处理错误码（如 401 跳转登录）。
+- 路由守卫：根据后端返回的权限列表动态生成可访问路由（超级账户和租户管理员使用不同菜单）。
+- 按钮级权限：自定义指令 `v-permission="'student:add'"` 控制元素显示/隐藏。
+- 学生管理页面：表格 + 分页 + 搜索（姓名、学号） + 新增/编辑弹窗（表单验证） + 删除确认。按钮根据权限指令控制。
+- 角色管理页面：使用 `el-tree` 展示权限树，支持半选/全选，保存角色的权限 ID 数组。
+- 代码风格：ESLint + Prettier 基本配置（无报错即可）。
+
+## 三、前后端 API 契约（必须严格遵循）
+
+1. **统一响应格式**
+   ```json
+   { "code": 200, "msg": "操作成功", "data": { ... } }
+HTTP 状态码与 code 字段保持一致：200成功，400参数错误，401未登录，403权限不足，404资源不存在，500服务器错误。分页时 data 为 { records: [], total: 0, size: 10, current: 1 }。
+
+字段命名：前后端均使用驼峰命名（camelCase）。数据库字段下划线，MyBatis-Plus 自动映射。日期格式 yyyy-MM-dd HH:mm:ss。
+
+具体接口定义
+
+登录：POST /api/auth/login Body { username, password } → 返回 { token, userInfo }（userInfo 包含 id, username, realName, roleId, tenantId, permissions 数组）。
+
+当前用户信息：GET /api/auth/info → 返回 userInfo。
+
+租户管理（超级账户）：
+
+分页查询：GET /api/tenant/page?page=1&size=10 → 分页数据。
+
+创建租户：POST /api/tenant Body { name, code, adminUsername?（可选，不提供则用 code+"admin"）, adminPassword?（可选，不提供则随机生成6位） } → 返回生成的租户管理员账号及明文密码。
+
+修改租户状态：PUT /api/tenant/{id}/status Body { status }
+
+角色管理（超级账户和租户管理员各自管理自己租户内的角色，但超级账户还可管理平台角色 tenant_id=0）：
+
+分页查询：GET /api/role/page?page=1&size=10 → 返回角色列表（包含 tenant_id 字段）。
+
+新增角色：POST /api/role Body { name, permissionIds[] }，租户管理员新增角色时后端校验 permissionIds 是否都在管理员自己的权限范围内。
+
+修改角色：PUT /api/role/{id} Body { name, permissionIds[] }，同样校验。
+
+删除角色：DELETE /api/role/{id}
+
+获取所有权限树（用于分配权限）：GET /api/permission/tree → 返回权限树（不含按钮权限或者包含，根据 type 字段）。
+
+员工管理（租户管理员操作，超级账户不可操作员工）：
+
+分页查询：GET /api/user/page?page=1&size=10&realName= → 返回本租户员工（不包含租户管理员自身？应包含所有租户下用户，但可筛选 roleId）。
+
+新增员工：POST /api/user Body { username, realName, roleId, password（可选，默认123456） }，后端自动设置 tenant_id 为当前租户ID，密码 BCrypt 加密。
+
+修改员工：PUT /api/user/{id} Body { realName, roleId }
+
+重置密码：PUT /api/user/{id}/reset-password → 重置为 123456。
+
+删除员工：DELETE /api/user/{id}
+
+学生管理（教学 CRUD）：
+
+分页查询：GET /api/student/page?page=1&size=10&name=&studentNo= → 返回分页数据（只返回当前租户的学生）。
+
+新增：POST /api/student Body { name, studentNo, grade, phone }
+
+修改：PUT /api/student/{id} Body { name, studentNo, grade, phone }
+
+删除：DELETE /api/student/{id}（逻辑删除）
+
+权限码：student:list, student:add, student:edit, student:delete。
+
+错误示例：{ "code": 400, "msg": "学号不能为空", "data": null }
+
+四、测试要求（必须生成）
+在 backend/src/test/java 下生成以下测试类：
+
+UserServiceTest：测试创建租户管理员时自动绑定 tenant_id，测试创建员工时密码加密。
+
+RoleServiceTest：测试租户管理员创建角色时权限集合不超出自己的权限范围（模拟不同权限集合的校验）。
+
+StudentServiceTest：测试新增学生自动填充 tenant_id，测试查询时自动带租户隔离（使用 @MybatisPlusTest 或 mock）。
+
+StudentControllerTest：使用 @SpringBootTest + TestRestTemplate，先登录获取 token，分别用租户A和租户B的用户测试学生列表只能看到本租户数据。
+
+五、必须提供的文档
+QUICKSTART.md：包含环境要求（JDK 11+, MySQL 8.0+, Node.js 16+, Maven 3.6+），导入数据库步骤（执行 docs/init.sql），修改 application.yml 中的数据库连接（root/1234/saaslearn），后端启动命令，前端启动命令，默认超级账户。
+
+TUTORIAL.md：以学生管理为例，从创建数据库表、后端分层代码、前端页面到权限分配，详细写出每一步的代码及解释，让学习者可以复制修改做出自己的功能模块。
+
+README.md：项目简介、目录结构、核心设计思想（多租户隔离、权限继承、三层账户）。
+
+六、文件夹结构及输出要求
+项目根目录名称为 saas-framework，包含：
+
+backend/：Spring Boot Maven 项目（pom.xml, src/main/java, src/main/resources, src/test/java）
+
+frontend/：Vue 3 项目（package.json, vite.config.js, src/ 等）
+
+docs/：存放 init.sql
+
+QUICKSTART.md, TUTORIAL.md, README.md 放在根目录
+
+init.sql 中必须包含：
+
+创建数据库 saaslearn（如果不存在）
+
+创建上述所有表结构
+
+插入默认权限数据（列出 student:list 等常见权限，以及菜单权限）
+
+插入超级角色（拥有所有权限）
+
+插入超级账户（admin, 密码 123456 的 BCrypt 哈希值，tenant_id=0，角色为超级角色）
+
+七、其他注意事项
+所有后端 API 前缀为 /api，并在 SecurityConfig 中放开 /api/auth/** 和 /swagger-ui/**、/v3/api-docs/**。
+
+集成 springdoc-openapi-ui，使得启动后可查看 API 文档。
+
+前端封装 request.js，在请求拦截器中添加 token，响应拦截器中处理 401 清除 token 并跳转登录。
+
+确保前端 npm run dev 后无报错，且能正常调用后端接口（跨域问题后端配置 CorsFilter 解决）。
+
+代码中所有数据库查询操作必须利用 MyBatis-Plus 多租户插件自动过滤，除了超级账户的某些查询（如租户列表）需要临时忽略租户条件，可以使用 @SqlParser(filter=true) 或 MyBatis-Plus 提供的方式。约定：超级账户的 tenant_id=0，在多租户插件中判断当前用户 tenantId == 0 时不追加条件。
+
+权限继承校验：租户管理员给员工分配角色时，或者租户管理员创建/修改角色时，后端必须调用一个校验方法：checkPermissionsWithin(currentUserPermissions, rolePermissions)，如果 rolePermissions 中有任何权限不在 currentUserPermissions 中，抛出业务异常（403 或 400）。
+
+请生成全部文件，确保一次性输出完整可运行的代码。所有代码必须符合上述规范，注释充分，无编译错误。
