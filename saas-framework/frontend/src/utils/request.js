@@ -26,7 +26,11 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   response => {
     const res = response.data
-    // 如果 code 不是 200，说明业务有错误
+
+    if (response.config.responseType === 'blob') {
+      return response
+    }
+
     if (res.code !== 200) {
       ElMessage.error(res.msg || '请求失败')
       return Promise.reject(new Error(res.msg || '请求失败'))

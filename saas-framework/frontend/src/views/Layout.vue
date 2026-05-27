@@ -3,8 +3,9 @@
     <!-- 侧边栏 -->
     <el-aside :width="isCollapse ? '64px' : '220px'" class="layout-aside">
       <div class="logo">
-        <span v-if="!isCollapse">SaaS 框架</span>
-        <span v-else>SaaS</span>
+        <img src="/logo.jpg" alt="Logo" class="logo-img" />
+        <span v-if="!isCollapse" class="logo-text">CRM客户管理系统</span>
+        <span v-else class="logo-text">CRM</span>
       </div>
 
       <el-menu
@@ -61,6 +62,12 @@
         <el-menu-item v-if="hasPermission('log:list')" index="/operation-log">
           <el-icon><Tickets /></el-icon>
           <span>操作日志</span>
+        </el-menu-item>
+
+        <!-- 数据备份（仅超级管理员可见） -->
+        <el-menu-item v-if="userStore.isSuperAdmin" index="/backup">
+          <el-icon><Coin /></el-icon>
+          <span>数据备份</span>
         </el-menu-item>
       </el-menu>
     </el-aside>
@@ -131,6 +138,9 @@
         <router-view />
       </el-main>
     </el-container>
+
+    <!-- 登录提醒弹窗 -->
+    <LoginReminderDialog ref="loginReminderRef" @close="fetchReminders" />
   </el-container>
 </template>
 
@@ -139,6 +149,8 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { followUpApi } from '@/api/followUp'
+import { reminderApi } from '@/api/reminder'
+import LoginReminderDialog from '@/components/LoginReminderDialog.vue'
 import { ElMessage } from 'element-plus'
 
 const route = useRoute()
@@ -151,6 +163,7 @@ const activeMenu = computed(() => route.path)
 const reminders = ref([])
 const unreadCount = ref(0)
 let reminderTimer = null
+const loginReminderRef = ref(null)
 
 function hasPermission(permission) {
   if (!permission) return true
@@ -192,8 +205,24 @@ function handleReminderClick(item) {
 
 onMounted(() => {
   fetchReminders()
+  showLoginReminder()
   reminderTimer = setInterval(fetchReminders, 60000)
 })
+
+async function showLoginReminder() {
+  try {
+    console.log('[LoginReminder] 开始获取登录提醒...')
+    const res = await reminderApi.getLoginReminders()
+    console.log('[LoginReminder] 获取结果:', res.data)
+    if (res.data && res.data.totalCount > 0) {
+      loginReminderRef.value?.open(res.data)
+    } else {
+      console.log('[LoginReminder] 无待处理提醒，不弹窗')
+    }
+  } catch (err) {
+    console.error('[LoginReminder] 获取提醒失败:', err)
+  }
+}
 
 onUnmounted(() => {
   if (reminderTimer) {
@@ -226,10 +255,22 @@ function handleCommand(cmd) {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   color: #fff;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding: 0 12px;
+}
+
+.logo-img {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  white-space: nowrap;
 }
 
 .el-menu {

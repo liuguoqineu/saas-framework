@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/saaslearn?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://39.98.221.201:3306/saaslearn?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: 123456
+    password: wolf1234
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       minimum-idle: 5
@@ -43,9 +43,10 @@ jwt:
   secret: saas-framework-jwt-secret-key-2024-very-long-secret-key-for-security
   expiration: 7200000
 
-# 文件上传配置（使用绝对路径，避免相对路径解析到Tomcat临时目录）
+# 文件上传配置（使用相对路径，自动解析为项目根目录下的uploads和backups文件夹）
 file:
-  upload-path: G:/gongshixiangmu/saas框架/saas框架/saas-framework/uploads/
+  upload-path: ./uploads/
+  backup-path: ./backups/
 
 # springdoc 配置
 springdoc:

@@ -15,6 +15,8 @@ public class CustomerRequest {
 
     private String address;
 
+    private String detailAddress;
+
     private String region;
 
     private String contactPerson;

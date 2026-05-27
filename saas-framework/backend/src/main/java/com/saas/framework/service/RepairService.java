@@ -38,6 +38,8 @@ public interface RepairService {
 
     void deleteAttachment(Long attachmentId);
 
+    void downloadAttachment(Long attachmentId, HttpServletResponse response);
+
     List<BizRepairProcessLog> listProcessLogs(Long repairId);
 
     RepairStatsVO stats();

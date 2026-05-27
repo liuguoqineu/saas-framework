@@ -3,6 +3,7 @@ package com.saas.framework.common.dto;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
 public class ContractRequest {
@@ -11,8 +12,8 @@ public class ContractRequest {
     private Long customerId;
 
     private String customerName;
-    private String signDate;
-    private String expireDate;
+    private LocalDate signDate;
+    private LocalDate expireDate;
     private BigDecimal contractAmount;
     private String serviceContent;
     private String paymentMethod;

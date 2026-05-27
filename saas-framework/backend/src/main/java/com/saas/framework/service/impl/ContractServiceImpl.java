@@ -11,10 +11,11 @@ import com.saas.framework.common.exception.BusinessException;
 import com.saas.framework.entity.*;
 import com.saas.framework.mapper.*;
 import com.saas.framework.service.ContractService;
+import com.saas.framework.config.FilePathConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -48,8 +49,8 @@ public class ContractServiceImpl implements ContractService {
     @Resource
     private BizCustomerMapper bizCustomerMapper;
 
-    @Value("${file.upload-path:./uploads/}")
-    private String uploadPath;
+    @Resource
+    private FilePathConfig filePathConfig;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -94,11 +95,8 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public BizContract create(ContractRequest request) {
-        if (!StringUtils.hasText(request.getContractNo())) {
-            throw new BusinessException("合同编号不能为空");
-        }
         if (request.getCustomerId() == null) {
             throw new BusinessException("请选择关联客户");
         }
@@ -114,21 +112,21 @@ public class ContractServiceImpl implements ContractService {
         }
         Long finalTenantId = tenantId != null ? tenantId : 0L;
 
-        LambdaQueryWrapper<BizContract> noWrapper = new LambdaQueryWrapper<>();
-        noWrapper.eq(BizContract::getContractNo, request.getContractNo());
-        noWrapper.eq(BizContract::getTenantId, finalTenantId);
-        if (bizContractMapper.selectCount(noWrapper) > 0) {
-            throw new BusinessException("合同编号已存在");
-        }
+        String contractNo = generateContractNo();
 
         BizContract contract = new BizContract();
         copyRequestToEntity(request, contract);
+        contract.setContractNo(contractNo);
         contract.setCustomerId(request.getCustomerId());
         contract.setCustomerName(customer.getName());
         contract.setContractStatus(STATUS_ACTIVE);
         contract.setTenantId(finalTenantId);
 
-        bizContractMapper.insert(contract);
+        try {
+            bizContractMapper.insert(contract);
+        } catch (DuplicateKeyException e) {
+            throw new BusinessException("合同编号已存在");
+        }
 
         if (contract.getExpireDate() != null) {
             generateReminders(contract.getId());
@@ -138,8 +136,24 @@ public class ContractServiceImpl implements ContractService {
         return contract;
     }
 
+    private String generateContractNo() {
+        String dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String prefix = "HT" + dateStr;
+        int maxAttempts = 10;
+        for (int i = 0; i < maxAttempts; i++) {
+            String randomSuffix = String.format("%04d", new Random().nextInt(10000));
+            String contractNo = prefix + randomSuffix;
+            LambdaQueryWrapper<BizContract> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(BizContract::getContractNo, contractNo);
+            if (bizContractMapper.selectCount(wrapper) == 0) {
+                return contractNo;
+            }
+        }
+        return prefix + String.format("%04d", System.currentTimeMillis() % 10000);
+    }
+
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void update(Long id, ContractRequest request) {
         BizContract contract = bizContractMapper.selectById(id);
         if (contract == null) {
@@ -219,12 +233,12 @@ public class ContractServiceImpl implements ContractService {
             throw new BusinessException(403, "无权删除其他租户的合同数据");
         }
 
-        bizContractMapper.physicalDeleteById(id);
-        log.info("彻底删除合同（物理删除）: id={}, contractNo={}", id, contract.getContractNo());
+        bizContractMapper.deleteById(id);
+        log.info("软删除合同: id={}, contractNo={}", id, contract.getContractNo());
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void changeStatus(Long id, ContractStatusChangeRequest request) {
         BizContract contract = bizContractMapper.selectById(id);
         if (contract == null) {
@@ -356,7 +370,7 @@ public class ContractServiceImpl implements ContractService {
         }
         String storedFileName = UUID.randomUUID().toString() + fileExtension;
 
-        File uploadDir = new File(uploadPath);
+        File uploadDir = new File(filePathConfig.getUploadPath());
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
         }
@@ -393,7 +407,7 @@ public class ContractServiceImpl implements ContractService {
             throw new BusinessException(404, "附件不存在");
         }
 
-        File file = new File(uploadPath, attachment.getFilePath());
+        File file = new File(filePathConfig.getUploadPath(), attachment.getFilePath());
         if (file.exists()) {
             file.delete();
         }
@@ -409,7 +423,7 @@ public class ContractServiceImpl implements ContractService {
             throw new BusinessException(404, "附件不存在");
         }
 
-        File file = new File(uploadPath, attachment.getFilePath());
+        File file = new File(filePathConfig.getUploadPath(), attachment.getFilePath());
         if (!file.exists()) {
             throw new BusinessException(404, "文件不存在");
         }
@@ -509,7 +523,6 @@ public class ContractServiceImpl implements ContractService {
 
         for (int days : remindDaysArr) {
             LocalDate remindDate = contract.getExpireDate().minusDays(days);
-            if (remindDate.isBefore(LocalDate.now())) continue;
 
             BizContractReminder reminder = new BizContractReminder();
             reminder.setContractId(contractId);
@@ -617,11 +630,11 @@ public class ContractServiceImpl implements ContractService {
         if (StringUtils.hasText(request.getContractNo())) {
             contract.setContractNo(request.getContractNo());
         }
-        if (StringUtils.hasText(request.getSignDate())) {
-            contract.setSignDate(LocalDate.parse(request.getSignDate(), DATE_FORMATTER));
+        if (request.getSignDate() != null) {
+            contract.setSignDate(request.getSignDate());
         }
-        if (StringUtils.hasText(request.getExpireDate())) {
-            contract.setExpireDate(LocalDate.parse(request.getExpireDate(), DATE_FORMATTER));
+        if (request.getExpireDate() != null) {
+            contract.setExpireDate(request.getExpireDate());
         }
         if (request.getContractAmount() != null) {
             contract.setContractAmount(request.getContractAmount());
@@ -656,10 +669,10 @@ public class ContractServiceImpl implements ContractService {
         fieldMap.put("contractStatus", new String[]{"合同状态", oldContract.getContractStatus(), newRequest.getContractStatus()});
         fieldMap.put("signDate", new String[]{"签订日期",
                 oldContract.getSignDate() != null ? oldContract.getSignDate().toString() : "",
-                newRequest.getSignDate()});
+                newRequest.getSignDate() != null ? newRequest.getSignDate().toString() : ""});
         fieldMap.put("expireDate", new String[]{"到期日期",
                 oldContract.getExpireDate() != null ? oldContract.getExpireDate().toString() : "",
-                newRequest.getExpireDate()});
+                newRequest.getExpireDate() != null ? newRequest.getExpireDate().toString() : ""});
         fieldMap.put("contractAmount", new String[]{"合同金额",
                 oldContract.getContractAmount() != null ? oldContract.getContractAmount().toString() : "",
                 newRequest.getContractAmount() != null ? newRequest.getContractAmount().toString() : ""});

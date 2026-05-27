@@ -79,8 +79,18 @@ public class StatisticsServiceImpl implements StatisticsService {
         sub.setByCooperationStatus(toMapList(statusCount));
 
         Map<String, Long> regionCount = customers.stream()
-                .filter(c -> c.getRegion() != null && !c.getRegion().isEmpty())
-                .collect(Collectors.groupingBy(BizCustomer::getRegion, Collectors.counting()));
+                .filter(c -> c.getAddress() != null && !c.getAddress().isEmpty())
+                .collect(Collectors.groupingBy(c -> {
+                    String address = c.getAddress();
+                    if (address.contains("/")) {
+                        String[] parts = address.split("/");
+                        if (parts.length >= 2) {
+                            return parts[1];
+                        }
+                        return parts[0];
+                    }
+                    return address;
+                }, Collectors.counting()));
         sub.setByRegion(toMapList(regionCount));
 
         Map<String, Long> typeCount = customers.stream()

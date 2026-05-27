@@ -155,6 +155,14 @@ public class RepairController {
         return Result.ok("附件已删除");
     }
 
+    @Operation(summary = "下载报修附件")
+    @GetMapping("/attachment/{attachmentId}/download")
+    @RequirePermission("repair:list")
+    public void downloadAttachment(@PathVariable Long attachmentId, HttpServletResponse response) {
+        log.info("下载报修附件: attachmentId={}", attachmentId);
+        repairService.downloadAttachment(attachmentId, response);
+    }
+
     @Operation(summary = "查询报修处理记录")
     @GetMapping("/{id}/process-logs")
     @RequirePermission("repair:list")

@@ -32,6 +32,9 @@ public class BizCustomer {
     /** 客户地址 */
     private String address;
 
+    /** 详细地址（街道、门牌号等） */
+    private String detailAddress;
+
     /** 所属区域 */
     private String region;
 

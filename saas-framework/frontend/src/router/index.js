@@ -71,6 +71,12 @@ const routes = [
         name: 'OperationLog',
         component: () => import('@/views/OperationLog.vue'),
         meta: { title: '操作日志', permission: 'log:list' }
+      },
+      {
+        path: 'backup',
+        name: 'Backup',
+        component: () => import('@/views/Backup.vue'),
+        meta: { title: '数据备份' }
       }
     ]
   }

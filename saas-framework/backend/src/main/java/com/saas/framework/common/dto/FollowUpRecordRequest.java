@@ -1,8 +1,10 @@
 package com.saas.framework.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Data
 public class FollowUpRecordRequest {
@@ -11,7 +13,8 @@ public class FollowUpRecordRequest {
     private Long customerId;
 
     @NotNull(message = "跟进时间不能为空")
-    private String followUpTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime followUpTime;
 
     private Long followUpPersonId;
 

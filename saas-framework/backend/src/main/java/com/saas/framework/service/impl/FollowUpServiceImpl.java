@@ -38,23 +38,8 @@ public class FollowUpServiceImpl implements FollowUpService {
     @Resource
     private BizCustomerMapper customerMapper;
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private static final DateTimeFormatter ISO_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-    private static LocalDateTime parseDateTime(String timeStr) {
-        if (timeStr == null || timeStr.isEmpty()) {
-            return null;
-        }
-        try {
-            if (timeStr.contains("T")) {
-                return LocalDateTime.parse(timeStr, ISO_FORMATTER);
-            }
-            return LocalDateTime.parse(timeStr, FORMATTER);
-        } catch (Exception e) {
-            throw new BusinessException("时间格式错误: " + timeStr + ", 期望格式: yyyy-MM-dd HH:mm:ss 或 yyyy-MM-ddTHH:mm:ss");
-        }
-    }
+    private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public IPage<BizFollowUpRecord> pageRecords(int page, int size, Long customerId, String customerName,
@@ -78,10 +63,10 @@ public class FollowUpServiceImpl implements FollowUpService {
             wrapper.eq(BizFollowUpRecord::getFollowUpMethod, followUpMethod);
         }
         if (StringUtils.hasText(startTime)) {
-            wrapper.ge(BizFollowUpRecord::getFollowUpTime, LocalDateTime.parse(startTime + " 00:00:00", FORMATTER));
+            wrapper.ge(BizFollowUpRecord::getFollowUpTime, LocalDateTime.parse(startTime + " 00:00:00", DATETIME_FORMATTER));
         }
         if (StringUtils.hasText(endTime)) {
-            wrapper.le(BizFollowUpRecord::getFollowUpTime, LocalDateTime.parse(endTime + " 23:59:59", FORMATTER));
+            wrapper.le(BizFollowUpRecord::getFollowUpTime, LocalDateTime.parse(endTime + " 23:59:59", DATETIME_FORMATTER));
         }
         if (StringUtils.hasText(customerName)) {
             List<Long> customerIds = getCustomerIdsByName(customerName);
@@ -112,7 +97,7 @@ public class FollowUpServiceImpl implements FollowUpService {
 
         BizFollowUpRecord record = new BizFollowUpRecord();
         record.setCustomerId(request.getCustomerId());
-        record.setFollowUpTime(parseDateTime(request.getFollowUpTime()));
+        record.setFollowUpTime(request.getFollowUpTime());
         record.setFollowUpPersonId(UserContext.getUserId());
         record.setFollowUpPerson(UserContext.getUsername());
         record.setFollowUpMethod(request.getFollowUpMethod());
@@ -148,7 +133,7 @@ public class FollowUpServiceImpl implements FollowUpService {
         }
 
         record.setCustomerId(request.getCustomerId());
-        record.setFollowUpTime(parseDateTime(request.getFollowUpTime()));
+        record.setFollowUpTime(request.getFollowUpTime());
         record.setFollowUpMethod(request.getFollowUpMethod());
         record.setFollowUpContent(request.getFollowUpContent());
         record.setNextPlan(request.getNextPlan());
@@ -216,13 +201,13 @@ public class FollowUpServiceImpl implements FollowUpService {
                 Row row = sheet.createRow(rowIndex++);
                 String cName = getCustomerName(r.getCustomerId());
                 row.createCell(0).setCellValue(cName);
-                row.createCell(1).setCellValue(r.getFollowUpTime() != null ? r.getFollowUpTime().format(FORMATTER) : "");
+                row.createCell(1).setCellValue(r.getFollowUpTime() != null ? r.getFollowUpTime().format(DATETIME_FORMATTER) : "");
                 row.createCell(2).setCellValue(r.getFollowUpPerson() != null ? r.getFollowUpPerson() : "");
                 row.createCell(3).setCellValue(r.getFollowUpMethod() != null && r.getFollowUpMethod() < methodDesc.length ? methodDesc[r.getFollowUpMethod()] : "");
                 row.createCell(4).setCellValue(r.getFollowUpContent() != null ? r.getFollowUpContent() : "");
                 row.createCell(5).setCellValue(r.getNextPlan() != null ? r.getNextPlan() : "");
                 row.createCell(6).setCellValue(r.getFollowUpStatus() != null && r.getFollowUpStatus() < statusDesc.length ? statusDesc[r.getFollowUpStatus()] : "");
-                row.createCell(7).setCellValue(r.getCreateTime() != null ? r.getCreateTime().format(FORMATTER) : "");
+                row.createCell(7).setCellValue(r.getCreateTime() != null ? r.getCreateTime().format(DATETIME_FORMATTER) : "");
             }
 
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");

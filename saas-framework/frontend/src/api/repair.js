@@ -39,6 +39,10 @@ export const repairApi = {
   deleteAttachment(attachmentId) {
     return request.delete(`/repair/attachment/${attachmentId}`)
   },
+  getDownloadUrl(attachmentId) {
+    const token = localStorage.getItem('token')
+    return `/api/repair/attachment/${attachmentId}/download?token=${token}`
+  },
   listProcessLogs(id) {
     return request.get(`/repair/${id}/process-logs`)
   },

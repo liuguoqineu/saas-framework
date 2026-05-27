@@ -3,8 +3,10 @@ package com.saas.framework.service.impl;
 import com.saas.framework.common.dto.LoginRequest;
 import com.saas.framework.common.exception.BusinessException;
 import com.saas.framework.common.util.JwtUtil;
+import com.saas.framework.entity.SysRole;
 import com.saas.framework.entity.SysTenant;
 import com.saas.framework.entity.SysUser;
+import com.saas.framework.mapper.SysRoleMapper;
 import com.saas.framework.mapper.SysRolePermissionMapper;
 import com.saas.framework.mapper.SysTenantMapper;
 import com.saas.framework.mapper.SysUserMapper;
@@ -27,6 +29,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Resource
     private SysUserMapper sysUserMapper;
+
+    @Resource
+    private SysRoleMapper sysRoleMapper;
 
     @Resource
     private SysRolePermissionMapper sysRolePermissionMapper;
@@ -74,12 +79,24 @@ public class AuthServiceImpl implements AuthService {
         // 查询用户权限
         List<String> permissions = sysRolePermissionMapper.selectPermissionCodesByRoleId(user.getRoleId());
 
+        // 查询角色名称
+        String roleName = "普通用户";
+        if (user.getTenantId() != null && user.getTenantId() == 0) {
+            roleName = "超级管理员";
+        } else if (user.getRoleId() != null) {
+            SysRole role = sysRoleMapper.selectById(user.getRoleId());
+            if (role != null && role.getName() != null) {
+                roleName = role.getName();
+            }
+        }
+
         // 构建返回数据
         Map<String, Object> userInfo = new HashMap<>();
         userInfo.put("id", user.getId());
         userInfo.put("username", user.getUsername());
         userInfo.put("realName", user.getRealName());
         userInfo.put("roleId", user.getRoleId());
+        userInfo.put("roleName", roleName);
         userInfo.put("tenantId", user.getTenantId());
         userInfo.put("permissions", permissions);
 
@@ -101,11 +118,23 @@ public class AuthServiceImpl implements AuthService {
 
         List<String> permissions = sysRolePermissionMapper.selectPermissionCodesByRoleId(user.getRoleId());
 
+        // 查询角色名称
+        String roleName = "普通用户";
+        if (user.getTenantId() != null && user.getTenantId() == 0) {
+            roleName = "超级管理员";
+        } else if (user.getRoleId() != null) {
+            SysRole role = sysRoleMapper.selectById(user.getRoleId());
+            if (role != null && role.getName() != null) {
+                roleName = role.getName();
+            }
+        }
+
         Map<String, Object> userInfo = new HashMap<>();
         userInfo.put("id", user.getId());
         userInfo.put("username", user.getUsername());
         userInfo.put("realName", user.getRealName());
         userInfo.put("roleId", user.getRoleId());
+        userInfo.put("roleName", roleName);
         userInfo.put("tenantId", user.getTenantId());
         userInfo.put("permissions", permissions);
 

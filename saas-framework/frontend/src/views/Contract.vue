@@ -81,72 +81,104 @@
 
     <el-dialog v-model="formDialogVisible" :title="formDialogTitle" width="700px" destroy-on-close>
       <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px">
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="合同编号" prop="contractNo">
-              <el-input v-model="formData.contractNo" placeholder="请输入合同编号" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="客户名称" prop="customerId">
-              <el-select v-model="formData.customerId" filterable placeholder="请选择客户" style="width: 100%"
-                @change="handleCustomerChange">
-                <el-option v-for="c in customerOptions" :key="c.id" :label="c.name" :value="c.id" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="合同金额" prop="contractAmount">
-              <el-input-number v-model="formData.contractAmount" :min="0" :precision="2" :controls="false"
-                placeholder="请输入合同金额" style="width: 100%" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12" v-if="isEdit">
-            <el-form-item label="合同状态" prop="contractStatus">
-              <el-select v-model="formData.contractStatus" placeholder="请选择合同状态" style="width: 100%">
-                <el-option v-for="item in contractStatusOptions" :key="item.value" :label="item.label"
-                  :value="item.value" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="签订日期" prop="signDate">
-              <el-date-picker v-model="formData.signDate" type="date" placeholder="请选择签订日期"
-                value-format="YYYY-MM-DD" style="width: 100%" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="到期日期" prop="expireDate">
-              <el-date-picker v-model="formData.expireDate" type="date" placeholder="请选择到期日期"
-                value-format="YYYY-MM-DD" style="width: 100%" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="付款方式" prop="paymentMethod">
-              <el-select v-model="formData.paymentMethod" placeholder="请选择付款方式" style="width: 100%">
-                <el-option v-for="item in paymentMethodOptions" :key="item.value" :label="item.label"
-                  :value="item.value" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="负责人" prop="personInCharge">
-              <el-input v-model="formData.personInCharge" placeholder="请输入负责人" />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item label="服务内容" prop="serviceContent">
-          <el-input v-model="formData.serviceContent" type="textarea" :rows="3" placeholder="请输入服务内容，如智慧燃气系统部署、运维、售后等" />
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="formData.remark" type="textarea" :rows="2" placeholder="请输入备注" />
-        </el-form-item>
+        <template v-if="!isEdit">
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="客户名称" prop="customerId">
+                <el-select v-model="formData.customerId" filterable placeholder="请选择客户" style="width: 100%"
+                  @change="handleCustomerChange">
+                  <el-option v-for="c in customerOptions" :key="c.id" :label="c.name" :value="c.id" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="合同金额" prop="contractAmount">
+                <el-input-number v-model="formData.contractAmount" :min="0" :precision="2" :controls="false"
+                  placeholder="请输入合同金额" style="width: 100%" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="合同状态" prop="contractStatus">
+                <el-select v-model="formData.contractStatus" placeholder="请选择合同状态" style="width: 100%">
+                  <el-option v-for="item in contractStatusOptions" :key="item.value" :label="item.label"
+                    :value="item.value" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="签订日期" prop="signDate">
+                <el-date-picker v-model="formData.signDate" type="date" placeholder="请选择签订日期"
+                  value-format="YYYY-MM-DD" style="width: 100%" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="到期日期" prop="expireDate">
+                <el-date-picker v-model="formData.expireDate" type="date" placeholder="请选择到期日期"
+                  value-format="YYYY-MM-DD" style="width: 100%" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="付款方式" prop="paymentMethod">
+                <el-select v-model="formData.paymentMethod" placeholder="请选择付款方式" style="width: 100%">
+                  <el-option v-for="item in paymentMethodOptions" :key="item.value" :label="item.label"
+                    :value="item.value" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="负责人" prop="personInCharge">
+                <el-input v-model="formData.personInCharge" placeholder="请输入负责人" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-form-item label="服务内容" prop="serviceContent">
+            <el-input v-model="formData.serviceContent" type="textarea" :rows="3" placeholder="请输入服务内容，如智慧燃气系统部署、运维、售后等" />
+          </el-form-item>
+          <el-form-item label="备注" prop="remark">
+            <el-input v-model="formData.remark" type="textarea" :rows="2" placeholder="请输入备注" />
+          </el-form-item>
+        </template>
+
+        <template v-else>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="合同编号">
+                <el-input v-model="formData.contractNo" disabled />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="客户名称">
+                <el-input v-model="formData.customerName" disabled />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="合同状态" prop="contractStatus">
+                <el-select v-model="formData.contractStatus" placeholder="请选择合同状态" style="width: 100%">
+                  <el-option v-for="item in contractStatusOptions" :key="item.value" :label="item.label"
+                    :value="item.value" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="到期日期" prop="expireDate">
+                <el-date-picker v-model="formData.expireDate" type="date" placeholder="请选择到期日期"
+                  value-format="YYYY-MM-DD" style="width: 100%" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-form-item label="修改原因" prop="modifyReason">
+            <el-input v-model="formData.modifyReason" type="textarea" :rows="3" placeholder="请输入修改原因" />
+          </el-form-item>
+        </template>
+
         <el-form-item label="合同扫描件">
           <el-upload :auto-upload="false" :on-change="handleFileChange" :file-list="fileList"
             :on-remove="handleFileRemove" ref="uploadRef">
@@ -271,15 +303,19 @@ const formData = reactive({
   personInChargeId: null,
   personInCharge: '',
   remark: '',
-  contractStatus: ''
+  contractStatus: '',
+  modifyReason: ''
 })
 
-const formRules = {
-  contractNo: [{ required: true, message: '请输入合同编号', trigger: 'blur' }],
+const formRules = computed(() => ({
   customerId: [{ required: true, message: '请选择客户', trigger: 'change' }],
   signDate: [{ required: true, message: '请选择签订日期', trigger: 'change' }],
-  expireDate: [{ required: true, message: '请选择到期日期', trigger: 'change' }]
-}
+  expireDate: [{ required: true, message: '请选择到期日期', trigger: 'change' }],
+  ...(isEdit.value ? {
+    contractStatus: [{ required: true, message: '请选择合同状态', trigger: 'change' }],
+    modifyReason: [{ required: true, message: '请输入修改原因', trigger: 'blur' }]
+  } : {})
+}))
 
 const detailDialogVisible = ref(false)
 const detailData = ref({})
@@ -363,7 +399,8 @@ function handleAdd() {
     personInChargeId: null,
     personInCharge: '',
     remark: '',
-    contractStatus: ''
+    contractStatus: '',
+    modifyReason: ''
   })
   fileList.value = []
   pendingFiles.value = []
@@ -389,7 +426,8 @@ async function handleEdit(row) {
       personInChargeId: data.personInChargeId,
       personInCharge: data.personInCharge || '',
       remark: data.remark || '',
-      contractStatus: data.contractStatus || ''
+      contractStatus: data.contractStatus || '',
+      modifyReason: ''
     })
 
     const attRes = await contractApi.listAttachments(row.id)
@@ -459,7 +497,12 @@ async function handleSubmit() {
   submitLoading.value = true
   try {
     if (isEdit.value) {
-      await contractApi.update(editId.value, formData)
+      const editData = {
+        contractStatus: formData.contractStatus,
+        expireDate: formData.expireDate,
+        modifyReason: formData.modifyReason
+      }
+      await contractApi.update(editId.value, editData)
       await uploadPendingFiles(editId.value)
       ElMessage.success('合同修改成功')
     } else {

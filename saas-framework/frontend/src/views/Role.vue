@@ -237,7 +237,9 @@ const detailData = ref(null)
 const treeExpanded = ref(true)
 
 const query = reactive({ page: 1, size: 10 })
-const tableData = reactive({ records: [], total: 0 })
+const tableDataRecords = ref([])
+const tableData = computed(() => ({ records: tableDataRecords.value, total: tableDataTotal.value }))
+const tableDataTotal = ref(0)
 const form = reactive({ name: '', description: '', permissionIds: [] })
 const permissionTree = ref([])
 const checkedKeys = ref([])
@@ -283,14 +285,16 @@ async function fetchData() {
   loading.value = true
   try {
     const res = await roleApi.page(query)
-    const records = res.data.records || []
-    records.forEach(r => {
-      r._userCount = 0
-      r._permissionCount = 0
-    })
-    Object.assign(tableData, res.data)
+    tableDataTotal.value = res.data.total || 0
+    const records = (res.data.records || []).map(r => ({
+      ...r,
+      _userCount: 0,
+      _permissionCount: 0
+    }))
+    tableDataRecords.value = records
     computeStats(records)
-    preloadUserCounts(records)
+    await preloadUserCounts(records)
+    tableDataRecords.value = [...records]
   } finally {
     loading.value = false
   }
@@ -303,22 +307,37 @@ function computeStats(records) {
 }
 
 async function preloadUserCounts(records) {
-  for (const record of records) {
+  console.log('📊 开始预加载角色详情，共', records.length, '个角色')
+  for (let i = 0; i < records.length; i++) {
     try {
-      const res = await roleApi.getById(record.id)
-      record._userCount = res.data.userCount || 0
-      record._permissionCount = (res.data.permissionIds || []).length
-    } catch {
-      record._userCount = 0
-      record._permissionCount = 0
+      const res = await roleApi.getById(records[i].id)
+      console.log(`🔍 角色 ${records[i].id} (${records[i].name}) 详情:`, res.data)
+      const permissionIds = res.data.permissionIds || []
+      const userCount = res.data.userCount || 0
+      console.log(`   ✅ permissionIds长度:`, permissionIds.length, ', userCount:', userCount)
+      Object.assign(records[i], {
+        _userCount: userCount,
+        _permissionCount: permissionIds.length
+      })
+      console.log(`   📝 更新后 records[${i}]:`, records[i])
+    } catch (e) {
+      console.warn('❌ 获取角色详情失败:', records[i].id, e)
+      Object.assign(records[i], {
+        _userCount: 0,
+        _permissionCount: 0
+      })
     }
   }
+  stats.totalUsers = records.reduce((sum, r) => sum + (r._userCount || 0), 0)
+  console.log('🎯 预加载完成，最终records:', records)
+  console.log('🎯 最终tableData.records:', tableData.records)
 }
 
 async function fetchPermissionTree() {
   const res = await roleApi.getPermissionTree()
   permissionTree.value = res.data || []
   expandedKeys.value = collectAllNodeIds(permissionTree.value)
+  allLeafIds = collectLeafNodeIds(permissionTree.value)
 }
 
 function collectAllNodeIds(nodes) {
@@ -333,6 +352,23 @@ function collectAllNodeIds(nodes) {
   traverse(nodes)
   return ids
 }
+
+function collectLeafNodeIds(nodes) {
+  const ids = []
+  function traverse(list) {
+    if (!list) return
+    list.forEach(node => {
+      if (!node.children || node.children.length === 0) {
+        ids.push(node.id)
+      }
+      traverse(node.children)
+    })
+  }
+  traverse(nodes)
+  return ids
+}
+
+let allLeafIds = []
 
 function openCreateDialog() {
   dialogType.value = 'create'
@@ -358,14 +394,15 @@ async function openEditDialog(row) {
 
   try {
     const roleRes = await roleApi.getById(row.id)
-    checkedKeys.value = roleRes.data.permissionIds || []
+    const allIds = roleRes.data.permissionIds || []
+    checkedKeys.value = allIds.filter(id => allLeafIds.includes(id))
   } catch {
     checkedKeys.value = []
   }
 
   dialogVisible.value = true
   nextTick(() => {
-    treeRef.value?.setCheckedKeys(checkedKeys.value)
+    treeRef.value?.setCheckedKeys(checkedKeys.value, false)
     treeRef.value?.setExpandedKeys(expandedKeys.value)
   })
 }
@@ -380,14 +417,15 @@ async function openCopyDialog(row) {
 
   try {
     const roleRes = await roleApi.getById(row.id)
-    checkedKeys.value = roleRes.data.permissionIds || []
+    const allIds = roleRes.data.permissionIds || []
+    checkedKeys.value = allIds.filter(id => allLeafIds.includes(id))
   } catch {
     checkedKeys.value = []
   }
 
   dialogVisible.value = true
   nextTick(() => {
-    treeRef.value?.setCheckedKeys(checkedKeys.value)
+    treeRef.value?.setCheckedKeys(checkedKeys.value, false)
     treeRef.value?.setExpandedKeys(expandedKeys.value)
   })
 }
@@ -422,7 +460,7 @@ async function handleSubmit() {
   if (!valid) return
 
   const checkedNodes = treeRef.value?.getCheckedNodes(false, true) || []
-  const permissionIds = checkedNodes.map(n => n.id)
+  const permissionIds = checkedNodes.filter(n => !n.children || n.children.length === 0).map(n => n.id)
 
   submitting.value = true
   try {

@@ -132,7 +132,7 @@ public class ContractController {
     }
 
     @Operation(summary = "下载合同附件")
-    @GetMapping("/attachment/{attachmentId}")
+    @GetMapping("/attachment/{attachmentId}/download")
     @RequirePermission("contract:list")
     public void downloadAttachment(@PathVariable Long attachmentId, HttpServletResponse response) {
         log.info("下载合同附件: attachmentId={}", attachmentId);

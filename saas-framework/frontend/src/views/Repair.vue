@@ -543,11 +543,11 @@ async function fetchCustomerOptions() {
 
 async function fetchUserOptions() {
   try {
-    const res = await userApi.list('运维人员')
+    const res = await userApi.list('维修专员')
     userOptions.value = res.data || []
   } catch (e) {
     try {
-      const res = await userApi.page({ page: 1, size: 1000, roleName: '运维人员' })
+      const res = await userApi.page({ page: 1, size: 1000, roleName: '维修专员' })
       userOptions.value = res.data?.records || []
     } catch (e2) {
       console.error(e2)

@@ -10,10 +10,10 @@ import com.saas.framework.common.exception.BusinessException;
 import com.saas.framework.entity.*;
 import com.saas.framework.mapper.*;
 import com.saas.framework.service.RepairService;
+import com.saas.framework.config.FilePathConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -43,8 +43,8 @@ public class RepairServiceImpl implements RepairService {
     @Resource
     private BizCustomerMapper customerMapper;
 
-    @Value("${file.upload-path:./uploads/}")
-    private String uploadPath;
+    @Resource
+    private FilePathConfig filePathConfig;
 
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -92,7 +92,7 @@ public class RepairServiceImpl implements RepairService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public BizRepairOrder create(RepairOrderRequest request) {
         if (!StringUtils.hasText(request.getRepairContent())) {
             throw new BusinessException("报修内容不能为空");
@@ -128,11 +128,7 @@ public class RepairServiceImpl implements RepairService {
         order.setContactPhone(request.getContactPhone());
         order.setRepairContent(request.getRepairContent());
         order.setRepairType(request.getRepairType());
-        if (StringUtils.hasText(request.getRepairTime())) {
-            order.setRepairTime(LocalDateTime.parse(request.getRepairTime(), DATETIME_FORMATTER));
-        } else {
-            order.setRepairTime(LocalDateTime.now());
-        }
+        order.setRepairTime(request.getRepairTime() != null ? request.getRepairTime() : LocalDateTime.now());
         order.setRepairAddress(request.getRepairAddress());
         order.setUrgency(StringUtils.hasText(request.getUrgency()) ? request.getUrgency() : "普通");
         order.setStatus(STATUS_PENDING);
@@ -152,7 +148,7 @@ public class RepairServiceImpl implements RepairService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void update(Long id, RepairOrderRequest request) {
         BizRepairOrder order = repairOrderMapper.selectById(id);
         if (order == null) {
@@ -178,8 +174,8 @@ public class RepairServiceImpl implements RepairService {
         if (StringUtils.hasText(request.getRepairType())) {
             order.setRepairType(request.getRepairType());
         }
-        if (StringUtils.hasText(request.getRepairTime())) {
-            order.setRepairTime(LocalDateTime.parse(request.getRepairTime(), DATETIME_FORMATTER));
+        if (request.getRepairTime() != null) {
+            order.setRepairTime(request.getRepairTime());
         }
         if (StringUtils.hasText(request.getRepairAddress())) {
             order.setRepairAddress(request.getRepairAddress());
@@ -231,7 +227,7 @@ public class RepairServiceImpl implements RepairService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void assign(Long id, RepairAssignRequest request) {
         BizRepairOrder order = repairOrderMapper.selectById(id);
         if (order == null) {
@@ -259,7 +255,7 @@ public class RepairServiceImpl implements RepairService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void process(Long id, RepairProcessRequest request) {
         BizRepairOrder order = repairOrderMapper.selectById(id);
         if (order == null) {
@@ -316,7 +312,7 @@ public class RepairServiceImpl implements RepairService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void confirm(Long id) {
         BizRepairOrder order = repairOrderMapper.selectById(id);
         if (order == null) {
@@ -344,7 +340,7 @@ public class RepairServiceImpl implements RepairService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void markException(Long id, RepairExceptionRequest request) {
         BizRepairOrder order = repairOrderMapper.selectById(id);
         if (order == null) {
@@ -358,8 +354,8 @@ public class RepairServiceImpl implements RepairService {
         if (StringUtils.hasText(request.getSecondPlan())) {
             order.setSecondPlan(request.getSecondPlan());
         }
-        if (StringUtils.hasText(request.getSecondRemindTime())) {
-            order.setSecondRemindTime(LocalDateTime.parse(request.getSecondRemindTime(), DATETIME_FORMATTER));
+        if (request.getSecondRemindTime() != null) {
+            order.setSecondRemindTime(request.getSecondRemindTime());
         }
 
         repairOrderMapper.updateById(order);
@@ -406,7 +402,7 @@ public class RepairServiceImpl implements RepairService {
         }
         String storedFileName = UUID.randomUUID().toString() + fileExtension;
 
-        File uploadDir = new File(uploadPath);
+        File uploadDir = new File(filePathConfig.getUploadPath());
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
         }
@@ -443,13 +439,47 @@ public class RepairServiceImpl implements RepairService {
             throw new BusinessException(404, "附件不存在");
         }
 
-        File file = new File(uploadPath, attachment.getFilePath());
+        File file = new File(filePathConfig.getUploadPath(), attachment.getFilePath());
         if (file.exists()) {
             file.delete();
         }
 
         repairAttachmentMapper.deleteById(attachmentId);
         log.info("删除报修附件: attachmentId={}", attachmentId);
+    }
+
+    @Override
+    public void downloadAttachment(Long attachmentId, HttpServletResponse response) {
+        BizRepairAttachment attachment = repairAttachmentMapper.selectById(attachmentId);
+        if (attachment == null) {
+            throw new BusinessException(404, "附件不存在");
+        }
+
+        File file = new File(filePathConfig.getUploadPath(), attachment.getFilePath());
+        if (!file.exists()) {
+            throw new BusinessException(404, "文件不存在");
+        }
+
+        try (FileInputStream fis = new FileInputStream(file);
+             OutputStream os = response.getOutputStream()) {
+
+            String fileName = attachment.getFileName();
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+            response.setContentLengthLong(file.length());
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+            os.flush();
+
+            log.info("下载报修附件: attachmentId={}, fileName={}", attachmentId, fileName);
+        } catch (IOException e) {
+            log.error("文件下载失败", e);
+            throw new BusinessException("文件下载失败: " + e.getMessage());
+        }
     }
 
     @Override
@@ -669,9 +699,29 @@ public class RepairServiceImpl implements RepairService {
     }
 
     private String generateRepairNo() {
-        String datePart = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String randomPart = String.format("%04d", new Random().nextInt(10000));
-        return "WX" + datePart + randomPart;
+        String datePart = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        String randomPart = String.format("%06d", new Random().nextInt(1000000));
+        String repairNo = "WX" + datePart + randomPart;
+
+        int maxRetry = 3;
+        int retryCount = 0;
+
+        while (retryCount < maxRetry) {
+            LambdaQueryWrapper<BizRepairOrder> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(BizRepairOrder::getRepairNo, repairNo);
+            Long count = repairOrderMapper.selectCount(wrapper);
+
+            if (count == 0) {
+                return repairNo;
+            }
+
+            retryCount++;
+            log.warn("报修单号 {} 已存在，第{}次重新生成", repairNo, retryCount);
+            randomPart = String.format("%06d", new Random().nextInt(1000000));
+            repairNo = "WX" + datePart + randomPart;
+        }
+
+        throw new BusinessException("生成报修单号失败，请稍后重试");
     }
 
     private void addProcessLog(Long repairId, String action, String oldStatus, String newStatus,

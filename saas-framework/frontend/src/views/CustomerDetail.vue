@@ -53,22 +53,24 @@
             placement="top"
           >
             <el-card shadow="never" class="log-card">
-              <div style="display:flex;justify-content:space-between;align-items:center">
-                <p class="log-user">
-                  {{ record.followUpPerson || '未知' }}
-                  <el-tag size="small" style="margin-left:8px">{{ followUpMethodMap[record.followUpMethod] || '未知' }}</el-tag>
-                  <el-tag :type="record.followUpStatus === 1 ? 'warning' : record.followUpStatus === 2 ? 'success' : 'primary'" size="small" style="margin-left:4px">
+              <el-descriptions :column="2" border size="small">
+                <el-descriptions-item label="跟进人" :span="1">{{ record.followUpPerson || '-' }}</el-descriptions-item>
+                <el-descriptions-item label="跟进方式" :span="1">
+                  <el-tag size="small">{{ followUpMethodMap[record.followUpMethod] || '未知' }}</el-tag>
+                </el-descriptions-item>
+                <el-descriptions-item label="跟进状态" :span="1">
+                  <el-tag :type="record.followUpStatus === 1 ? 'warning' : record.followUpStatus === 2 ? 'success' : 'primary'" size="small">
                     {{ followUpStatusMap[record.followUpStatus] || '未知' }}
                   </el-tag>
-                </p>
-                <div>
-                  <el-button v-permission="'followup:status'" size="small" type="warning" @click="openStatusChangeDialog">变更状态</el-button>
-                </div>
+                </el-descriptions-item>
+                <el-descriptions-item label="下一步计划" :span="2">{{ record.nextPlan || '-' }}</el-descriptions-item>
+                <el-descriptions-item label="跟进内容" :span="2">
+                  <div style="white-space:pre-wrap;line-height:1.6">{{ record.followUpContent }}</div>
+                </el-descriptions-item>
+              </el-descriptions>
+              <div style="margin-top:8px;text-align:right">
+                <el-button v-permission="'followup:status'" size="small" type="warning" @click="openStatusChangeDialog">变更状态</el-button>
               </div>
-              <p class="follow-content" style="margin:6px 0;color:#303133">{{ record.followUpContent }}</p>
-              <p v-if="record.nextPlan" class="follow-plan" style="margin:4px 0;color:#909399;font-size:12px">
-                下一步计划：{{ record.nextPlan }}
-              </p>
             </el-card>
           </el-timeline-item>
         </el-timeline>

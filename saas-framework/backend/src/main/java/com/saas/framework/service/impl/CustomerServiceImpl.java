@@ -16,11 +16,12 @@ import com.saas.framework.mapper.BizCustomerMapper;
 import com.saas.framework.mapper.BizCustomerModifyLogMapper;
 import com.saas.framework.mapper.BizContractMapper;
 import com.saas.framework.service.CustomerService;
+import com.saas.framework.config.FilePathConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,8 +54,8 @@ public class CustomerServiceImpl implements CustomerService {
     @Resource
     private BizContractMapper bizContractMapper;
 
-    @Value("${file.upload-path:./uploads/}")
-    private String uploadPath;
+    @Resource
+    private FilePathConfig filePathConfig;
 
     @Override
     public IPage<BizCustomer> page(int page, int size, String name, String businessCategory,
@@ -107,6 +108,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void create(CustomerRequest request) {
         BizCustomer customer = new BizCustomer();
         copyRequestToEntity(request, customer);
@@ -129,6 +131,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void update(Long id, CustomerRequest request) {
         BizCustomer customer = bizCustomerMapper.selectById(id);
         if (customer == null) {
@@ -163,6 +166,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void markInvalid(Long id) {
         BizCustomer customer = bizCustomerMapper.selectById(id);
         if (customer == null) {
@@ -195,6 +199,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
         BizCustomer customer = bizCustomerMapper.selectById(id);
         if (customer == null) {
@@ -205,9 +210,25 @@ public class CustomerServiceImpl implements CustomerService {
             throw new BusinessException(403, "无权删除其他租户的客户数据");
         }
 
-        // 物理删除：真正从数据库移除误录客户数据（绕过 @TableLogic 逻辑删除）
-        bizCustomerMapper.physicalDeleteById(id);
-        log.info("彻底删除客户（物理删除）: id={}, name={}", id, customer.getName());
+        if (customer.getIsInvalid() != null && customer.getIsInvalid() == 1) {
+            throw new BusinessException("该客户已被标记为无效");
+        }
+
+        customer.setIsInvalid(1);
+        bizCustomerMapper.updateById(customer);
+
+        BizCustomerModifyLog modifyLog = new BizCustomerModifyLog();
+        modifyLog.setCustomerId(id);
+        modifyLog.setFieldName("isInvalid");
+        modifyLog.setOldValue("0");
+        modifyLog.setNewValue("1");
+        modifyLog.setModifyUserId(UserContext.getUserId());
+        modifyLog.setModifyUser(UserContext.getUsername());
+        modifyLog.setModifyTime(LocalDateTime.now());
+        modifyLog.setTenantId(customer.getTenantId());
+        bizCustomerModifyLogMapper.insert(modifyLog);
+
+        log.info("软删除客户（标记为无效）: id={}, name={}", id, customer.getName());
     }
 
     @Override
@@ -242,7 +263,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
         String storedFileName = UUID.randomUUID().toString() + fileExtension;
 
-        File uploadDir = new File(uploadPath);
+        File uploadDir = new File(filePathConfig.getUploadPath());
         if (!uploadDir.exists()) {
             uploadDir.mkdirs();
         }
@@ -279,7 +300,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new BusinessException(404, "附件不存在");
         }
 
-        File file = new File(uploadPath, attachment.getFilePath());
+        File file = new File(filePathConfig.getUploadPath(), attachment.getFilePath());
         if (file.exists()) {
             file.delete();
         }
@@ -295,7 +316,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new BusinessException(404, "附件不存在");
         }
 
-        File file = new File(uploadPath, attachment.getFilePath());
+        File file = new File(filePathConfig.getUploadPath(), attachment.getFilePath());
         if (!file.exists()) {
             throw new BusinessException(404, "文件不存在");
         }
@@ -505,20 +526,22 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private void copyRequestToEntity(CustomerRequest request, BizCustomer customer) {
-        customer.setName(request.getName());
-        customer.setAddress(request.getAddress());
-        customer.setRegion(request.getRegion());
-        customer.setContactPerson(request.getContactPerson());
-        customer.setContactPhone(request.getContactPhone());
-        customer.setBusinessCategory(request.getBusinessCategory());
-        customer.setBusinessType(request.getBusinessType());
-        customer.setCooperationCategory(request.getCooperationCategory());
-        customer.setCooperationStatus(request.getCooperationStatus());
-        customer.setGasScale(request.getGasScale());
-        customer.setSmartGasSystem(request.getSmartGasSystem());
-        customer.setContractInfo(request.getContractInfo());
-        customer.setFollowUpPersonId(request.getFollowUpPersonId());
-        customer.setFollowUpPerson(request.getFollowUpPerson());
+        if (request.getName() != null) customer.setName(request.getName());
+        if (request.getAddress() != null) customer.setAddress(request.getAddress());
+        if (request.getDetailAddress() != null) customer.setDetailAddress(request.getDetailAddress());
+        if (request.getRegion() != null) customer.setRegion(request.getRegion());
+        if (request.getContactPerson() != null) customer.setContactPerson(request.getContactPerson());
+        if (request.getContactPhone() != null) customer.setContactPhone(request.getContactPhone());
+        if (request.getBusinessCategory() != null) customer.setBusinessCategory(request.getBusinessCategory());
+        if (request.getBusinessType() != null) customer.setBusinessType(request.getBusinessType());
+        if (request.getCooperationCategory() != null) customer.setCooperationCategory(request.getCooperationCategory());
+        if (request.getCooperationStatus() != null) customer.setCooperationStatus(request.getCooperationStatus());
+        if (request.getGasScale() != null) customer.setGasScale(request.getGasScale());
+        if (request.getSmartGasSystem() != null) customer.setSmartGasSystem(request.getSmartGasSystem());
+        if (request.getContractInfo() != null) customer.setContractInfo(request.getContractInfo());
+        if (request.getFollowUpPersonId() != null) customer.setFollowUpPersonId(request.getFollowUpPersonId());
+        if (request.getFollowUpPerson() != null) customer.setFollowUpPerson(request.getFollowUpPerson());
+        if (request.getMaintenanceCategory() != null) customer.setMaintenanceCategory(request.getMaintenanceCategory());
     }
 
     private void recordModifyLogs(Long customerId, BizCustomer oldCustomer, CustomerRequest newRequest) {

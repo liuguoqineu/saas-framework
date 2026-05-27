@@ -18,7 +18,7 @@
     <description>SaaS 多租户教学框架</description>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>8</java.version>
         <mybatis-plus.version>3.5.5</mybatis-plus.version>
         <jjwt.version>0.9.1</jjwt.version>
     </properties>
@@ -100,6 +100,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
     </dependencies>
 

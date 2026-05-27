@@ -4,7 +4,226 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="51334fea-a382-4fb5-933f-b986423ae62e" name="更改" comment="更改" />
+    <list default="true" id="51334fea-a382-4fb5-933f-b986423ae62e" name="更改" comment="更改">
+      <change afterPath="$PROJECT_DIR$/.idea/aws.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/saas-framework/frontend/public/logo.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/197b9ed4-6cc3-45a1-9cd9-c933682e2d56.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/common/dto/ContractRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/common/dto/ContractRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/common/dto/CustomerRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/common/dto/CustomerRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/common/dto/FollowUpRecordRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/common/dto/FollowUpRecordRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/common/dto/RepairExceptionRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/common/dto/RepairExceptionRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/common/dto/RepairOrderRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/common/dto/RepairOrderRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/config/DataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/config/DataInitializer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/config/MyBatisPlusConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/config/MyBatisPlusConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/controller/ContractController.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/controller/ContractController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/controller/CustomerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/controller/CustomerController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/controller/RepairController.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/controller/RepairController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/entity/BizCustomer.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/entity/BizCustomer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/mapper/BizContractMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/mapper/BizContractMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/mapper/BizCustomerMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/mapper/BizCustomerMapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/RepairService.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/RepairService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/AuthServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/AuthServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/ContractServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/ContractServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/CustomerServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/CustomerServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/FollowUpServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/FollowUpServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/RepairServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/RepairServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/StatisticsServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/StatisticsServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/resources/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/application.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/SaasFrameworkApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/SaasFrameworkApplication.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/Result.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/Result.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/annotation/OperationLog.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/annotation/OperationLog.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/annotation/RequirePermission.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/annotation/RequirePermission.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/aspect/OperationLogAspect.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/aspect/OperationLogAspect.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/aspect/PermissionAspect.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/aspect/PermissionAspect.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/context/TenantContext.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/context/TenantContext.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/context/UserContext.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/context/UserContext.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/ContractRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/ContractRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/ContractStatsVO.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/ContractStatsVO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/ContractStatusChangeRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/ContractStatusChangeRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/CustomerRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/CustomerRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/CustomerStatsVO$CustomerSubStats.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/CustomerStatsVO$CustomerSubStats.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/CustomerStatsVO.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/CustomerStatsVO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/CustomerStatusChangeRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/CustomerStatusChangeRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/FollowUpRecordRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/FollowUpRecordRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/LoginRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/LoginRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/PageResult.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/PageResult.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairAssignRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairAssignRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairExceptionRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairExceptionRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairOrderRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairOrderRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairProcessRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairProcessRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairStatsVO.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairStatsVO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairTrendStatsVO.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairTrendStatsVO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RoleCreateRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RoleCreateRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RoleResponse.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RoleResponse.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/TenantCreateRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/TenantCreateRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/UserCreateRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/UserCreateRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/UserUpdateRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/UserUpdateRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/VisitStatsVO.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/VisitStatsVO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/exception/BusinessException.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/exception/BusinessException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/exception/GlobalExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/exception/GlobalExceptionHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/util/JwtUtil.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/util/JwtUtil.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/CorsConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/CorsConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/DataInitializer.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/DataInitializer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/FilterConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/FilterConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/JwtAuthFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/JwtAuthFilter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/MyBatisPlusConfig$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/MyBatisPlusConfig$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/MyBatisPlusConfig$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/MyBatisPlusConfig$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/MyBatisPlusConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/MyBatisPlusConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/SecurityConfig.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/SecurityConfig.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/AuthController.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/AuthController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/ContractController.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/ContractController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/CustomerController.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/CustomerController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/FollowUpController.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/FollowUpController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/OperationLogController.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/OperationLogController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/PermissionController.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/PermissionController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/RepairController.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/RepairController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/RoleController.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/RoleController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/StatisticsController.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/StatisticsController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/TenantController.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/TenantController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/UserController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizContract.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizContract.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizContractAttachment.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizContractAttachment.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizContractModifyLog.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizContractModifyLog.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizContractReminder.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizContractReminder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizCustomer.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizCustomer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizCustomerAttachment.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizCustomerAttachment.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizCustomerModifyLog.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizCustomerModifyLog.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizCustomerStatusLog.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizCustomerStatusLog.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizFollowUpRecord.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizFollowUpRecord.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizRepairAttachment.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizRepairAttachment.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizRepairOrder.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizRepairOrder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizRepairProcessLog.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizRepairProcessLog.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/SysOperationLog.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/SysOperationLog.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/SysPermission.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/SysPermission.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/SysRole.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/SysRole.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/SysRolePermission.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/SysRolePermission.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/SysTenant.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/SysTenant.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/SysUser.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/SysUser.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizContractAttachmentMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizContractAttachmentMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizContractMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizContractMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizContractModifyLogMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizContractModifyLogMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizContractReminderMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizContractReminderMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizCustomerAttachmentMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizCustomerAttachmentMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizCustomerMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizCustomerMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizCustomerModifyLogMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizCustomerModifyLogMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizCustomerStatusLogMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizCustomerStatusLogMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizFollowUpRecordMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizFollowUpRecordMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizRepairAttachmentMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizRepairAttachmentMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizRepairOrderMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizRepairOrderMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizRepairProcessLogMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/BizRepairProcessLogMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/SysOperationLogMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/SysOperationLogMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/SysPermissionMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/SysPermissionMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/SysRoleMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/SysRoleMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/SysRolePermissionMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/SysRolePermissionMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/SysTenantMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/SysTenantMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/SysUserMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/mapper/SysUserMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/AuthService.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/AuthService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/ContractService.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/ContractService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/CustomerService.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/CustomerService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/FollowUpService.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/FollowUpService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/OperationLogService.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/OperationLogService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/PermissionService.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/PermissionService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/RepairService.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/RepairService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/RoleService.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/RoleService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/StatisticsService.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/StatisticsService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/TenantService.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/TenantService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/UserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/UserService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/AuthServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/AuthServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/ContractServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/ContractServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/CustomerServiceImpl$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/CustomerServiceImpl$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/CustomerServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/CustomerServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/FollowUpServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/FollowUpServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/OperationLogServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/OperationLogServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/PermissionServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/PermissionServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/RepairServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/RepairServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/RoleServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/RoleServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/StatisticsServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/StatisticsServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/TenantServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/TenantServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/UserServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/UserServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Contract-DYE6cSJy.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Contract-vqgWKSho.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Customer-CvW-Nhhr.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Customer-D-ySWVV5.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/CustomerDetail-CeuJ2P9Z.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/CustomerDetail-ZsLkZ4Wa.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Dashboard-DcNG8dCn.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Dashboard-nD2wEeEL.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Layout-BvTgjAzP.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Layout-Czlb4yQp.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Login-B6Lixf0d.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Login-D1ShjMax.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/OperationLog-BqveUB6S.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Repair-CN6AbHNo.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Repair-D_4MXbjJ.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Role-BvKBz0zC.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Role-Cv8Db7Q6.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Statistics-BolNr3B7.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Tenant-Kr7Ls5J2.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/User-Bq9IMH1I.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/customer-BSe48HNr.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/followUp-EU8VAj5j.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/index-iMVs6yhK.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/request-_Zl60H-s.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/role-nPDzBWO5.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/user-Blg8Brxd.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/user-CFHimA4x.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/dist/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/@element-plus_icons-vue.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/@element-plus_icons-vue.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/_metadata.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/axios.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/axios.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-G3PMV62Z.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-G3PMV62Z.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-V7XUQDCA.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-V7XUQDCA.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-XBRQRQT7.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-XBRQRQT7.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-YFT6OQ5R.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-YFT6OQ5R.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/echarts.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/echarts.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-china-area-data.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-china-area-data.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-plus.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-plus.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-plus_dist_locale_zh-cn__mjs.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-plus_dist_locale_zh-cn__mjs.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/pinia.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/pinia.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/vue-router.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/vue-router.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/vue.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/vue.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/src/api/customer.js" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/src/api/customer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/src/api/repair.js" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/src/api/repair.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/src/router/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/src/utils/request.js" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/src/utils/request.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/src/views/Contract.vue" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/src/views/Contract.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/src/views/Customer.vue" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/src/views/Customer.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/src/views/CustomerDetail.vue" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/src/views/CustomerDetail.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/src/views/Dashboard.vue" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/src/views/Dashboard.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/src/views/Layout.vue" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/src/views/Layout.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/src/views/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/src/views/Login.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/src/views/Repair.vue" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/src/views/Repair.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/src/views/Role.vue" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/src/views/Role.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/uploads/221d4442-edd1-46b0-9e0a-5477e90a164e.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/uploads/67bb0592-cadf-4cea-8fe1-81a199929381.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/uploads/7d34dbb3-dd5e-4cd0-9427-2f263c9ab2af.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/uploads/cfc7787c-31ac-47e0-9c52-868a4ecccacb.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/uploads/cfe42b6d-fccd-4af9-83ce-8c4d1c3afc9c.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/uploads/dcfdc83e-6bd7-4d1d-bc56-43cf5f0fadd7.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/uploads/1.png" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -20,12 +239,24 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {}
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/1546947215/saas.git&quot;,
+    &quot;accountId&quot;: &quot;141e9b4a-4500-437f-b153-feac7f87c2bd&quot;
+  }
+}</component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
 }</component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
@@ -38,17 +269,24 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Maven.saas-framework [clean].executor": "Run",
+    "Maven.saas-framework [package].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Notification.DisplayName-DoNotAsk-DatabaseConfigFileWatcher.found": "Database connection parameters found",
+    "Notification.DoNotAsk-DatabaseConfigFileWatcher.found": "true",
     "RequestMappingsPanelOrder0": "0",
     "RequestMappingsPanelOrder1": "1",
     "RequestMappingsPanelWidth0": "75",
     "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Spring Boot.SaasFrameworkApplication.executor": "Run",
     "WebServerToolWindowFactoryState": "false",
+    "database.data.extractors.current.export.id": "Comma-separated (CSV)_id",
+    "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "G:/gongshixiangmu/saas/saas",
+    "last_opened_file_path": "/Users/jason/工作/xiangmu/saas/saas-framework/backend/src/main/resources/static",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -70,7 +308,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/saas-framework/backend/src/main/resources/static" />
       <recent name="G:\gongshixiangmu\saas框架\saas框架\uploads" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="G:\gongshixiangmu\saas\saas\saas-framework\frontend\public" />
     </key>
   </component>
   <component name="RunManager" selected="Spring Boot.SaasFrameworkApplication">
@@ -108,11 +350,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Database Script.init.sql" />
-      </list>
-    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -179,7 +416,18 @@
       <workItem from="1779155575698" duration="1270000" />
       <workItem from="1779169830171" duration="5637000" />
       <workItem from="1779323933792" duration="12544000" />
-      <workItem from="1779340262932" duration="753000" />
+      <workItem from="1779340262932" duration="2091000" />
+      <workItem from="1779411564337" duration="2731000" />
+      <workItem from="1779417334975" duration="8885000" />
+      <workItem from="1779434236895" duration="1290000" />
+      <workItem from="1779437310353" duration="179000" />
+      <workItem from="1779675008310" duration="1650000" />
+      <workItem from="1779676792222" duration="9117000" />
+      <workItem from="1779689298980" duration="3557000" />
+      <workItem from="1779694308526" duration="35000" />
+      <workItem from="1779756177319" duration="747000" />
+      <workItem from="1779763937508" duration="4366000" />
+      <workItem from="1779781121900" duration="4506000" />
     </task>
     <servers />
   </component>

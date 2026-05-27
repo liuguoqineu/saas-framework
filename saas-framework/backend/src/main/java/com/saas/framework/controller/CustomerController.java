@@ -10,6 +10,7 @@ import com.saas.framework.entity.BizCustomer;
 import com.saas.framework.entity.BizCustomerAttachment;
 import com.saas.framework.entity.BizCustomerModifyLog;
 import com.saas.framework.service.CustomerService;
+import com.saas.framework.service.DictService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 客户管理控制器
@@ -34,11 +36,21 @@ public class CustomerController {
     @Resource
     private CustomerService customerService;
 
+    @Resource
+    private DictService dictService;
+
+    @Operation(summary = "获取客户相关字典数据")
+    @GetMapping("/dicts")
+    public Result<Map<String, Object>> getDicts() {
+        log.info("获取客户字典数据");
+        return Result.ok(dictService.getCustomerDicts());
+    }
+
     @Operation(summary = "分页查询客户列表（多条件筛选+租户隔离，默认过滤无效客户）")
     @GetMapping("/page")
     @RequirePermission("customer:list")
     @OperationLog(operation = "QUERY", module = "客户", description = "查询客户列表")
-    public Result<PageResult<?>> page(@RequestParam(defaultValue = "1") int page,
+    public Result<PageResult<BizCustomer>> page(@RequestParam(defaultValue = "1") int page,
                                                  @RequestParam(defaultValue = "10") int size,
                                                  @RequestParam(required = false) String name,
                                                  @RequestParam(required = false) String businessCategory,

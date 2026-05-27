@@ -1,6 +1,9 @@
 package com.saas.framework.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Data
 public class RepairOrderRequest {
@@ -11,7 +14,8 @@ public class RepairOrderRequest {
     private String contactPhone;
     private String repairContent;
     private String repairType;
-    private String repairTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime repairTime;
     private String repairAddress;
     private String urgency;
     private String faultDescription;

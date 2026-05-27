@@ -1,41 +1,73 @@
 <template>
   <div class="dashboard">
-    <h2>欢迎使用 SaaS 多租户教学框架</h2>
-    <p class="desc">当前登录：{{ userStore.userInfo?.realName }}（{{ userStore.isSuperAdmin ? '超级管理员' : '租户管理员' }}）</p>
-
-    <el-row :gutter="20" style="margin-top:30px">
-      <el-col :span="8">
-        <el-card shadow="hover">
-          <template #header>账户体系</template>
-          <p>三层账户：超级账户 → 租户 → 租户员工</p>
-          <p>无公开注册，管理员创建下级账户</p>
-        </el-card>
-      </el-col>
-      <el-col :span="8">
-        <el-card shadow="hover">
-          <template #header>多租户隔离</template>
-          <p>所有业务表自动追加 tenant_id 条件</p>
-          <p>超级账户可查看全部数据</p>
-        </el-card>
-      </el-col>
-      <el-col :span="8">
-        <el-card shadow="hover">
-          <template #header>权限控制</template>
-          <p>RBAC 角色权限模型</p>
-          <p>权限继承限制，下级不能超越上级</p>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <el-card shadow="hover" style="margin-top:20px">
-      <template #header>快速开始</template>
-      <el-steps :active="0" align-center style="margin-top:20px">
-        <el-step title="创建租户" description="超级账户创建租户并自动生成管理员" />
-        <el-step title="分配角色" description="为租户管理员分配角色和权限" />
-        <el-step title="员工管理" description="租户管理员创建员工并分配角色" />
-        <el-step title="业务操作" description="员工进行日常业务操作" />
-      </el-steps>
+    <el-card class="welcome-card" shadow="hover">
+      <div class="welcome-header">
+        <img src="/logo.jpg" alt="Logo" class="welcome-logo" />
+        <h2 class="welcome-title">欢迎使用 CRM 客户管理系统</h2>
+      </div>
+      <p class="welcome-desc">高效管理 · 精准营销 · 数据驱动</p>
     </el-card>
+
+    <div class="stat-row">
+      <el-card shadow="hover" class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon-wrap stat-icon--blue">
+            <el-icon><UserFilled /></el-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ userStore.userInfo?.realName || userStore.userInfo?.username || '用户' }}</span>
+            <span class="stat-label">当前登录用户</span>
+          </div>
+        </div>
+      </el-card>
+      <el-card shadow="hover" class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon-wrap stat-icon--green">
+            <el-icon><OfficeBuilding /></el-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ userStore.isSuperAdmin ? '超级管理员' : (userStore.userInfo?.tenantId || '-') }}</span>
+            <span class="stat-label">所属租户</span>
+          </div>
+        </div>
+      </el-card>
+      <el-card shadow="hover" class="stat-card">
+        <div class="stat-content">
+          <div class="stat-icon-wrap stat-icon--orange">
+            <el-icon><Management /></el-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ userStore.userInfo?.roleName || (userStore.isSuperAdmin ? '超级管理员' : '普通用户') }}</span>
+            <span class="stat-label">当前角色</span>
+          </div>
+        </div>
+      </el-card>
+    </div>
+
+    <div class="feature-row">
+      <el-card shadow="hover" class="feature-card">
+        <template #header>系统功能</template>
+        <ul class="feature-list">
+          <li><el-tag type="primary" size="small">客户管理</el-tag> 全生命周期客户信息管理</li>
+          <li><el-tag type="success" size="small">合同管理</el-tag> 合同创建与到期提醒</li>
+          <li><el-tag type="warning" size="small">报修管理</el-tag> 报修工单全流程跟踪</li>
+          <li><el-tag type="danger" size="small">跟进记录</el-tag> 客户跟进与回访记录</li>
+        </ul>
+      </el-card>
+      <el-card shadow="hover" class="feature-card">
+        <template #header>快速入口</template>
+        <div class="quick-links">
+          <div class="quick-row">
+            <el-button type="primary" @click="$router.push('/customer')">客户列表</el-button>
+            <el-button type="success" @click="$router.push('/contract')">合同管理</el-button>
+          </div>
+          <div class="quick-row">
+            <el-button type="warning" @click="$router.push('/repair')">报修管理</el-button>
+            <el-button type="info" @click="$router.push('/statistics')">统计分析</el-button>
+          </div>
+        </div>
+      </el-card>
+    </div>
   </div>
 </template>
 
@@ -46,6 +78,158 @@ const userStore = useUserStore()
 </script>
 
 <style scoped>
-.dashboard h2 { margin: 0 0 8px; color: #303133; }
-.desc { color: #909399; margin: 0; }
+.dashboard {
+  padding: 0;
+}
+
+.welcome-card {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.welcome-card :deep(.el-card__body) {
+  padding: 30px 20px;
+}
+
+.welcome-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.welcome-logo {
+  width: 40px;
+  height: 40px;
+}
+
+.welcome-title {
+  margin: 0;
+  color: #303133;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.welcome-desc {
+  margin: 0;
+  color: #909399;
+  font-size: 14px;
+  letter-spacing: 4px;
+}
+
+.stat-row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  flex: 1;
+}
+
+.stat-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-icon-wrap .el-icon {
+  font-size: 26px;
+  color: #fff;
+}
+
+.stat-icon--blue {
+  background: linear-gradient(135deg, #409EFF, #66b1ff);
+}
+
+.stat-icon--green {
+  background: linear-gradient(135deg, #67C23A, #85ce61);
+}
+
+.stat-icon--orange {
+  background: linear-gradient(135deg, #E6A23C, #ebb563);
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #909399;
+  margin-top: 4px;
+}
+
+.feature-row {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.feature-card {
+  flex: 1;
+  align-self: stretch;
+}
+
+.feature-card :deep(.el-card__body) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feature-list li {
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #606266;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.feature-list li:last-child {
+  border-bottom: none;
+}
+
+.quick-links {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.quick-links .quick-row {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+}
+
+.quick-links .quick-row .el-button {
+  width: 100%;
+  height: 40px;
+}
 </style>

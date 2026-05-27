@@ -26,7 +26,7 @@
         </el-form-item>
         <el-form-item label="运维需求">
           <el-select v-model="filterForm.maintenanceCategory" placeholder="全部" clearable style="width: 130px">
-            <el-option v-for="opt in maintenanceCategoryOptions" :key="opt.value" :label="opt.label" :value="opt.value" />
+            <el-option v-for="opt in dictMaintenanceCategory" :key="opt.value" :label="opt.label" :value="opt.value" />
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -61,6 +61,11 @@
         </el-table-column>
         <el-table-column prop="contactPerson" label="联系人" min-width="80" />
         <el-table-column prop="contactPhone" label="联系电话" min-width="120" />
+        <el-table-column prop="address" label="客户地址" min-width="150">
+          <template #default="{ row }">
+            <span>{{ row.address || '-' }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="followUpPerson" label="跟进人" min-width="90">
           <template #default="{ row }">{{ row.followUpPerson || '-' }}</template>
         </el-table-column>
@@ -164,14 +169,29 @@
           <el-col :span="12">
             <el-form-item label="运维需求" prop="maintenanceCategory">
               <el-select v-model="formData.maintenanceCategory" placeholder="请选择运维需求" style="width: 100%">
-                <el-option v-for="opt in maintenanceCategoryOptions" :key="opt.value" :label="opt.label" :value="opt.value" />
+                <el-option v-for="opt in dictMaintenanceCategory" :key="opt.value" :label="opt.label" :value="opt.value" />
               </el-select>
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="客户地址" prop="address">
-          <el-input v-model="formData.address" placeholder="请输入客户地址" />
-        </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="客户地址" prop="regionCodes">
+              <el-cascader
+                v-model="formData.regionCodes"
+                :options="regionData"
+                placeholder="请选择省/市/区"
+                style="width: 100%"
+                @change="handleRegionChange"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="详细地址" prop="detailAddress">
+              <el-input v-model="formData.detailAddress" placeholder="请输入详细地址（街道、门牌号等）" />
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-form-item label="智慧燃气系统" prop="smartGasSystem">
           <el-input v-model="formData.smartGasSystem" type="textarea" :rows="2" placeholder="请输入智慧燃气系统信息" />
         </el-form-item>
@@ -211,6 +231,7 @@
           <span v-else>-</span>
         </el-descriptions-item>
         <el-descriptions-item label="客户地址" :span="2">{{ detailData.address || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="详细地址" :span="2">{{ detailData.detailAddress || '-' }}</el-descriptions-item>
         <el-descriptions-item label="合同到期">
           <span v-if="detailData.contractExpireDate" :style="getExpireDateStyle(detailData.contractExpireDate)">
             {{ detailData.contractExpireDate }}
@@ -281,16 +302,22 @@
           placement="top"
         >
           <el-card shadow="never" class="follow-up-card">
-            <div class="follow-up-header-info">
-              <span class="follow-up-person">{{ record.followUpPerson || '未知' }}</span>
-              <el-tag size="small" style="margin-left: 8px">{{ followUpMethodMap[record.followUpMethod] || '未知' }}</el-tag>
-              <el-tag :type="record.followUpStatus === 1 ? 'warning' : record.followUpStatus === 2 ? 'success' : 'primary'" size="small" style="margin-left: 4px">
-                {{ followUpStatusMap[record.followUpStatus] || '未知' }}
-              </el-tag>
-            </div>
-            <p class="follow-up-content">{{ record.followUpContent }}</p>
-            <p v-if="record.nextPlan" class="follow-up-next-plan">下一步计划：{{ record.nextPlan }}</p>
-            <div class="follow-up-actions">
+            <el-descriptions :column="2" border size="small">
+              <el-descriptions-item label="跟进人" :span="1">{{ record.followUpPerson || '-' }}</el-descriptions-item>
+              <el-descriptions-item label="跟进方式" :span="1">
+                <el-tag size="small">{{ followUpMethodMap[record.followUpMethod] || '未知' }}</el-tag>
+              </el-descriptions-item>
+              <el-descriptions-item label="跟进状态" :span="1">
+                <el-tag :type="record.followUpStatus === 1 ? 'warning' : record.followUpStatus === 2 ? 'success' : 'primary'" size="small">
+                  {{ followUpStatusMap[record.followUpStatus] || '未知' }}
+                </el-tag>
+              </el-descriptions-item>
+              <el-descriptions-item label="下一步计划" :span="2">{{ record.nextPlan || '-' }}</el-descriptions-item>
+              <el-descriptions-item label="跟进内容" :span="2">
+                <div style="white-space:pre-wrap;line-height:1.6">{{ record.followUpContent }}</div>
+              </el-descriptions-item>
+            </el-descriptions>
+            <div class="follow-up-actions" style="margin-top:8px;text-align:right">
               <el-button v-permission="'followup:delete'" size="small" link type="danger" @click="deleteFollowUpRecord(record.id)">删除</el-button>
             </div>
           </el-card>
@@ -356,14 +383,24 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { customerApi, businessCategoryMap, cooperationCategoryMap, maintenanceCategoryOptions } from '@/api/customer'
+import { customerApi, businessCategoryMap, cooperationCategoryMap } from '@/api/customer'
 import { followUpApi, followUpMethodMap, followUpStatusMap, followUpMethodOptions, followUpStatusOptions } from '@/api/followUp'
+import { regionData, CodeToText } from 'element-china-area-data'
+
+const regionCodeToText = CodeToText || {}
 
 const loading = ref(false)
 const submitLoading = ref(false)
 const importLoading = ref(false)
 const followUpSubmitting = ref(false)
 const tableData = ref([])
+
+const dictLoading = ref(false)
+const dictBusinessCategory = ref([])
+const dictBusinessTypeMap = ref({})
+const dictCooperationCategory = ref([])
+const dictCooperationStatusMap = ref({})
+const dictMaintenanceCategory = ref([])
 
 const filterForm = reactive({
   name: '',
@@ -387,17 +424,17 @@ const paginationLayout = computed(() => {
     : 'total, sizes, prev, pager, next, jumper'
 })
 
-const businessCategories = computed(() => Object.keys(businessCategoryMap))
-const cooperationCategories = computed(() => Object.keys(cooperationCategoryMap))
+const businessCategories = computed(() => dictBusinessCategory.value.map(item => item.value))
+const cooperationCategories = computed(() => dictCooperationCategory.value.map(item => item.value))
 
 const filterBusinessTypes = computed(() => {
   if (!filterForm.businessCategory) return []
-  return businessCategoryMap[filterForm.businessCategory] || []
+  return dictBusinessTypeMap.value[filterForm.businessCategory] || []
 })
 
 const filterCooperationStatuses = computed(() => {
   if (!filterForm.cooperationCategory) return []
-  return cooperationCategoryMap[filterForm.cooperationCategory] || []
+  return dictCooperationStatusMap.value[filterForm.cooperationCategory] || []
 })
 
 const formBusinessTypes = ref([])
@@ -416,7 +453,7 @@ function onBusinessCategoryChange(source) {
     filterForm.businessType = ''
   } else {
     formData.businessType = ''
-    formBusinessTypes.value = businessCategoryMap[formData.businessCategory] || []
+    formBusinessTypes.value = dictBusinessTypeMap.value[formData.businessCategory] || []
   }
 }
 
@@ -425,7 +462,7 @@ function onCooperationCategoryChange(source) {
     filterForm.cooperationStatus = ''
   } else {
     formData.cooperationStatus = ''
-    formCooperationStatuses.value = cooperationCategoryMap[formData.cooperationCategory] || []
+    formCooperationStatuses.value = dictCooperationStatusMap.value[formData.cooperationCategory] || []
   }
 }
 
@@ -448,7 +485,7 @@ function getMaintenanceTagType(category) {
 }
 
 function getMaintenanceLabel(value) {
-  const opt = maintenanceCategoryOptions.find(o => o.value === value)
+  const opt = dictMaintenanceCategory.value.find(o => o.value === value)
   return opt ? opt.label : value
 }
 
@@ -517,12 +554,16 @@ const formData = reactive({
   contactPerson: '',
   contactPhone: '',
   followUpPerson: '',
+  followUpPersonId: null,
   businessCategory: '',
   businessType: '',
   cooperationCategory: '',
   cooperationStatus: '',
   gasScale: '',
   address: '',
+  region: '',
+  regionCodes: [],
+  detailAddress: '',
   smartGasSystem: '',
   contractInfo: '',
   remark: '',
@@ -534,7 +575,8 @@ const formRules = {
   contactPerson: [{ required: true, message: '请输入联系人', trigger: 'blur' }],
   contactPhone: [{ required: true, message: '请输入联系电话', trigger: 'blur' }],
   businessCategory: [{ required: true, message: '请选择业务一级分类', trigger: 'change' }],
-  businessType: [{ required: true, message: '请选择业务二级分类', trigger: 'change' }]
+  businessType: [{ required: true, message: '请选择业务二级分类', trigger: 'change' }],
+  regionCodes: [{ required: true, type: 'array', min: 1, message: '请选择客户地址', trigger: 'change' }]
 }
 
 function handleAdd() {
@@ -546,12 +588,16 @@ function handleAdd() {
     contactPerson: '',
     contactPhone: '',
     followUpPerson: '',
+    followUpPersonId: null,
     businessCategory: '',
     businessType: '',
     cooperationCategory: '',
     cooperationStatus: '',
     gasScale: '',
     address: '',
+    region: '',
+    regionCodes: [],
+    detailAddress: '',
     smartGasSystem: '',
     contractInfo: '',
     remark: '',
@@ -562,6 +608,35 @@ function handleAdd() {
   formDialogVisible.value = true
 }
 
+function handleRegionChange(value) {
+  if (value && value.length > 0) {
+    const regionTexts = value.map(code => regionCodeToText[code] || code)
+    formData.address = regionTexts.join('/')
+    formData.region = value[value.length - 1]
+  } else {
+    formData.address = ''
+    formData.region = ''
+  }
+}
+
+function parseAddressToRegionCodes(address) {
+  if (!address) return []
+  const parts = address.split('/')
+  const codes = []
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i]
+    for (const [code, text] of Object.entries(regionCodeToText)) {
+      if (text === part) {
+        if (i === 0 || (i === 1 && codes.length === 1) || (i === 2 && codes.length === 2)) {
+          codes.push(code)
+          break
+        }
+      }
+    }
+  }
+  return codes
+}
+
 async function handleEdit(row) {
   isEdit.value = true
   editId.value = row.id
@@ -569,17 +644,22 @@ async function handleEdit(row) {
   try {
     const res = await customerApi.detail(row.id)
     const data = res.data
+    const regionCodes = parseAddressToRegionCodes(data.address)
     Object.assign(formData, {
       name: data.name || '',
       contactPerson: data.contactPerson || '',
       contactPhone: data.contactPhone || '',
       followUpPerson: data.followUpPerson || '',
+      followUpPersonId: data.followUpPersonId || null,
       businessCategory: data.businessCategory || '',
       businessType: data.businessType || '',
       cooperationCategory: data.cooperationCategory || '',
       cooperationStatus: data.cooperationStatus || '',
       gasScale: data.gasScale || '',
       address: data.address || '',
+      region: data.region || '',
+      regionCodes: regionCodes,
+      detailAddress: data.detailAddress || '',
       smartGasSystem: data.smartGasSystem || '',
       contractInfo: data.contractInfo || '',
       remark: data.remark || '',
@@ -935,7 +1015,53 @@ async function deleteFollowUpRecord(recordId) {
   }
 }
 
-onMounted(() => {
+async function loadDicts() {
+  dictLoading.value = true
+  try {
+    const res = await customerApi.getDicts()
+    const data = res.data || {}
+
+    dictBusinessCategory.value = (data.businessCategory || []).map(item => ({
+      value: item.value,
+      label: item.label
+    }))
+
+    const businessTypeMap = data.businessTypeMap || {}
+    dictBusinessTypeMap.value = {}
+    for (const key in businessTypeMap) {
+      dictBusinessTypeMap.value[key] = businessTypeMap[key].map(item => ({
+        value: item.value,
+        label: item.label
+      }))
+    }
+
+    dictCooperationCategory.value = (data.cooperationCategory || []).map(item => ({
+      value: item.value,
+      label: item.label
+    }))
+
+    const cooperationStatusMap = data.cooperationStatusMap || {}
+    dictCooperationStatusMap.value = {}
+    for (const key in cooperationStatusMap) {
+      dictCooperationStatusMap.value[key] = cooperationStatusMap[key].map(item => ({
+        value: item.value,
+        label: item.label
+      }))
+    }
+
+    dictMaintenanceCategory.value = (data.maintenanceCategory || []).map(item => ({
+      value: item.value,
+      label: item.label
+    }))
+  } catch (e) {
+    console.error('加载字典数据失败:', e)
+  } finally {
+    dictLoading.value = false
+  }
+}
+
+onMounted(async () => {
+  await loadDicts()
   fetchList()
 })
 </script>

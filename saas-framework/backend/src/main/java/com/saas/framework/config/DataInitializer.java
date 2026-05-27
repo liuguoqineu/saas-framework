@@ -1,10 +1,14 @@
 package com.saas.framework.config;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.saas.framework.entity.SysDict;
+import com.saas.framework.entity.SysDictItem;
 import com.saas.framework.entity.SysPermission;
 import com.saas.framework.entity.SysRole;
 import com.saas.framework.entity.SysRolePermission;
 import com.saas.framework.entity.SysUser;
+import com.saas.framework.mapper.SysDictItemMapper;
+import com.saas.framework.mapper.SysDictMapper;
 import com.saas.framework.mapper.SysPermissionMapper;
 import com.saas.framework.mapper.SysRoleMapper;
 import com.saas.framework.mapper.SysRolePermissionMapper;
@@ -43,11 +47,18 @@ public class DataInitializer implements CommandLineRunner {
     @Resource
     private DataSource dataSource;
 
+    @Resource
+    private SysDictMapper sysDictMapper;
+
+    @Resource
+    private SysDictItemMapper sysDictItemMapper;
+
     @Override
     public void run(String... args) {
         log.info("========== 开始检查并初始化默认数据 ==========");
 
         initOperationLogTable();
+        initDictTables();
         initSuperRole();
         initSuperAdmin();
         initContractPermissions();
@@ -58,6 +69,7 @@ public class DataInitializer implements CommandLineRunner {
         initOperationLogPermissions();
         initFollowUpPermissions();
         syncSuperRolePermissions();
+        initDictData();
 //        initDefaultRoles();
 
         log.info("========== 默认数据初始化完成 ==========");
@@ -349,5 +361,120 @@ public class DataInitializer implements CommandLineRunner {
         sysPermissionMapper.insert(permission);
 
         return permission.getId();
+    }
+
+    private void initDictTables() {
+        try (Connection conn = dataSource.getConnection();
+             Statement stmt = conn.createStatement()) {
+
+            stmt.execute("CREATE TABLE IF NOT EXISTS sys_dict (" +
+                    "id BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID'," +
+                    "code VARCHAR(100) NOT NULL COMMENT '字典编码'," +
+                    "name VARCHAR(100) NOT NULL COMMENT '字典名称'," +
+                    "description VARCHAR(500) DEFAULT NULL COMMENT '字典描述'," +
+                    "status TINYINT(1) NOT NULL DEFAULT 1 COMMENT '状态: 1-启用, 0-禁用'," +
+                    "sort INT DEFAULT 0 COMMENT '排序号'," +
+                    "create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'," +
+                    "update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'," +
+                    "deleted TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除'," +
+                    "PRIMARY KEY (id)," +
+                    "UNIQUE KEY uk_code (code)" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统字典类型表'");
+
+            stmt.execute("CREATE TABLE IF NOT EXISTS sys_dict_item (" +
+                    "id BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID'," +
+                    "dict_id BIGINT NOT NULL COMMENT '字典类型ID'," +
+                    "value VARCHAR(200) NOT NULL COMMENT '字典项值'," +
+                    "label VARCHAR(200) NOT NULL COMMENT '字典项标签'," +
+                    "parent_value VARCHAR(200) DEFAULT NULL COMMENT '父项值'," +
+                    "sort INT DEFAULT 0 COMMENT '排序号'," +
+                    "status TINYINT(1) NOT NULL DEFAULT 1 COMMENT '状态: 1-启用, 0-禁用'," +
+                    "remark VARCHAR(500) DEFAULT NULL COMMENT '备注说明'," +
+                    "create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'," +
+                    "update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'," +
+                    "deleted TINYINT(1) NOT NULL DEFAULT 0 COMMENT '逻辑删除'," +
+                    "PRIMARY KEY (id)," +
+                    "INDEX idx_dict_id (dict_id)," +
+                    "INDEX idx_parent_value (parent_value)" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统字典项表'");
+
+            log.info("字典表检查/创建完成");
+        } catch (Exception e) {
+            log.warn("字典表创建失败（可能已存在）: {}", e.getMessage());
+        }
+    }
+
+    private void initDictData() {
+        LambdaQueryWrapper<SysDict> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SysDict::getCode, "business_category");
+        SysDict existing = sysDictMapper.selectOne(wrapper);
+        if (existing != null) {
+            log.info("字典数据已存在，跳过初始化");
+            return;
+        }
+
+        Long businessCategoryId = createDict("business_category", "业务类型一级分类", "客户业务类型一级分类", 1);
+        Long businessTypeId = createDict("business_type", "业务类型二级分类", "客户业务类型二级分类，关联一级分类", 2);
+        Long cooperationCategoryId = createDict("cooperation_category", "合作状态一级分类", "客户合作状态一级分类", 3);
+        Long cooperationStatusId = createDict("cooperation_status", "合作状态二级分类", "客户合作状态二级分类", 4);
+        Long maintenanceCategoryId = createDict("maintenance_category", "运维需求分类", "客户运维需求分类", 5);
+        Long gasScaleId = createDict("gas_scale", "用气规模分类", "工业客户用气规模分类", 6);
+
+        createDictItem(businessCategoryId, "加气站类", "加气站类", null, 1, "加气站类客户");
+        createDictItem(businessCategoryId, "商业用气", "商业用气", null, 2, "商业用气客户");
+        createDictItem(businessCategoryId, "工业用气", "工业用气", null, 3, "工业用气客户");
+
+        createDictItem(businessTypeId, "CNG加气站", "CNG加气站", "加气站类", 1, null);
+        createDictItem(businessTypeId, "LPG加气站", "LPG加气站", "加气站类", 2, null);
+        createDictItem(businessTypeId, "餐饮类", "餐饮类（饭店、餐馆）", "商业用气", 3, null);
+        createDictItem(businessTypeId, "团餐类", "团餐类（大企业食堂、高校食堂）", "商业用气", 4, null);
+        createDictItem(businessTypeId, "其他商业类", "其他商业类（酒店、商超后厨等）", "商业用气", 5, null);
+        createDictItem(businessTypeId, "大型", "大型", "工业用气", 6, null);
+        createDictItem(businessTypeId, "中型", "中型", "工业用气", 7, null);
+        createDictItem(businessTypeId, "小型", "小型", "工业用气", 8, null);
+
+        createDictItem(cooperationCategoryId, "已合作", "已合作", null, 1, "已合作客户");
+        createDictItem(cooperationCategoryId, "潜在", "潜在", null, 2, "潜在客户");
+        createDictItem(cooperationCategoryId, "无效", "无效", null, 3, "无效客户");
+
+        createDictItem(cooperationStatusId, "正常履约", "正常履约（已签合同，正在使用系统，无逾期）", "已合作", 1, null);
+        createDictItem(cooperationStatusId, "终止合作", "终止合作（不再合作，留存历史数据）", "已合作", 2, null);
+        createDictItem(cooperationStatusId, "高潜力", "高潜力（明确需求，短期内可签约）", "潜在", 3, null);
+        createDictItem(cooperationStatusId, "中潜力", "中潜力（有需求但时间不明确）", "潜在", 4, null);
+        createDictItem(cooperationStatusId, "低潜力", "低潜力（需求不明确，需长期跟进）", "潜在", 5, null);
+        createDictItem(cooperationStatusId, "无效客户", "无效客户（多次无回应或不符合服务范围）", "无效", 6, null);
+
+        createDictItem(maintenanceCategoryId, "高频报修", "高频报修客户（需重点关注）", null, 1, null);
+        createDictItem(maintenanceCategoryId, "常规运维", "常规运维客户（按计划巡检）", null, 2, null);
+        createDictItem(maintenanceCategoryId, "无报修", "无报修客户（系统稳定）", null, 3, null);
+
+        createDictItem(gasScaleId, "大型", "大型", null, 1, null);
+        createDictItem(gasScaleId, "中型", "中型", null, 2, null);
+        createDictItem(gasScaleId, "小型", "小型", null, 3, null);
+
+        log.info("字典数据初始化完成");
+    }
+
+    private Long createDict(String code, String name, String description, int sort) {
+        SysDict dict = new SysDict();
+        dict.setCode(code);
+        dict.setName(name);
+        dict.setDescription(description);
+        dict.setSort(sort);
+        dict.setStatus(1);
+        sysDictMapper.insert(dict);
+        return dict.getId();
+    }
+
+    private void createDictItem(Long dictId, String value, String label, String parentValue, int sort, String remark) {
+        SysDictItem item = new SysDictItem();
+        item.setDictId(dictId);
+        item.setValue(value);
+        item.setLabel(label);
+        item.setParentValue(parentValue);
+        item.setSort(sort);
+        item.setStatus(1);
+        item.setRemark(remark);
+        sysDictItemMapper.insert(item);
     }
 }

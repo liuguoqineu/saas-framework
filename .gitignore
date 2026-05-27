@@ -1,0 +1,11 @@
+target/
+.idea/
+*.iml
+.mvn/
+*.log
+application-dev.yml
+application-prod.yml
+application.yml
+application.properties
+.DS_Store
+

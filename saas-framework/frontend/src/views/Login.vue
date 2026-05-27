@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <div class="login-card">
-      <h2 class="login-title">SaaS 多租户教学框架</h2>
+      <h2 class="login-title">CRM客户管理系统</h2>
       <p class="login-subtitle">请使用您的账号登录</p>
 
       <el-form ref="formRef" :model="form" :rules="rules" size="large">
@@ -31,10 +31,6 @@
           </el-button>
         </el-form-item>
       </el-form>
-
-      <div class="login-tip">
-        <p>默认超级账户：admin / 123456</p>
-      </div>
     </div>
   </div>
 </template>

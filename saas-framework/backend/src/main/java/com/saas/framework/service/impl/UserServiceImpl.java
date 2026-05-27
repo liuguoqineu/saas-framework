@@ -181,6 +181,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
         log.info("删除员工: userId={}", id);
 
