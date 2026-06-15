@@ -46,7 +46,7 @@ CREATE TABLE sys_dict_item (
 
 -- 1. 业务类型一级分类
 INSERT INTO sys_dict (id, code, name, description, sort) VALUES
-(1, 'business_category', '业务类型一级分类', '客户业务类型一级分类：加气站类/商业用气/工业用气', 1);
+(1, 'business_category', '业务类型一级分类', '客户业务类型一级分类：加气站类/商业用气/民业用气', 1);
 
 -- 2. 业务类型二级分类
 INSERT INTO sys_dict (id, code, name, description, sort) VALUES
@@ -54,7 +54,7 @@ INSERT INTO sys_dict (id, code, name, description, sort) VALUES
 
 -- 3. 合作状态一级分类
 INSERT INTO sys_dict (id, code, name, description, sort) VALUES
-(3, 'cooperation_category', '合作状态一级分类', '客户合作状态一级分类：已合作/潜在/无效', 3);
+(3, 'cooperation_category', '合作状态一级分类', '客户合作状态一级分类：已合作/潜在/无效客户', 3);
 
 -- 4. 合作状态二级分类
 INSERT INTO sys_dict (id, code, name, description, sort) VALUES
@@ -76,7 +76,7 @@ INSERT INTO sys_dict (id, code, name, description, sort) VALUES
 INSERT INTO sys_dict_item (dict_id, value, label, sort, remark) VALUES
 (1, '加气站类', '加气站类', 1, '加气站类客户，关联智慧燃气设备运维需求'),
 (1, '商业用气', '商业用气', 2, '商业用气客户：餐饮/团餐/其他商业'),
-(1, '工业用气', '工业用气', 3, '工业用气客户，按用气规模辅助分类');
+(1, '民业用气', '民业用气', 3, '民业用气客户，按用气规模辅助分类');
 
 -- 业务类型二级分类项（parent_value 关联一级分类）
 INSERT INTO sys_dict_item (dict_id, value, label, parent_value, sort, remark) VALUES
@@ -87,16 +87,16 @@ INSERT INTO sys_dict_item (dict_id, value, label, parent_value, sort, remark) VA
 (2, '餐饮类', '餐饮类（饭店、餐馆）', '商业用气', 3, '餐饮类客户'),
 (2, '团餐类', '团餐类（大企业食堂、高校食堂）', '商业用气', 4, '团餐类客户'),
 (2, '其他商业类', '其他商业类（酒店、商超后厨等）', '商业用气', 5, '其他商业类客户'),
--- 工业用气
-(2, '大型', '大型', '工业用气', 6, '大型工业客户'),
-(2, '中型', '中型', '工业用气', 7, '中型工业客户'),
-(2, '小型', '小型', '工业用气', 8, '小型工业客户');
+-- 民业用气
+(2, '大型', '大型', '民业用气', 6, '大型民业客户'),
+(2, '中型', '中型', '民业用气', 7, '中型民业客户'),
+(2, '小型', '小型', '民业用气', 8, '小型民业客户');
 
 -- 合作状态一级分类项
 INSERT INTO sys_dict_item (dict_id, value, label, sort, remark) VALUES
 (3, '已合作', '已合作', 1, '已合作客户，已签合同，正在使用系统'),
 (3, '潜在', '潜在', 2, '潜在客户，已对接，有关注和跟进需求'),
-(3, '无效', '无效', 3, '无效客户，多次对接无回应或不符合服务范围');
+(3, '无效客户', '无效客户', 3, '无效客户，多次对接无回应或不符合服务范围');
 
 -- 合作状态二级分类项（parent_value 关联一级分类）
 INSERT INTO sys_dict_item (dict_id, value, label, parent_value, sort, remark) VALUES
@@ -106,9 +106,7 @@ INSERT INTO sys_dict_item (dict_id, value, label, parent_value, sort, remark) VA
 -- 潜在
 (4, '高潜力', '高潜力（明确需求，短期内可签约）', '潜在', 3, '高潜力客户'),
 (4, '中潜力', '中潜力（有需求但时间不明确）', '潜在', 4, '中潜力客户'),
-(4, '低潜力', '低潜力（需求不明确，需长期跟进）', '潜在', 5, '低潜力客户'),
--- 无效
-(4, '无效客户', '无效客户（多次无回应或不符合服务范围）', '无效', 6, '无效客户');
+(4, '低潜力', '低潜力（需求不明确，需长期跟进）', '潜在', 5, '低潜力客户');
 
 -- 运维需求分类项
 INSERT INTO sys_dict_item (dict_id, value, label, sort, remark) VALUES

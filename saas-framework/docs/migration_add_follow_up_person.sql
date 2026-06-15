@@ -15,7 +15,7 @@ USE saaslearn;
 SET @col_exists = (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
     WHERE TABLE_SCHEMA = 'saaslearn' AND TABLE_NAME = 'biz_customer' AND COLUMN_NAME = 'follow_up_person_id');
 SET @sql = IF(@col_exists = 0, 
-    'ALTER TABLE biz_customer ADD COLUMN follow_up_person_id BIGINT DEFAULT NULL COMMENT ''当前跟进人ID'' AFTER is_invalid', 
+    'ALTER TABLE biz_customer ADD COLUMN follow_up_person_id BIGINT DEFAULT NULL COMMENT ''当前跟进人ID'' AFTER contract_info', 
     'SELECT ''follow_up_person_id column already exists''');
 PREPARE stmt FROM @sql;
 EXECUTE stmt;

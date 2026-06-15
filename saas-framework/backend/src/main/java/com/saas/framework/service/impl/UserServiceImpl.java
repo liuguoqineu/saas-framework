@@ -98,6 +98,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<SysUser> listByTenantAndPostType(String postType) {
+        LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
+        if (!UserContext.isSuperAdmin()) {
+            wrapper.eq(SysUser::getTenantId, UserContext.getTenantId());
+        }
+        wrapper.eq(SysUser::getPostType, postType);
+        wrapper.eq(SysUser::getStatus, 1);
+        wrapper.orderByAsc(SysUser::getRealName);
+        return sysUserMapper.selectList(wrapper);
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void create(UserCreateRequest request) {
         if (UserContext.isSuperAdmin()) {
@@ -126,6 +138,7 @@ public class UserServiceImpl implements UserService {
         user.setRoleId(roleId);
         user.setTenantId(UserContext.getTenantId());
         user.setRealName(request.getRealName());
+        user.setPostType(request.getPostType());
         user.setStatus(1);
         sysUserMapper.insert(user);
 
@@ -147,14 +160,18 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(403, "无权修改其他租户的员工");
         }
 
-        // 校验选择的角色权限是否在管理员权限范围内
-        List<Long> rolePermissionIds = sysRolePermissionMapper.selectPermissionIdsByRoleId(request.getRoleId());
-        permissionService.checkPermissionsWithin(rolePermissionIds);
+        if (!UserContext.isSuperAdmin() && !user.getRoleId().equals(request.getRoleId())) {
+            List<Long> rolePermissionIds = sysRolePermissionMapper.selectPermissionIdsByRoleId(request.getRoleId());
+            permissionService.checkPermissionsWithin(rolePermissionIds);
+        }
 
         user.setRealName(request.getRealName());
         user.setRoleId(request.getRoleId());
         if (request.getStatus() != null) {
             user.setStatus(request.getStatus());
+        }
+        if (request.getPostType() != null) {
+            user.setPostType(request.getPostType());
         }
         sysUserMapper.updateById(user);
 

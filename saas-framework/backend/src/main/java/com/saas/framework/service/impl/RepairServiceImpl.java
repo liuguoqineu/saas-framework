@@ -159,6 +159,11 @@ public class RepairServiceImpl implements RepairService {
             throw new BusinessException(403, "无权修改其他租户的报修数据");
         }
 
+        // 当天新增的报修单只能当天修改，第二天无法修改
+        if (order.getCreateTime() != null && !order.getCreateTime().toLocalDate().equals(java.time.LocalDate.now())) {
+            throw new BusinessException(403, "报修信息仅限新增当天修改，次日不可修改");
+        }
+
         if (StringUtils.hasText(request.getCustomerName())) {
             order.setCustomerName(request.getCustomerName());
         }

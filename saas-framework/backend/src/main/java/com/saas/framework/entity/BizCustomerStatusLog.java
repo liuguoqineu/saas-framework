@@ -20,16 +20,10 @@ public class BizCustomerStatusLog {
     /** 客户ID */
     private Long customerId;
 
-    /** 原状态一级分类 */
-    private String oldCooperationCategory;
-
-    /** 原状态二级分类 */
+    /** 原合作状态 */
     private String oldCooperationStatus;
 
-    /** 新状态一级分类 */
-    private String newCooperationCategory;
-
-    /** 新状态二级分类 */
+    /** 新合作状态 */
     private String newCooperationStatus;
 
     /** 变更原因 */

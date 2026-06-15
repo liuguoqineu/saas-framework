@@ -61,6 +61,12 @@ const routes = [
         meta: { title: '报修管理', permission: 'repair:list' }
       },
       {
+        path: 'check-in',
+        name: 'CheckIn',
+        component: () => import('@/views/CheckIn.vue'),
+        meta: { title: '员工打卡', permission: 'checkin:list' }
+      },
+      {
         path: 'statistics',
         name: 'Statistics',
         component: () => import('@/views/Statistics.vue'),
@@ -77,6 +83,36 @@ const routes = [
         name: 'Backup',
         component: () => import('@/views/Backup.vue'),
         meta: { title: '数据备份' }
+      },
+      {
+        path: 'my-reports',
+        name: 'MyReports',
+        component: () => import('@/views/report/MyReports.vue'),
+        meta: { title: '我的报表' }
+      },
+      {
+        path: 'approvals',
+        name: 'Approvals',
+        component: () => import('@/views/report/Approvals.vue'),
+        meta: { title: '审批管理', permission: 'report:approve' }
+      },
+      {
+        path: 'report-query',
+        name: 'ReportQuery',
+        component: () => import('@/views/report/ReportQuery.vue'),
+        meta: { title: '报表查询' }
+      },
+      {
+        path: 'report-dashboard',
+        name: 'ReportDashboard',
+        component: () => import('@/views/report/Dashboard.vue'),
+        meta: { title: '数据看板' }
+      },
+      {
+        path: 'overdue',
+        name: 'Overdue',
+        component: () => import('@/views/report/Overdue.vue'),
+        meta: { title: '逾期管理', permission: 'report:overdue:manage' }
       }
     ]
   }

@@ -7,9 +7,9 @@ export const userApi = {
   page(params) {
     return request.get('/user/page', { params })
   },
-  list(roleName) {
-    const params = roleName ? { roleName } : {}
-    return request.get('/user/list', { params })
+  list(params) {
+    const p = typeof params === 'string' ? { roleName: params } : (params || {})
+    return request.get('/user/list', { params: p })
   },
   create(data) {
     return request.post('/user', data)

@@ -11,28 +11,20 @@
         <template #header>
           <div class="card-header">
             <span>基本信息</span>
-            <el-tag :type="customer.isInvalid === 1 ? 'info' : 'success'" style="margin-left:8px">
-              {{ customer.isInvalid === 1 ? '无效' : '正常' }}
-            </el-tag>
           </div>
         </template>
         <el-descriptions :column="3" border>
           <el-descriptions-item label="客户名称">{{ customer.name }}</el-descriptions-item>
-          <el-descriptions-item label="业务一级分类">{{ customer.businessCategory || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="业务二级分类">{{ customer.businessType || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="合作一级分类">{{ customer.cooperationCategory || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="合作二级分类">
-            <el-tag :type="getCooperationTagType(customer.cooperationCategory, customer.cooperationStatus)" size="small">
-              {{ customer.cooperationStatus || '-' }}
-            </el-tag>
-          </el-descriptions-item>
+          <el-descriptions-item label="业务分类">{{ customer.businessCategory || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="站点名称">{{ customer.businessType || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="合作状态"><el-tag :type="getCooperationTagType(customer.cooperationStatus)" size="small">{{ customer.cooperationStatus || '-' }}</el-tag></el-descriptions-item>
           <el-descriptions-item label="联系人">{{ customer.contactPerson || '-' }}</el-descriptions-item>
           <el-descriptions-item label="联系电话">{{ customer.contactPhone || '-' }}</el-descriptions-item>
           <el-descriptions-item label="跟进人">{{ customer.followUpPerson || '-' }}</el-descriptions-item>
           <el-descriptions-item label="用气规模">{{ customer.gasScale || '-' }}</el-descriptions-item>
           <el-descriptions-item label="客户地址" :span="2">{{ customer.address || '-' }}</el-descriptions-item>
           <el-descriptions-item label="创建时间">{{ customer.createTime || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="智慧燃气系统" :span="2">{{ customer.smartGasSystem || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="智慧燃气设备信息" :span="2">{{ customer.smartGasSystem || '-' }}</el-descriptions-item>
           <el-descriptions-item label="合同信息" :span="3">{{ customer.contractInfo || '-' }}</el-descriptions-item>
         </el-descriptions>
       </el-card>
@@ -49,7 +41,7 @@
           <el-timeline-item
             v-for="record in followUpRecords"
             :key="record.id"
-            :timestamp="record.followUpTime"
+            :timestamp="formatDateTime(record.followUpTime)"
             placement="top"
           >
             <el-card shadow="never" class="log-card">
@@ -119,7 +111,7 @@
           <el-timeline-item
             v-for="log in modifyLogs"
             :key="log.id"
-            :timestamp="log.modifyTime"
+            :timestamp="formatDateTime(log.modifyTime)"
             placement="top"
           >
             <el-card shadow="never" class="log-card">
@@ -144,15 +136,15 @@
           <el-timeline-item
             v-for="log in statusLogs"
             :key="log.id"
-            :timestamp="log.changeTime"
+            :timestamp="formatDateTime(log.changeTime)"
             placement="top"
           >
             <el-card shadow="never" class="log-card">
               <p class="log-user">{{ log.changePerson || '未知' }} 变更了客户状态</p>
               <p class="log-change">
-                <span class="old-value">{{ log.oldCooperationCategory }}/{{ log.oldCooperationStatus }}</span>
+                <span class="old-value">{{ log.oldCooperationStatus || '-' }}</span>
                 <el-icon style="margin:0 8px"><Right /></el-icon>
-                <span class="new-value">{{ log.newCooperationCategory }}/{{ log.newCooperationStatus }}</span>
+                <span class="new-value">{{ log.newCooperationStatus || '-' }}</span>
               </p>
               <p v-if="log.changeReason" style="margin:4px 0;color:#909399;font-size:12px">原因：{{ log.changeReason }}</p>
             </el-card>
@@ -187,6 +179,20 @@
             <el-option v-for="opt in followUpStatusOptions" :key="opt.value" :label="opt.label" :value="opt.value" />
           </el-select>
         </el-form-item>
+
+        <el-divider content-position="left">变更合作状态</el-divider>
+
+        <el-form-item label="当前状态">
+          <el-tag>{{ customer.cooperationStatus || '-' }}</el-tag>
+        </el-form-item>
+        <el-form-item label="新合作状态" prop="newCooperationStatus">
+          <el-select v-model="followUpForm.newCooperationStatus" placeholder="请选择" style="width:100%">
+            <el-option v-for="opt in dictCooperationStatus" :key="opt.value" :label="opt.label" :value="opt.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="变更原因" prop="changeReason">
+          <el-input v-model="followUpForm.changeReason" type="textarea" :rows="2" placeholder="请输入变更原因" maxlength="200" show-word-limit />
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="followUpDialogVisible = false">取消</el-button>
@@ -198,16 +204,11 @@
     <el-dialog title="变更客户合作状态" v-model="statusChangeDialogVisible" width="600px" @close="resetStatusChangeForm">
       <el-form ref="statusChangeFormRef" :model="statusChangeForm" :rules="statusChangeRules" label-width="120px">
         <el-form-item label="当前状态">
-          <el-tag>{{ customer.cooperationCategory }} / {{ customer.cooperationStatus }}</el-tag>
+          <el-tag>{{ customer.cooperationStatus || '-' }}</el-tag>
         </el-form-item>
-        <el-form-item label="新合作一级分类" prop="newCooperationCategory">
-          <el-select v-model="statusChangeForm.newCooperationCategory" placeholder="请选择" style="width:100%" @change="onStatusChangeCategoryChange">
-            <el-option v-for="cat in cooperationCategories" :key="cat" :label="cat" :value="cat" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="新合作二级分类" prop="newCooperationStatus">
+        <el-form-item label="新合作状态" prop="newCooperationStatus">
           <el-select v-model="statusChangeForm.newCooperationStatus" placeholder="请选择" style="width:100%">
-            <el-option v-for="s in statusChangeCooperationStatuses" :key="typeof s === 'object' ? s.value : s" :label="typeof s === 'object' ? s.label : s" :value="typeof s === 'object' ? s.value : s" />
+            <el-option v-for="opt in dictCooperationStatus" :key="opt.value" :label="opt.label" :value="opt.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="变更原因" prop="changeReason">
@@ -223,9 +224,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { customerApi, cooperationCategoryMap } from '@/api/customer'
+import { customerApi, cooperationStatusOptions } from '@/api/customer'
 import { followUpApi, followUpMethodOptions, followUpStatusOptions, followUpMethodMap, followUpStatusMap } from '@/api/followUp'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ArrowLeft, Right } from '@element-plus/icons-vue'
@@ -246,58 +247,48 @@ const followUpSubmitting = ref(false)
 const statusChangeSubmitting = ref(false)
 const followUpFormRef = ref()
 const statusChangeFormRef = ref()
-const cooperationCategories = Object.keys(cooperationCategoryMap)
+const dictCooperationStatus = ref([])
 
 const followUpForm = reactive({
   customerId: null, followUpTime: '', followUpPerson: '', followUpPersonId: null,
-  followUpMethod: null, followUpContent: '', nextPlan: '', followUpStatus: 2
+  followUpMethod: null, followUpContent: '', nextPlan: '', followUpStatus: 2,
+  newCooperationStatus: '', changeReason: ''
 })
 const followUpRules = {
   followUpTime: [{ required: true, message: '请选择跟进时间', trigger: 'change' }],
   followUpMethod: [{ required: true, message: '请选择跟进方式', trigger: 'change' }],
   followUpContent: [{ required: true, message: '请输入跟进内容', trigger: 'blur' }],
-  followUpStatus: [{ required: true, message: '请选择跟进状态', trigger: 'change' }]
-}
-const statusChangeForm = reactive({
-  newCooperationCategory: '', newCooperationStatus: '', followUpRecordId: null, changeReason: ''
-})
-const statusChangeRules = {
-  newCooperationCategory: [{ required: true, message: '请选择新合作一级分类', trigger: 'change' }],
-  newCooperationStatus: [{ required: true, message: '请选择新合作二级分类', trigger: 'change' }],
+  followUpStatus: [{ required: true, message: '请选择跟进状态', trigger: 'change' }],
   changeReason: [{ required: true, message: '请输入变更原因', trigger: 'blur' }]
 }
-const statusChangeCooperationStatuses = computed(() => {
-  return cooperationCategoryMap[statusChangeForm.newCooperationCategory] || []
+const statusChangeForm = reactive({
+  newCooperationStatus: '', followUpRecordId: null, changeReason: ''
 })
+const statusChangeRules = {
+  newCooperationStatus: [{ required: true, message: '请选择新合作状态', trigger: 'change' }],
+  changeReason: [{ required: true, message: '请输入变更原因', trigger: 'blur' }]
+}
 
 const fieldLabelMap = {
   name: '客户名称', address: '地址',
   contactPerson: '联系人', contactPhone: '联系电话',
-  businessCategory: '业务一级分类', businessType: '业务二级分类',
-  cooperationCategory: '合作一级分类', cooperationStatus: '合作二级分类',
-  gasScale: '用气规模', smartGasSystem: '智慧燃气系统',
-  contractInfo: '合同信息', isInvalid: '状态'
+  businessCategory: '业务分类', businessType: '站点名称',
+  cooperationStatus: '合作状态',
+  gasScale: '用气规模', smartGasSystem: '智慧燃气设备信息',
+  contractInfo: '合同信息'
 }
 
 function getFieldLabel(fieldName) {
   return fieldLabelMap[fieldName] || fieldName
 }
 
-function getCooperationTagType(category, status) {
-  if (category === '已合作') {
-    if (status === '正常履约') return 'success'
-    if (status === '逾期客户') return 'danger'
-    if (status === '暂停合作') return 'warning'
-    if (status === '终止合作') return 'info'
-    return ''
-  }
-  if (category === '潜在') {
-    if (status === '高潜力') return 'success'
-    if (status === '中潜力') return 'warning'
-    if (status === '低潜力') return 'info'
-    return ''
-  }
-  if (category === '意向') return ''
+function getCooperationTagType(status) {
+  if (status === '正常履约') return 'success'
+  if (status === '终止合作') return 'info'
+  if (status === '高潜力') return ''
+  if (status === '中潜力') return 'warning'
+  if (status === '低潜力') return 'info'
+  if (status === '无效客户') return 'danger'
   return ''
 }
 
@@ -306,6 +297,19 @@ function formatFileSize(bytes) {
   if (bytes < 1024) return bytes + 'B'
   if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + 'KB'
   return (bytes / (1024 * 1024)).toFixed(1) + 'MB'
+}
+
+function formatDateTime(val) {
+  if (!val) return '-'
+  const d = new Date(val)
+  if (isNaN(d.getTime())) return val
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  const h = String(d.getHours()).padStart(2, '0')
+  const min = String(d.getMinutes()).padStart(2, '0')
+  const s = String(d.getSeconds()).padStart(2, '0')
+  return `${y}-${m}-${day} ${h}:${min}:${s}`
 }
 
 function goBack() {
@@ -426,19 +430,30 @@ function getCurrentUser() {
 
 function openFollowUpDialog() {
   const user = getCurrentUser()
+  const now = new Date()
+  const y = now.getFullYear()
+  const m = String(now.getMonth() + 1).padStart(2, '0')
+  const d = String(now.getDate()).padStart(2, '0')
+  const h = String(now.getHours()).padStart(2, '0')
+  const min = String(now.getMinutes()).padStart(2, '0')
+  const s = String(now.getSeconds()).padStart(2, '0')
   followUpForm.customerId = Number(customerId)
   followUpForm.followUpPerson = user.username
   followUpForm.followUpPersonId = user.id
-  followUpForm.followUpTime = ''
+  followUpForm.followUpTime = `${y}-${m}-${d} ${h}:${min}:${s}`
   followUpForm.followUpMethod = null
   followUpForm.followUpContent = ''
   followUpForm.nextPlan = ''
   followUpForm.followUpStatus = 2
+  followUpForm.newCooperationStatus = ''
+  followUpForm.changeReason = ''
   followUpDialogVisible.value = true
 }
 
 function resetFollowUpForm() {
   followUpFormRef.value?.resetFields()
+  followUpForm.newCooperationStatus = ''
+  followUpForm.changeReason = ''
 }
 
 async function submitFollowUp() {
@@ -447,16 +462,17 @@ async function submitFollowUp() {
   followUpSubmitting.value = true
   try {
     await followUpApi.createRecord(followUpForm)
-    ElMessage.success('跟进记录添加成功')
+    ElMessage.success('跟进记录添加成功，合作状态已同步更新')
     followUpDialogVisible.value = false
     fetchFollowUpRecords()
+    fetchDetail()
+    fetchStatusLogs()
   } finally {
     followUpSubmitting.value = false
   }
 }
 
 function openStatusChangeDialog() {
-  statusChangeForm.newCooperationCategory = ''
   statusChangeForm.newCooperationStatus = ''
   statusChangeForm.changeReason = ''
   statusChangeForm.followUpRecordId = null
@@ -465,10 +481,6 @@ function openStatusChangeDialog() {
 
 function resetStatusChangeForm() {
   statusChangeFormRef.value?.resetFields()
-}
-
-function onStatusChangeCategoryChange() {
-  statusChangeForm.newCooperationStatus = ''
 }
 
 async function submitStatusChange() {
@@ -506,6 +518,15 @@ onMounted(() => {
   fetchModifyLogs()
   fetchFollowUpRecords()
   fetchStatusLogs()
+  customerApi.getDicts().then(res => {
+    if (res.data && res.data.cooperationStatus) {
+      dictCooperationStatus.value = res.data.cooperationStatus
+    } else {
+      dictCooperationStatus.value = cooperationStatusOptions
+    }
+  }).catch(() => {
+    dictCooperationStatus.value = cooperationStatusOptions
+  })
 })
 </script>
 

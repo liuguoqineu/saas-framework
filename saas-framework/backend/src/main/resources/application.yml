@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:mysql://39.98.221.201:3306/saaslearn?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/web1?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: wolf1234
+    password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       minimum-idle: 5
@@ -58,3 +58,24 @@ springdoc:
 logging:
   level:
     com.saas.framework: debug
+
+# 日报/周报/月报系统配置
+report:
+  daily:
+    deadline: "18:00"
+    remind-before-minutes: 60
+  weekly:
+    start-day: 1
+    deadline-day: 5
+    deadline-time: "18:00"
+  monthly:
+    deadline-day: 3
+    deadline-time: "18:00"
+  approval:
+    timeout-hours: 24
+    max-level: 2
+  overdue:
+    remind-interval-hours: 2
+    max-remind-count: 3
+  export:
+    max-batch-size: 500

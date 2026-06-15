@@ -6,26 +6,23 @@
           <el-input v-model="filterForm.name" placeholder="请输入客户名称" clearable style="width: 150px" />
         </el-form-item>
         <el-form-item label="业务分类">
-          <el-select v-model="filterForm.businessCategory" placeholder="一级分类" clearable style="width: 110px" @change="onBusinessCategoryChange('filter')">
+          <el-select v-model="filterForm.businessCategory" placeholder="请选择" clearable style="width: 110px" @change="onBusinessCategoryChange('filter')">
             <el-option v-for="cat in businessCategories" :key="cat" :label="cat" :value="cat" />
           </el-select>
-          <el-select v-model="filterForm.businessType" placeholder="二级分类" clearable style="width: 130px; margin-left: 4px" @change="handleSearch">
+          <el-select v-model="filterForm.businessType" placeholder="请选择" clearable style="width: 130px; margin-left: 4px" @change="handleSearch">
             <el-option v-for="t in filterBusinessTypes" :key="getOptValue(t)" :label="getOptLabel(t)" :value="getOptValue(t)" />
           </el-select>
         </el-form-item>
         <el-form-item label="合作状态">
-          <el-select v-model="filterForm.cooperationCategory" placeholder="一级分类" clearable style="width: 100px" @change="onCooperationCategoryChange('filter')">
-            <el-option v-for="cat in cooperationCategories" :key="cat" :label="cat" :value="cat" />
-          </el-select>
-          <el-select v-model="filterForm.cooperationStatus" placeholder="二级分类" clearable style="width: 150px; margin-left: 4px" @change="handleSearch">
-            <el-option v-for="s in filterCooperationStatuses" :key="getOptValue(s)" :label="getOptLabel(s)" :value="getOptValue(s)" />
+          <el-select v-model="filterForm.cooperationStatus" placeholder="全部" clearable style="width: 130px" @change="handleSearch">
+            <el-option v-for="opt in dictCooperationStatus" :key="opt.value" :label="opt.label" :value="opt.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="联系人">
           <el-input v-model="filterForm.contactPerson" placeholder="请输入联系人" clearable style="width: 120px" />
         </el-form-item>
         <el-form-item label="运维需求">
-          <el-select v-model="filterForm.maintenanceCategory" placeholder="全部" clearable style="width: 130px">
+          <el-select v-model="filterForm.maintenanceCategory" placeholder="全部" clearable style="width: 130px" @change="handleSearch">
             <el-option v-for="opt in dictMaintenanceCategory" :key="opt.value" :label="opt.label" :value="opt.value" />
           </el-select>
         </el-form-item>
@@ -47,25 +44,18 @@
       </div>
 
       <el-table :data="tableData" v-loading="loading" stripe border style="width: 100%">
-        <el-table-column prop="id" label="ID" width="70" />
-        <el-table-column prop="name" label="客户名称" min-width="140" show-overflow-tooltip />
-        <el-table-column prop="businessCategory" label="业务一级" min-width="90" />
-        <el-table-column prop="businessType" label="业务二级" min-width="100" />
-        <el-table-column prop="cooperationCategory" label="合作一级" min-width="90" />
-        <el-table-column prop="cooperationStatus" label="合作二级" min-width="100">
+        <el-table-column prop="name" label="客户名称" min-width="150" show-overflow-tooltip />
+        <el-table-column prop="businessCategory" label="业务分类" min-width="100" />
+        <el-table-column prop="businessType" label="站点名称" min-width="110" />
+        <el-table-column label="合作状态" min-width="120">
           <template #default="{ row }">
-            <el-tag :type="getCooperationTagType(row.cooperationCategory, row.cooperationStatus)" size="small">
+            <el-tag :type="getCooperationTagType(row.cooperationStatus)" size="small">
               {{ row.cooperationStatus || '-' }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="contactPerson" label="联系人" min-width="80" />
-        <el-table-column prop="contactPhone" label="联系电话" min-width="120" />
-        <el-table-column prop="address" label="客户地址" min-width="150">
-          <template #default="{ row }">
-            <span>{{ row.address || '-' }}</span>
-          </template>
-        </el-table-column>
+        <el-table-column prop="contactPerson" label="联系人" min-width="90" />
+        <el-table-column prop="contactPhone" label="联系电话" min-width="130" />
         <el-table-column prop="followUpPerson" label="跟进人" min-width="90">
           <template #default="{ row }">{{ row.followUpPerson || '-' }}</template>
         </el-table-column>
@@ -85,19 +75,19 @@
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="280" fixed="right">
+        <el-table-column label="操作" width="260" fixed="right">
           <template #default="{ row }">
             <el-button size="small" @click="handleDetail(row)">详情</el-button>
             <el-button v-permission="'followup:list'" size="small" type="warning" @click="handleFollowUp(row)">跟进</el-button>
             <el-button v-permission="'customer:edit'" size="small" type="primary" @click="handleEdit(row)">编辑</el-button>
-            <el-button v-permission="'customer:delete'" size="small" type="danger" @click="handleDelete(row)">删除</el-button>
+            <el-button v-permission="'customer:assign'" size="small" type="success" @click="openTransferDialog(row)">转移</el-button>
           </template>
         </el-table-column>
       </el-table>
 
       <el-pagination v-model:current-page="pagination.page" v-model:page-size="pagination.size"
         :page-sizes="[10, 20, 50, 100]" :total="pagination.total"
-        :layout="paginationLayout" @size-change="handleSearch" @current-change="handleSearch"
+        :layout="paginationLayout" @size-change="handleSearch" @current-change="fetchList"
         style="margin-top: 16px; justify-content: flex-end" />
     </el-card>
 
@@ -130,14 +120,14 @@
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="业务一级分类" prop="businessCategory">
+            <el-form-item label="业务分类" prop="businessCategory">
               <el-select v-model="formData.businessCategory" placeholder="请选择" style="width: 100%" @change="onBusinessCategoryChange('form')">
                 <el-option v-for="cat in businessCategories" :key="cat" :label="cat" :value="cat" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="业务二级分类" prop="businessType">
+            <el-form-item label="站点名称" prop="businessType">
               <el-select v-model="formData.businessType" placeholder="请先选择一级分类" style="width: 100%">
                 <el-option v-for="t in formBusinessTypes" :key="getOptValue(t)" :label="getOptLabel(t)" :value="getOptValue(t)" />
               </el-select>
@@ -146,26 +136,19 @@
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="合作一级分类" prop="cooperationCategory">
-              <el-select v-model="formData.cooperationCategory" placeholder="请选择" style="width: 100%" @change="onCooperationCategoryChange('form')">
-                <el-option v-for="cat in cooperationCategories" :key="cat" :label="cat" :value="cat" />
+            <el-form-item label="合作状态" prop="cooperationStatus">
+              <el-select v-model="formData.cooperationStatus" placeholder="请选择" style="width: 100%">
+                <el-option v-for="opt in dictCooperationStatus" :key="opt.value" :label="opt.label" :value="opt.value" />
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="合作二级分类" prop="cooperationStatus">
-              <el-select v-model="formData.cooperationStatus" placeholder="请先选择一级分类" style="width: 100%">
-                <el-option v-for="s in formCooperationStatuses" :key="getOptValue(s)" :label="getOptLabel(s)" :value="getOptValue(s)" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="用气规模" prop="gasScale">
               <el-input v-model="formData.gasScale" placeholder="请输入用气规模" />
             </el-form-item>
           </el-col>
+        </el-row>
+        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="运维需求" prop="maintenanceCategory">
               <el-select v-model="formData.maintenanceCategory" placeholder="请选择运维需求" style="width: 100%">
@@ -192,14 +175,14 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item label="智慧燃气系统" prop="smartGasSystem">
-          <el-input v-model="formData.smartGasSystem" type="textarea" :rows="2" placeholder="请输入智慧燃气系统信息" />
+        <el-form-item label="智慧燃气设备信息" prop="smartGasSystem">
+          <el-input v-model="formData.smartGasSystem" type="textarea" :rows="2" placeholder="请输入智慧燃气设备信息" />
         </el-form-item>
         <el-form-item label="合同信息" prop="contractInfo">
           <el-input v-model="formData.contractInfo" type="textarea" :rows="2" placeholder="请输入合同相关信息" />
         </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="formData.remark" type="textarea" :rows="2" placeholder="请输入备注" />
+        <el-form-item label="客户备注" prop="remark">
+          <el-input v-model="formData.remark" type="textarea" :rows="2" placeholder="请输入客户备注" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -215,11 +198,10 @@
         <el-descriptions-item label="联系人">{{ detailData.contactPerson }}</el-descriptions-item>
         <el-descriptions-item label="联系电话">{{ detailData.contactPhone }}</el-descriptions-item>
         <el-descriptions-item label="跟进人">{{ detailData.followUpPerson || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="业务一级分类">{{ detailData.businessCategory || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="业务二级分类">{{ detailData.businessType || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="合作一级分类">{{ detailData.cooperationCategory || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="合作二级分类">
-          <el-tag :type="getCooperationTagType(detailData.cooperationCategory, detailData.cooperationStatus)" size="small">
+        <el-descriptions-item label="业务分类">{{ detailData.businessCategory || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="站点名称">{{ detailData.businessType || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="合作状态">
+          <el-tag :type="getCooperationTagType(detailData.cooperationStatus)" size="small">
             {{ detailData.cooperationStatus || '-' }}
           </el-tag>
         </el-descriptions-item>
@@ -239,9 +221,9 @@
           <span v-else>-</span>
         </el-descriptions-item>
         <el-descriptions-item label="创建时间">{{ detailData.createTime }}</el-descriptions-item>
-        <el-descriptions-item label="智慧燃气系统" :span="2">{{ detailData.smartGasSystem || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="智慧燃气设备信息" :span="2">{{ detailData.smartGasSystem || '-' }}</el-descriptions-item>
         <el-descriptions-item label="合同信息" :span="2">{{ detailData.contractInfo || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="备注" :span="2">{{ detailData.remark || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="客户备注" :span="2">{{ detailData.remark || '-' }}</el-descriptions-item>
       </el-descriptions>
 
       <el-divider content-position="left">
@@ -263,10 +245,13 @@
           <template #default="{ row }">{{ formatFileSize(row.fileSize) }}</template>
         </el-table-column>
         <el-table-column prop="createTime" label="上传时间" width="170" />
-        <el-table-column label="操作" width="180">
+        <el-table-column label="操作" width="260">
           <template #default="{ row }">
-            <el-button size="small" type="success" @click="downloadAttachment(row)">⬇️ 下载</el-button>
-            <el-button size="small" type="danger" @click="deleteAttachment(row)">🗑️ 删除</el-button>
+            <div class="action-buttons">
+              <el-button v-if="isImageFile(row.fileType, row.fileName)" size="small" type="primary" @click="previewImage(row)">查看</el-button>
+              <el-button size="small" type="success" @click="downloadAttachment(row)">下载</el-button>
+              <el-button size="small" type="danger" @click="deleteAttachment(row)">删除</el-button>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -274,7 +259,7 @@
 
       <el-divider content-position="left">修改记录</el-divider>
       <el-timeline>
-        <el-timeline-item v-for="log in detailModifyLogs" :key="log.id" :timestamp="log.modifyTime"
+        <el-timeline-item v-for="log in detailModifyLogs" :key="log.id" :timestamp="formatDateTime(log.modifyTime)"
           placement="top">
           <div>
             <strong>{{ log.modifyUser }}</strong> 修改了
@@ -288,6 +273,42 @@
       <el-empty v-if="detailModifyLogs.length === 0" description="暂无修改记录" />
     </el-dialog>
 
+    <!-- 图片预览对话框 -->
+    <el-dialog v-model="imagePreviewVisible" :title="`图片预览 - ${currentPreviewImage?.fileName || ''}`" width="90%" top="5vh" destroy-on-close>
+      <div class="image-preview-container">
+        <div class="image-preview-toolbar">
+          <el-button-group>
+            <el-button size="small" @click="zoomOut">🔍- 缩小</el-button>
+            <el-button size="small" @click="resetZoom">↺ 原始大小</el-button>
+            <el-button size="small" @click="zoomIn">🔍+ 放大</el-button>
+          </el-button-group>
+          <el-button-group style="margin-left: 12px;">
+            <el-button size="small" :disabled="currentImageIndex <= 0" @click="prevImage">⬅️ 上一张</el-button>
+            <el-button size="small" :disabled="currentImageIndex >= previewImages.length - 1" @click="nextImage">➡️ 下一张</el-button>
+          </el-button-group>
+        </div>
+        <div class="image-preview-content" ref="imagePreviewContentRef" @wheel="handleWheel">
+          <img
+            :src="currentPreviewImageUrl"
+            :style="{ transform: `scale(${imageScale})` }"
+            class="preview-image"
+            @load="onImageLoad"
+            @error="onImageError"
+          />
+        </div>
+        <div v-if="previewImages.length > 1" class="image-preview-thumbs">
+          <div
+            v-for="(img, index) in previewImages"
+            :key="img.id"
+            :class="['thumb-item', { active: index === currentImageIndex }]"
+            @click="switchImage(index)"
+          >
+            <img :src="getThumbnailUrl(img)" :alt="img.fileName" />
+          </div>
+        </div>
+      </div>
+    </el-dialog>
+
     <!-- 跟进记录管理对话框 -->
     <el-dialog v-model="followUpDialogVisible" :title="`跟进记录 - ${currentCustomer?.name || ''}`" width="900px" destroy-on-close>
       <div class="follow-up-header">
@@ -298,7 +319,7 @@
         <el-timeline-item
           v-for="record in followUpRecords"
           :key="record.id"
-          :timestamp="record.followUpTime"
+          :timestamp="formatDateTime(record.followUpTime)"
           placement="top"
         >
           <el-card shadow="never" class="follow-up-card">
@@ -348,6 +369,20 @@
           <el-form-item label="下一步计划" prop="nextPlan">
             <el-input v-model="followUpForm.nextPlan" type="textarea" :rows="2" placeholder="请输入下一步计划（可选）" />
           </el-form-item>
+
+          <el-divider content-position="left">变更合作状态</el-divider>
+
+          <el-form-item label="当前状态">
+            <el-tag>{{ currentCustomer?.cooperationStatus || '-' }}</el-tag>
+          </el-form-item>
+          <el-form-item label="新合作状态" prop="newCooperationStatus">
+            <el-select v-model="followUpForm.newCooperationStatus" placeholder="请选择" style="width: 100%">
+              <el-option v-for="opt in dictCooperationStatus" :key="opt.value" :label="opt.label" :value="opt.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="变更原因" prop="changeReason">
+            <el-input v-model="followUpForm.changeReason" type="textarea" :rows="2" placeholder="请输入变更原因" maxlength="200" show-word-limit />
+          </el-form-item>
         </el-form>
         <template #footer>
           <el-button @click="addFollowUpDialogVisible = false">取消</el-button>
@@ -377,14 +412,58 @@
         <el-button type="primary" @click="handleImportSubmit" :loading="importLoading">开始导入</el-button>
       </template>
     </el-dialog>
+
+    <!-- 客户转移对话框 -->
+    <el-dialog v-model="transferDialogVisible" title="转移客户" width="450px" destroy-on-close>
+      <el-alert
+        :title="`将客户「${transferCustomer?.name || ''}」从「${transferCustomer?.followUpPerson || '未分配'}」转移给其他销售人员`"
+        type="info"
+        :closable="false"
+        style="margin-bottom: 20px;"
+      />
+      <el-form label-width="100px">
+        <el-form-item label="目标人员">
+          <el-select
+            v-model="transferTargetUserId"
+            placeholder="请选择目标销售人员"
+            filterable
+            style="width: 100%"
+            :loading="userListLoading"
+          >
+            <el-option
+              v-for="user in userList"
+              :key="user.id"
+              :label="`${user.realName} (${user.username})`"
+              :value="user.id"
+              :disabled="user.id === transferCustomer?.followUpPersonId"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input
+            v-model="transferRemark"
+            type="textarea"
+            :rows="3"
+            placeholder="请输入转移原因（可选）"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="transferDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleTransferSubmit" :loading="transferLoading" :disabled="!transferTargetUserId">
+          确认转移
+        </el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { customerApi, businessCategoryMap, cooperationCategoryMap } from '@/api/customer'
+import { customerApi, businessCategoryMap } from '@/api/customer'
 import { followUpApi, followUpMethodMap, followUpStatusMap, followUpMethodOptions, followUpStatusOptions } from '@/api/followUp'
+import { userApi } from '@/api/user'
 import { regionData, CodeToText } from 'element-china-area-data'
 
 const regionCodeToText = CodeToText || {}
@@ -398,15 +477,13 @@ const tableData = ref([])
 const dictLoading = ref(false)
 const dictBusinessCategory = ref([])
 const dictBusinessTypeMap = ref({})
-const dictCooperationCategory = ref([])
-const dictCooperationStatusMap = ref({})
+const dictCooperationStatus = ref([])
 const dictMaintenanceCategory = ref([])
 
 const filterForm = reactive({
   name: '',
   businessCategory: '',
   businessType: '',
-  cooperationCategory: '',
   cooperationStatus: '',
   contactPerson: '',
   maintenanceCategory: ''
@@ -425,20 +502,13 @@ const paginationLayout = computed(() => {
 })
 
 const businessCategories = computed(() => dictBusinessCategory.value.map(item => item.value))
-const cooperationCategories = computed(() => dictCooperationCategory.value.map(item => item.value))
 
 const filterBusinessTypes = computed(() => {
   if (!filterForm.businessCategory) return []
   return dictBusinessTypeMap.value[filterForm.businessCategory] || []
 })
 
-const filterCooperationStatuses = computed(() => {
-  if (!filterForm.cooperationCategory) return []
-  return dictCooperationStatusMap.value[filterForm.cooperationCategory] || []
-})
-
 const formBusinessTypes = ref([])
-const formCooperationStatuses = ref([])
 
 function getOptValue(opt) {
   return typeof opt === 'string' ? opt : opt?.value
@@ -457,24 +527,13 @@ function onBusinessCategoryChange(source) {
   }
 }
 
-function onCooperationCategoryChange(source) {
-  if (source === 'filter') {
-    filterForm.cooperationStatus = ''
-  } else {
-    formData.cooperationStatus = ''
-    formCooperationStatuses.value = dictCooperationStatusMap.value[formData.cooperationCategory] || []
-  }
-}
-
-function getCooperationTagType(category, status) {
-  if (category === '已合作') {
-    return status === '正常履约' ? 'success' : 'info'
-  }
-  if (category === '潜在') {
-    if (status === '高潜力') return ''
-    if (status === '中潜力') return 'warning'
-    return 'info'
-  }
+function getCooperationTagType(status) {
+  if (status === '正常履约') return 'success'
+  if (status === '终止合作') return 'info'
+  if (status === '高潜力') return ''
+  if (status === '中潜力') return 'warning'
+  if (status === '低潜力') return 'info'
+  if (status === '无效客户') return 'danger'
   return 'info'
 }
 
@@ -510,7 +569,6 @@ async function fetchList() {
       name: filterForm.name || undefined,
       businessCategory: filterForm.businessCategory || undefined,
       businessType: filterForm.businessType || undefined,
-      cooperationCategory: filterForm.cooperationCategory || undefined,
       cooperationStatus: filterForm.cooperationStatus || undefined,
       contactPerson: filterForm.contactPerson || undefined,
       maintenanceCategory: filterForm.maintenanceCategory || undefined
@@ -535,7 +593,6 @@ function handleReset() {
     name: '',
     businessCategory: '',
     businessType: '',
-    cooperationCategory: '',
     cooperationStatus: '',
     contactPerson: '',
     maintenanceCategory: ''
@@ -557,7 +614,6 @@ const formData = reactive({
   followUpPersonId: null,
   businessCategory: '',
   businessType: '',
-  cooperationCategory: '',
   cooperationStatus: '',
   gasScale: '',
   address: '',
@@ -574,8 +630,8 @@ const formRules = {
   name: [{ required: true, message: '请输入客户名称', trigger: 'blur' }],
   contactPerson: [{ required: true, message: '请输入联系人', trigger: 'blur' }],
   contactPhone: [{ required: true, message: '请输入联系电话', trigger: 'blur' }],
-  businessCategory: [{ required: true, message: '请选择业务一级分类', trigger: 'change' }],
-  businessType: [{ required: true, message: '请选择业务二级分类', trigger: 'change' }],
+  businessCategory: [{ required: true, message: '请选择业务分类', trigger: 'change' }],
+  businessType: [{ required: true, message: '请选择站点名称', trigger: 'change' }],
   regionCodes: [{ required: true, type: 'array', min: 1, message: '请选择客户地址', trigger: 'change' }]
 }
 
@@ -591,7 +647,6 @@ function handleAdd() {
     followUpPersonId: null,
     businessCategory: '',
     businessType: '',
-    cooperationCategory: '',
     cooperationStatus: '',
     gasScale: '',
     address: '',
@@ -604,7 +659,6 @@ function handleAdd() {
     maintenanceCategory: ''
   })
   formBusinessTypes.value = []
-  formCooperationStatuses.value = []
   formDialogVisible.value = true
 }
 
@@ -653,7 +707,6 @@ async function handleEdit(row) {
       followUpPersonId: data.followUpPersonId || null,
       businessCategory: data.businessCategory || '',
       businessType: data.businessType || '',
-      cooperationCategory: data.cooperationCategory || '',
       cooperationStatus: data.cooperationStatus || '',
       gasScale: data.gasScale || '',
       address: data.address || '',
@@ -667,7 +720,6 @@ async function handleEdit(row) {
     })
 
     formBusinessTypes.value = data.businessCategory ? (businessCategoryMap[data.businessCategory] || []) : []
-    formCooperationStatuses.value = data.cooperationCategory ? (cooperationCategoryMap[data.cooperationCategory] || []) : []
 
     formDialogVisible.value = true
   } catch (e) {
@@ -808,6 +860,110 @@ async function deleteAttachment(row) {
   }
 }
 
+const imagePreviewVisible = ref(false)
+const currentPreviewImage = ref(null)
+const currentImageIndex = ref(0)
+const imageScale = ref(1)
+const imagePreviewContentRef = ref(null)
+
+function isImageFile(fileType, fileName) {
+  const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp']
+  const imageTypes = ['图片', 'image', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']
+
+  if (fileType) {
+    const lowerType = fileType.toLowerCase()
+    if (imageTypes.some(type => lowerType.includes(type.toLowerCase()))) {
+      return true
+    }
+  }
+
+  if (fileName) {
+    const lowerName = fileName.toLowerCase()
+    return imageExtensions.some(ext => lowerName.endsWith(ext))
+  }
+
+  return false
+}
+
+async function previewImage(row) {
+  currentPreviewImage.value = row
+  currentImageIndex.value = 0
+
+  const imageAttachments = detailAttachments.value.filter(att => isImageFile(att.fileType, att.fileName))
+  if (imageAttachments.length > 1) {
+    currentImageIndex.value = imageAttachments.findIndex(img => img.id === row.id)
+  }
+
+  imageScale.value = 1
+  imagePreviewVisible.value = true
+}
+
+const previewImages = computed(() => {
+  return detailAttachments.value.filter(att => isImageFile(att.fileType, att.fileName))
+})
+
+const currentPreviewImageUrl = computed(() => {
+  if (!currentPreviewImage.value) return ''
+  const token = localStorage.getItem('token')
+  return `/api/customer/attachment/${currentPreviewImage.value.id}/download?token=${token}`
+})
+
+function getThumbnailUrl(img) {
+  const token = localStorage.getItem('token')
+  return `/api/customer/attachment/${img.id}/download?token=${token}`
+}
+
+function switchImage(index) {
+  currentImageIndex.value = index
+  currentPreviewImage.value = previewImages.value[index]
+  imageScale.value = 1
+}
+
+function prevImage() {
+  if (currentImageIndex.value > 0) {
+    switchImage(currentImageIndex.value - 1)
+  }
+}
+
+function nextImage() {
+  if (currentImageIndex.value < previewImages.value - 1) {
+    switchImage(currentImageIndex.value + 1)
+  }
+}
+
+function zoomIn() {
+  if (imageScale.value < 5) {
+    imageScale.value = Math.min(5, imageScale.value + 0.25)
+  }
+}
+
+function zoomOut() {
+  if (imageScale.value > 0.25) {
+    imageScale.value = Math.max(0.25, imageScale.value - 0.25)
+  }
+}
+
+function resetZoom() {
+  imageScale.value = 1
+}
+
+function handleWheel(e) {
+  e.preventDefault()
+  if (e.deltaY < 0) {
+    zoomIn()
+  } else {
+    zoomOut()
+  }
+}
+
+function onImageLoad() {
+  console.log('图片加载完成')
+}
+
+function onImageError() {
+  ElMessage.error('❌ 图片加载失败')
+}
+
 function formatFileSize(bytes) {
   if (!bytes) return '-'
   if (bytes < 1024) return bytes + ' B'
@@ -815,19 +971,17 @@ function formatFileSize(bytes) {
   return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
 }
 
-async function handleDelete(row) {
-  try {
-    await ElMessageBox.confirm(
-      `确定要删除客户「${row.name}」吗？此操作不可恢复。`,
-      '删除确认',
-      { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
-    )
-    await customerApi.delete(row.id)
-    ElMessage.success('客户已删除')
-    fetchList()
-  } catch (e) {
-    if (e !== 'cancel') console.error(e)
-  }
+function formatDateTime(val) {
+  if (!val) return '-'
+  const d = new Date(val)
+  if (isNaN(d.getTime())) return val
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  const h = String(d.getHours()).padStart(2, '0')
+  const min = String(d.getMinutes()).padStart(2, '0')
+  const s = String(d.getSeconds()).padStart(2, '0')
+  return `${y}-${m}-${day} ${h}:${min}:${s}`
 }
 
 function handleExport() {
@@ -835,7 +989,6 @@ function handleExport() {
     name: filterForm.name || undefined,
     businessCategory: filterForm.businessCategory || undefined,
     businessType: filterForm.businessType || undefined,
-    cooperationCategory: filterForm.cooperationCategory || undefined,
     cooperationStatus: filterForm.cooperationStatus || undefined,
     maintenanceCategory: filterForm.maintenanceCategory || undefined
   }
@@ -906,6 +1059,84 @@ async function handleImportSubmit() {
   }
 }
 
+// ========== 客户转移功能 ==========
+const transferDialogVisible = ref(false)
+const transferCustomer = ref(null)
+const transferTargetUserId = ref(null)
+const transferRemark = ref('')
+const transferLoading = ref(false)
+const userList = ref([])
+const userListLoading = ref(false)
+
+// 打开转移对话框
+async function openTransferDialog(row) {
+  transferCustomer.value = row
+  transferTargetUserId.value = null
+  transferRemark.value = ''
+  transferDialogVisible.value = true
+
+  // 加载用户列表
+  await fetchUserList()
+}
+
+// 获取用户列表
+async function fetchUserList() {
+  userListLoading.value = true
+  try {
+    const res = await userApi.list()
+    userList.value = res.data || []
+  } catch (e) {
+    console.error('获取用户列表失败:', e)
+    ElMessage.error('获取用户列表失败')
+    userList.value = []
+  } finally {
+    userListLoading.value = false
+  }
+}
+
+// 提交转移
+async function handleTransferSubmit() {
+  if (!transferTargetUserId.value) {
+    ElMessage.warning('请选择目标销售人员')
+    return
+  }
+
+  // 查找目标用户信息
+  const targetUser = userList.value.find(u => u.id === transferTargetUserId.value)
+  if (!targetUser) {
+    ElMessage.error('目标用户不存在')
+    return
+  }
+
+  // 确认对话框
+  try {
+    await ElMessageBox.confirm(
+      `确认将客户「${transferCustomer.value.name}」从「${transferCustomer.value.followUpPerson || '未分配'}」转移给「${targetUser.realName || targetUser.username}」？`,
+      '确认转移',
+      { confirmButtonText: '确认', cancelButtonText: '取消', type: 'warning' }
+    )
+
+    transferLoading.value = true
+    try {
+      await customerApi.transferCustomer(
+        transferCustomer.value.id,
+        targetUser.id,
+        targetUser.realName || targetUser.username
+      )
+      ElMessage.success(`✅ 客户已成功转移给 ${targetUser.realName || targetUser.username}`)
+      transferDialogVisible.value = false
+      fetchList() // 刷新列表
+    } catch (e) {
+      console.error('转移失败:', e)
+      ElMessage.error('❌ 转移失败: ' + (e.response?.data?.msg || e.message || '未知错误'))
+    } finally {
+      transferLoading.value = false
+    }
+  } catch (e) {
+    if (e !== 'cancel') console.error(e)
+  }
+}
+
 // ========== 跟进记录相关功能 ==========
 const followUpDialogVisible = ref(false)
 const addFollowUpDialogVisible = ref(false)
@@ -921,15 +1152,20 @@ const followUpForm = reactive({
   followUpMethod: null,
   followUpContent: '',
   nextPlan: '',
-  followUpStatus: 1
+  followUpStatus: 1,
+  newCooperationStatus: '',
+  changeReason: ''
 })
 
-const followUpFormRules = {
+const followUpFormRules = computed(() => ({
   followUpTime: [{ required: true, message: '请选择跟进时间', trigger: 'change' }],
   followUpMethod: [{ required: true, message: '请选择跟进方式', trigger: 'change' }],
   followUpContent: [{ required: true, message: '请输入跟进内容', trigger: 'blur' }],
-  followUpStatus: [{ required: true, message: '请选择跟进状态', trigger: 'change' }]
-}
+  followUpStatus: [{ required: true, message: '请选择跟进状态', trigger: 'change' }],
+  ...(followUpForm.newCooperationStatus ? {
+    changeReason: [{ required: true, message: '请输入变更原因', trigger: 'blur' }]
+  } : {})
+}))
 
 async function handleFollowUp(row) {
   currentCustomer.value = row
@@ -950,13 +1186,22 @@ async function fetchFollowUpRecords(customerId) {
 function openAddFollowUpDialog() {
   isEditingFollowUp.value = false
   editingFollowUpId.value = null
+  const now = new Date()
+  const y = now.getFullYear()
+  const m = String(now.getMonth() + 1).padStart(2, '0')
+  const d = String(now.getDate()).padStart(2, '0')
+  const h = String(now.getHours()).padStart(2, '0')
+  const min = String(now.getMinutes()).padStart(2, '0')
+  const s = String(now.getSeconds()).padStart(2, '0')
   Object.assign(followUpForm, {
     customerId: currentCustomer.value.id,
-    followUpTime: '',
+    followUpTime: `${y}-${m}-${d} ${h}:${min}:${s}`,
     followUpMethod: null,
     followUpContent: '',
     nextPlan: '',
-    followUpStatus: 1
+    followUpStatus: 1,
+    newCooperationStatus: '',
+    changeReason: ''
   })
   addFollowUpDialogVisible.value = true
 }
@@ -989,10 +1234,11 @@ async function submitFollowUp() {
       ElMessage.success('跟进记录修改成功')
     } else {
       await followUpApi.createRecord(followUpForm)
-      ElMessage.success('跟进记录添加成功')
+      ElMessage.success('跟进记录添加成功，合作状态已同步更新')
     }
     addFollowUpDialogVisible.value = false
     await fetchFollowUpRecords(currentCustomer.value.id)
+    fetchList()
   } catch (e) {
     console.error(e)
   } finally {
@@ -1035,19 +1281,10 @@ async function loadDicts() {
       }))
     }
 
-    dictCooperationCategory.value = (data.cooperationCategory || []).map(item => ({
+    dictCooperationStatus.value = (data.cooperationStatus || []).map(item => ({
       value: item.value,
       label: item.label
     }))
-
-    const cooperationStatusMap = data.cooperationStatusMap || {}
-    dictCooperationStatusMap.value = {}
-    for (const key in cooperationStatusMap) {
-      dictCooperationStatusMap.value[key] = cooperationStatusMap[key].map(item => ({
-        value: item.value,
-        label: item.label
-      }))
-    }
 
     dictMaintenanceCategory.value = (data.maintenanceCategory || []).map(item => ({
       value: item.value,
@@ -1141,6 +1378,19 @@ onMounted(async () => {
   text-align: right;
 }
 
+/* 操作按钮组样式 */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+}
+
+.action-buttons .el-button {
+  margin-left: 0 !important;
+}
+
 @media (max-width: 768px) {
   .filter-form :deep(.el-form-item) {
     width: 100%;
@@ -1151,5 +1401,87 @@ onMounted(async () => {
   .filter-form :deep(.el-form-item .el-date-editor) {
     width: 100% !important;
   }
+}
+
+/* 图片预览样式 */
+.image-preview-container {
+  display: flex;
+  flex-direction: column;
+  height: 70vh;
+}
+
+.image-preview-toolbar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  background: #f5f7fa;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.image-preview-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 20px;
+  min-height: 400px;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+  cursor: grab;
+  user-select: none;
+}
+
+.preview-image:active {
+  cursor: grabbing;
+}
+
+.image-preview-thumbs {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  background: #f5f7fa;
+  border-radius: 8px;
+  margin-top: 16px;
+  overflow-x: auto;
+  justify-content: center;
+}
+
+.thumb-item {
+  width: 60px;
+  height: 60px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.thumb-item:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.thumb-item.active {
+  border-color: #409eff;
+  opacity: 1;
+  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.3);
+}
+
+.thumb-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>

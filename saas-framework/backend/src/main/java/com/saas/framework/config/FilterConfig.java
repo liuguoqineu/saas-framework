@@ -22,6 +22,9 @@ public class FilterConfig {
         registration.setFilter(jwtAuthFilter);
         // 拦截所有 /api/** 请求
         registration.addUrlPatterns("/api/*");
+        registration.addUrlPatterns("/api/*/*");
+        registration.addUrlPatterns("/api/*/*/*");
+        registration.addUrlPatterns("/api/*/*/*/*");
         registration.setOrder(1);
         return registration;
     }

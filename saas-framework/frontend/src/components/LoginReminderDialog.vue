@@ -17,7 +17,7 @@
     </div>
 
     <el-tabs v-model="activeTab" style="margin-top: 16px">
-      <el-tab-pane v-if="contractReminders !== null" label="合同到期" name="contract">
+      <el-tab-pane v-if="Array.isArray(contractReminders)" label="合同到期" name="contract">
         <div v-if="contractReminders.length === 0" class="empty-text">暂无合同到期提醒</div>
         <div v-else class="reminder-list">
           <div
@@ -40,7 +40,7 @@
         </div>
       </el-tab-pane>
 
-      <el-tab-pane v-if="followUpReminders !== null" label="客户跟进" name="followUp">
+      <el-tab-pane v-if="Array.isArray(followUpReminders)" label="客户跟进" name="followUp">
         <div v-if="followUpReminders.length === 0" class="empty-text">暂无跟进提醒</div>
         <div v-else class="reminder-list">
           <div
@@ -63,7 +63,7 @@
         </div>
       </el-tab-pane>
 
-      <el-tab-pane v-if="repairReminders !== null" label="报修处理" name="repair">
+      <el-tab-pane v-if="Array.isArray(repairReminders)" label="报修处理" name="repair">
         <div v-if="repairReminders.length === 0" class="empty-text">暂无报修提醒</div>
         <div v-else class="reminder-list">
           <div
@@ -82,6 +82,29 @@
             </div>
             <div class="item-content">{{ item.content }}</div>
             <div class="item-person">处理人：{{ item.person || '未指定' }}</div>
+          </div>
+        </div>
+      </el-tab-pane>
+
+      <el-tab-pane v-if="Array.isArray(reportReminders)" label="报表提醒" name="report">
+        <div v-if="reportReminders.length === 0" class="empty-text">暂无报表提醒</div>
+        <div v-else class="reminder-list">
+          <div
+            v-for="item in reportReminders"
+            :key="item.id"
+            class="reminder-item report"
+            :class="{ 'is-mine': item.isMine === 1 }"
+            @click="handleItemClick(item)"
+          >
+            <div class="item-header">
+              <div class="item-tags">
+                <el-tag type="info" size="small">报表</el-tag>
+                <el-tag v-if="item.isMine === 1" type="success" size="small">我的</el-tag>
+              </div>
+              <span class="item-time">{{ formatTime(item.time) }}</span>
+            </div>
+            <div class="item-content">{{ item.content }}</div>
+            <div class="item-person">创建人：{{ item.person || '未指定' }}</div>
           </div>
         </div>
       </el-tab-pane>
@@ -108,16 +131,18 @@ const reminderData = ref({
   totalCount: 0,
   contractReminders: [],
   followUpReminders: [],
-  repairReminders: []
+  repairReminders: [],
+  reportReminders: []
 })
 
 const totalCount = computed(() => reminderData.value.totalCount)
 const contractReminders = computed(() => reminderData.value.contractReminders)
 const followUpReminders = computed(() => reminderData.value.followUpReminders)
 const repairReminders = computed(() => reminderData.value.repairReminders)
+const reportReminders = computed(() => reminderData.value.reportReminders)
 
 function open(data) {
-  reminderData.value = data || { totalCount: 0, contractReminders: null, followUpReminders: null, repairReminders: null }
+  reminderData.value = data || { totalCount: 0, contractReminders: null, followUpReminders: null, repairReminders: null, reportReminders: null }
   if (totalCount.value > 0) {
     if (contractReminders.value && contractReminders.value.length > 0) {
       activeTab.value = 'contract'
@@ -125,12 +150,16 @@ function open(data) {
       activeTab.value = 'followUp'
     } else if (repairReminders.value && repairReminders.value.length > 0) {
       activeTab.value = 'repair'
+    } else if (reportReminders.value && reportReminders.value.length > 0) {
+      activeTab.value = 'report'
     } else if (contractReminders.value !== null) {
       activeTab.value = 'contract'
     } else if (followUpReminders.value !== null) {
       activeTab.value = 'followUp'
     } else if (repairReminders.value !== null) {
       activeTab.value = 'repair'
+    } else if (reportReminders.value !== null) {
+      activeTab.value = 'report'
     }
     visible.value = true
   }
@@ -156,6 +185,8 @@ function handleViewAll() {
     router.push('/customer')
   } else if (activeTab.value === 'repair') {
     router.push('/repair')
+  } else if (activeTab.value === 'report') {
+    router.push('/my-reports')
   }
 }
 
@@ -168,6 +199,8 @@ function handleItemClick(item) {
     router.push(`/customer/${item.relatedId}`)
   } else if (item.type === 'REPAIR' && item.relatedId) {
     router.push(`/repair`)
+  } else if (item.type === 'REPORT' && item.relatedId) {
+    router.push(`/my-reports`)
   }
 }
 
@@ -217,6 +250,11 @@ defineExpose({ open })
 .reminder-item.repair {
   background: #ecf5ff;
   border-left-color: #409eff;
+}
+
+.reminder-item.report {
+  background: #f0f9eb;
+  border-left-color: #67c23a;
 }
 
 .item-header {

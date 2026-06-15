@@ -4,7 +4,7 @@
     <el-aside :width="isCollapse ? '64px' : '220px'" class="layout-aside">
       <div class="logo">
         <img src="/logo.jpg" alt="Logo" class="logo-img" />
-        <span v-if="!isCollapse" class="logo-text">CRM客户管理系统</span>
+        <span v-if="!isCollapse" class="logo-text">客户管理系统</span>
         <span v-else class="logo-text">CRM</span>
       </div>
 
@@ -54,6 +54,38 @@
           <span>报修管理</span>
         </el-menu-item>
 
+        <el-menu-item v-if="hasPermission('checkin:list')" index="/check-in">
+          <el-icon><Clock /></el-icon>
+          <span>员工打卡</span>
+        </el-menu-item>
+
+        <el-sub-menu v-if="hasPermission('report:fill') || hasPermission('report:approve') || hasPermission('report:view') || hasPermission('report:dashboard') || hasPermission('report:overdue:manage')" index="report">
+          <template #title>
+            <el-icon><Document /></el-icon>
+            <span>报表管理</span>
+          </template>
+          <el-menu-item v-if="hasPermission('report:fill')" index="/my-reports">
+            <el-icon><EditPen /></el-icon>
+            <span>我的报表</span>
+          </el-menu-item>
+          <el-menu-item v-if="hasPermission('report:approve')" index="/approvals">
+            <el-icon><Select /></el-icon>
+            <span>审批管理</span>
+          </el-menu-item>
+          <el-menu-item v-if="hasPermission('report:view')" index="/report-query">
+            <el-icon><Search /></el-icon>
+            <span>报表查询</span>
+          </el-menu-item>
+          <el-menu-item v-if="hasPermission('report:dashboard')" index="/report-dashboard">
+            <el-icon><DataAnalysis /></el-icon>
+            <span>数据看板</span>
+          </el-menu-item>
+          <el-menu-item v-if="hasPermission('report:overdue:manage')" index="/overdue">
+            <el-icon><Warning /></el-icon>
+            <span>逾期管理</span>
+          </el-menu-item>
+        </el-sub-menu>
+
         <el-menu-item v-if="hasPermission('statistics:customer')" index="/statistics">
           <el-icon><DataAnalysis /></el-icon>
           <span>统计分析</span>
@@ -85,37 +117,6 @@
         </div>
 
         <div class="header-right">
-          <el-popover placement="bottom" :width="360" trigger="click" @show="fetchReminders">
-            <template #reference>
-              <el-badge :value="unreadCount" :hidden="unreadCount === 0" :max="99" class="reminder-badge">
-                <el-icon class="reminder-icon"><Bell /></el-icon>
-              </el-badge>
-            </template>
-            <div class="reminder-popover">
-              <div class="reminder-header">
-                <span>跟进提醒</span>
-                <el-button v-if="unreadCount > 0" type="primary" link size="small" @click="markAllRead">全部已读</el-button>
-              </div>
-              <div v-if="reminders.length === 0" class="reminder-empty">暂无提醒</div>
-              <div v-else class="reminder-list">
-                <div
-                  v-for="item in reminders"
-                  :key="item.id"
-                  class="reminder-item"
-                  :class="{ unread: item.isRead === 0 }"
-                  @click="handleReminderClick(item)"
-                >
-                  <div class="reminder-item-header">
-                    <span class="reminder-item-time">{{ item.reminderTime }}</span>
-                    <el-tag v-if="item.isRead === 0" type="danger" size="small">未读</el-tag>
-                  </div>
-                  <div class="reminder-item-content">{{ item.reminderContent }}</div>
-                  <div class="reminder-item-person">提醒人：{{ item.reminderPerson }}</div>
-                </div>
-              </div>
-            </div>
-          </el-popover>
-
           <el-dropdown @command="handleCommand">
             <span class="user-info">
               {{ userStore.userInfo?.realName || userStore.userInfo?.username || '用户' }}
@@ -140,7 +141,7 @@
     </el-container>
 
     <!-- 登录提醒弹窗 -->
-    <LoginReminderDialog ref="loginReminderRef" @close="fetchReminders" />
+    <LoginReminderDialog ref="loginReminderRef" />
   </el-container>
 </template>
 
@@ -148,10 +149,8 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
-import { followUpApi } from '@/api/followUp'
 import { reminderApi } from '@/api/reminder'
 import LoginReminderDialog from '@/components/LoginReminderDialog.vue'
-import { ElMessage } from 'element-plus'
 
 const route = useRoute()
 const router = useRouter()
@@ -160,9 +159,6 @@ const userStore = useUserStore()
 const isCollapse = ref(false)
 const currentTitle = computed(() => route.meta.title || '')
 const activeMenu = computed(() => route.path)
-const reminders = ref([])
-const unreadCount = ref(0)
-let reminderTimer = null
 const loginReminderRef = ref(null)
 
 function hasPermission(permission) {
@@ -170,65 +166,25 @@ function hasPermission(permission) {
   return userStore.isSuperAdmin || userStore.permissions.includes(permission)
 }
 
-async function fetchReminders() {
-  try {
-    const res = await followUpApi.getPendingReminders()
-    reminders.value = res.data || []
-    unreadCount.value = reminders.value.filter(r => r.isRead === 0).length
-  } catch { /* ignore */ }
-}
-
-async function markAllRead() {
-  for (const item of reminders.value) {
-    if (item.isRead === 0) {
-      try {
-        await followUpApi.markReminderRead(item.id)
-        item.isRead = 1
-      } catch { /* ignore */ }
-    }
-  }
-  unreadCount.value = 0
-  ElMessage.success('已全部标记为已读')
-}
-
-function handleReminderClick(item) {
-  if (item.isRead === 0) {
-    followUpApi.markReminderRead(item.id).then(() => {
-      item.isRead = 1
-      unreadCount.value = Math.max(0, unreadCount.value - 1)
-    }).catch(() => {})
-  }
-  if (item.customerId) {
-    router.push(`/customer/${item.customerId}`)
-  }
-}
-
 onMounted(() => {
-  fetchReminders()
   showLoginReminder()
-  reminderTimer = setInterval(fetchReminders, 60000)
 })
 
 async function showLoginReminder() {
+  if (!userStore.token) return
   try {
-    console.log('[LoginReminder] 开始获取登录提醒...')
     const res = await reminderApi.getLoginReminders()
-    console.log('[LoginReminder] 获取结果:', res.data)
     if (res.data && res.data.totalCount > 0) {
       loginReminderRef.value?.open(res.data)
-    } else {
-      console.log('[LoginReminder] 无待处理提醒，不弹窗')
     }
   } catch (err) {
-    console.error('[LoginReminder] 获取提醒失败:', err)
+    if (err?.response?.status !== 401) {
+      console.error('[LoginReminder] 获取提醒失败:', err)
+    }
   }
 }
 
 onUnmounted(() => {
-  if (reminderTimer) {
-    clearInterval(reminderTimer)
-    reminderTimer = null
-  }
 })
 
 function handleCommand(cmd) {
@@ -306,79 +262,6 @@ function handleCommand(cmd) {
   display: flex;
   align-items: center;
   gap: 16px;
-}
-
-.reminder-badge {
-  cursor: pointer;
-}
-
-.reminder-icon {
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.reminder-popover {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.reminder-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #ebeef5;
-  margin-bottom: 8px;
-  font-weight: 600;
-}
-
-.reminder-empty {
-  text-align: center;
-  color: #909399;
-  padding: 20px 0;
-}
-
-.reminder-list {
-  max-height: 340px;
-  overflow-y: auto;
-}
-
-.reminder-item {
-  padding: 8px 4px;
-  border-bottom: 1px solid #f0f0f0;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.reminder-item:hover {
-  background: #f5f7fa;
-}
-
-.reminder-item.unread {
-  background: #ecf5ff;
-}
-
-.reminder-item-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-.reminder-item-time {
-  font-size: 12px;
-  color: #909399;
-}
-
-.reminder-item-content {
-  font-size: 13px;
-  color: #303133;
-  margin-bottom: 2px;
-}
-
-.reminder-item-person {
-  font-size: 12px;
-  color: #909399;
 }
 
 .user-info {

@@ -22,4 +22,7 @@ public class UserCreateRequest {
 
     /** 密码（可选，默认123456） */
     private String password;
+
+    /** 岗位类型 */
+    private String postType;
 }

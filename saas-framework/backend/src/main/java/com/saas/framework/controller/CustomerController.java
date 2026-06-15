@@ -55,15 +55,14 @@ public class CustomerController {
                                                  @RequestParam(required = false) String name,
                                                  @RequestParam(required = false) String businessCategory,
                                                  @RequestParam(required = false) String businessType,
-                                                 @RequestParam(required = false) String cooperationCategory,
                                                  @RequestParam(required = false) String cooperationStatus,
                                                  @RequestParam(required = false) String region,
                                                  @RequestParam(required = false) String contactPerson,
                                                  @RequestParam(required = false) String maintenanceCategory) {
-        log.info("查询客户列表: page={}, size={}, name={}, businessCategory={}, businessType={}, cooperationCategory={}, cooperationStatus={}, region={}, contactPerson={}, maintenanceCategory={}",
-                page, size, name, businessCategory, businessType, cooperationCategory, cooperationStatus, region, contactPerson, maintenanceCategory);
+        log.info("查询客户列表: page={}, size={}, name={}, businessCategory={}, businessType={}, cooperationStatus={}, region={}, contactPerson={}, maintenanceCategory={}",
+                page, size, name, businessCategory, businessType, cooperationStatus, region, contactPerson, maintenanceCategory);
         IPage<BizCustomer> iPage = customerService.page(page, size, name, businessCategory, businessType,
-                cooperationCategory, cooperationStatus, region, contactPerson, maintenanceCategory);
+                cooperationStatus, region, contactPerson, maintenanceCategory);
         return Result.ok(PageResult.of(iPage));
     }
 
@@ -107,14 +106,24 @@ public class CustomerController {
         return Result.ok("客户已标记为无效");
     }
 
-    @Operation(summary = "彻底删除客户（物理删除，需权限验证）")
+    @Operation(summary = "恢复无效客户为正常")
+    @PutMapping("/{id}/restore")
+    @RequirePermission("customer:edit")
+    @OperationLog(operation = "UPDATE", module = "客户", description = "恢复无效客户")
+    public Result<?> restoreInvalid(@PathVariable Long id) {
+        log.info("恢复无效客户: id={}", id);
+        customerService.restoreInvalid(id);
+        return Result.ok("客户已恢复为正常状态");
+    }
+
+    @Operation(summary = "删除客户（软删除，标记为无效）")
     @DeleteMapping("/{id}")
     @RequirePermission("customer:delete")
     @OperationLog(operation = "DELETE", module = "客户", description = "删除客户")
     public Result<?> delete(@PathVariable Long id) {
-        log.info("彻底删除客户: id={}", id);
+        log.info("删除客户（软删除）: id={}", id);
         customerService.delete(id);
-        return Result.ok("客户已彻底删除");
+        return Result.ok("客户已标记为无效");
     }
 
     @Operation(summary = "查询客户附件列表")
@@ -186,11 +195,62 @@ public class CustomerController {
                                  @RequestParam(required = false) String name,
                                  @RequestParam(required = false) String businessCategory,
                                  @RequestParam(required = false) String businessType,
-                                 @RequestParam(required = false) String cooperationCategory,
                                  @RequestParam(required = false) String cooperationStatus,
                                  @RequestParam(required = false) String region) {
-        log.info("Excel导出客户: name={}, businessCategory={}, businessType={}, cooperationCategory={}, cooperationStatus={}, region={}",
-                name, businessCategory, businessType, cooperationCategory, cooperationStatus, region);
-        customerService.exportCustomers(response, name, businessCategory, businessType, cooperationCategory, cooperationStatus, region);
+        log.info("Excel导出客户: name={}, businessCategory={}, businessType={}, cooperationStatus={}, region={}",
+                name, businessCategory, businessType, cooperationStatus, region);
+        customerService.exportCustomers(response, name, businessCategory, businessType, cooperationStatus, region);
+    }
+
+    @Operation(summary = "查询公共客户池（未分配跟进人的客户）")
+    @GetMapping("/public-pool")
+    @RequirePermission("customer:assign")
+    @OperationLog(operation = "QUERY", module = "客户", description = "查询公共客户池")
+    public Result<PageResult<BizCustomer>> publicPool(@RequestParam(defaultValue = "1") int page,
+                                                       @RequestParam(defaultValue = "10") int size,
+                                                       @RequestParam(required = false) String name,
+                                                       @RequestParam(required = false) String businessCategory,
+                                                       @RequestParam(required = false) String businessType,
+                                                       @RequestParam(required = false) String cooperationStatus,
+                                                       @RequestParam(required = false) String region) {
+        log.info("查询公共客户池: page={}, size={}, name={}, businessCategory={}, businessType={}, cooperationStatus={}, region={}",
+                page, size, name, businessCategory, businessType, cooperationStatus, region);
+        IPage<BizCustomer> iPage = customerService.publicPool(page, size, name, businessCategory,
+                businessType, cooperationStatus, region);
+        return Result.ok(PageResult.of(iPage));
+    }
+
+    @Operation(summary = "分配客户给销售人员")
+    @PostMapping("/{id}/assign")
+    @RequirePermission("customer:assign")
+    @OperationLog(operation = "UPDATE", module = "客户", description = "分配客户")
+    public Result<?> assignCustomer(@PathVariable Long id,
+                                     @RequestParam Long userId,
+                                     @RequestParam String username) {
+        log.info("分配客户: customerId={}, to userId={}, username={}", id, userId, username);
+        customerService.assignCustomer(id, userId, username);
+        return Result.ok("客户分配成功");
+    }
+
+    @Operation(summary = "转移客户给另一个销售人员")
+    @PostMapping("/{id}/transfer")
+    @RequirePermission("customer:assign")
+    @OperationLog(operation = "UPDATE", module = "客户", description = "转移客户")
+    public Result<?> transferCustomer(@PathVariable Long id,
+                                       @RequestParam Long userId,
+                                       @RequestParam String username) {
+        log.info("转移客户: customerId={}, to userId={}, username={}", id, userId, username);
+        customerService.transferCustomer(id, userId, username);
+        return Result.ok("客户转移成功");
+    }
+
+    @Operation(summary = "回收客户到公共池")
+    @PostMapping("/{id}/reclaim")
+    @RequirePermission("customer:assign")
+    @OperationLog(operation = "UPDATE", module = "客户", description = "回收客户")
+    public Result<?> reclaimCustomer(@PathVariable Long id) {
+        log.info("回收客户到公共池: customerId={}", id);
+        customerService.reclaimCustomer(id);
+        return Result.ok("客户已回收到公共池");
     }
 }

@@ -45,9 +45,12 @@ public class UserController {
 
     @Operation(summary = "获取当前租户员工列表（不分页，用于选择器）")
     @GetMapping("/list")
-    public Result<List<SysUser>> list(@RequestParam(required = false) String roleName) {
+    public Result<List<SysUser>> list(@RequestParam(required = false) String roleName,
+                                       @RequestParam(required = false) String postType) {
         List<SysUser> users;
-        if (StringUtils.hasText(roleName)) {
+        if (StringUtils.hasText(postType)) {
+            users = userService.listByTenantAndPostType(postType);
+        } else if (StringUtils.hasText(roleName)) {
             users = userService.listByTenantAndRoleName(roleName);
         } else {
             users = userService.listByTenant();

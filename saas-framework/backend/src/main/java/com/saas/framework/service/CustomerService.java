@@ -19,8 +19,8 @@ public interface CustomerService {
      * 分页查询客户（支持多条件组合筛选，自动租户隔离，默认过滤无效客户）
      */
     IPage<BizCustomer> page(int page, int size, String name, String businessCategory,
-                            String businessType, String cooperationCategory,
-                            String cooperationStatus, String region, String contactPerson,
+                            String businessType, String cooperationStatus,
+                            String region, String contactPerson,
                             String maintenanceCategory);
 
     /**
@@ -44,7 +44,12 @@ public interface CustomerService {
     void markInvalid(Long id);
 
     /**
-     * 彻底删除客户（物理删除，需权限验证）
+     * 恢复无效客户为正常状态
+     */
+    void restoreInvalid(Long id);
+
+    /**
+     * 删除客户（软删除，标记为无效）
      */
     void delete(Long id);
 
@@ -82,6 +87,27 @@ public interface CustomerService {
      * Excel导出客户列表
      */
     void exportCustomers(HttpServletResponse response, String name, String businessCategory,
-                         String businessType, String cooperationCategory,
-                         String cooperationStatus, String region);
+                         String businessType, String cooperationStatus,
+                         String region);
+
+    /**
+     * 分页查询公共客户池（未分配跟进人的客户）
+     */
+    IPage<BizCustomer> publicPool(int page, int size, String name, String businessCategory,
+                                  String businessType, String cooperationStatus, String region);
+
+    /**
+     * 分配客户给销售人员
+     */
+    void assignCustomer(Long customerId, Long userId, String username);
+
+    /**
+     * 转移客户给另一个销售人员
+     */
+    void transferCustomer(Long customerId, Long userId, String username);
+
+    /**
+     * 回收客户到公共池（清空跟进人）
+     */
+    void reclaimCustomer(Long customerId);
 }

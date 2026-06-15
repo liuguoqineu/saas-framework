@@ -28,8 +28,7 @@ public class CustomerRequest {
 
     private String businessType;
 
-    private String cooperationCategory;
-
+    /** 合作状态: 正常履约/终止合作/高潜力/中潜力/低潜力/无效客户 */
     private String cooperationStatus;
 
     private String maintenanceCategory;

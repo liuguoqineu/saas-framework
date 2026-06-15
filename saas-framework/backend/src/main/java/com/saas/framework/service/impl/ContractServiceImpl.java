@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -128,6 +129,22 @@ public class ContractServiceImpl implements ContractService {
             throw new BusinessException("合同编号已存在");
         }
 
+        // 签订合同后，同步更新客户合作状态为"正常履约"
+        BizCustomer customerForStatus = bizCustomerMapper.selectById(request.getCustomerId());
+        if (customerForStatus != null) {
+            boolean needUpdate = false;
+            String oldStatus = customerForStatus.getCooperationStatus();
+            // 如果客户状态不是"正常履约"，则更新为"正常履约"
+            if (!"正常履约".equals(oldStatus)) {
+                customerForStatus.setCooperationStatus("正常履约");
+                needUpdate = true;
+            }
+            if (needUpdate) {
+                bizCustomerMapper.updateById(customerForStatus);
+                log.info("签订合同，同步客户合作状态: customerId={}, {} -> 正常履约", customerForStatus.getId(), oldStatus);
+            }
+        }
+
         if (contract.getExpireDate() != null) {
             generateReminders(contract.getId());
         }
@@ -166,6 +183,11 @@ public class ContractServiceImpl implements ContractService {
 
         if (STATUS_TERMINATED.equals(contract.getContractStatus())) {
             throw new BusinessException("已终止的合同不可修改");
+        }
+
+        // 当天新增的合同只能当天修改，第二天无法修改
+        if (contract.getCreateTime() != null && !contract.getCreateTime().toLocalDate().equals(java.time.LocalDate.now())) {
+            throw new BusinessException(403, "合同信息仅限新增当天修改，次日不可修改");
         }
 
         if (StringUtils.hasText(request.getContractNo()) && !request.getContractNo().equals(contract.getContractNo())) {
@@ -278,11 +300,7 @@ public class ContractServiceImpl implements ContractService {
             BizCustomer customer = bizCustomerMapper.selectById(contract.getCustomerId());
             if (customer != null) {
                 boolean needUpdate = false;
-                if (!"已合作".equals(customer.getCooperationCategory())) {
-                    customer.setCooperationCategory("已合作");
-                    customer.setCooperationStatus("正常履约");
-                    needUpdate = true;
-                } else if ("终止合作".equals(customer.getCooperationStatus())) {
+                if ("终止合作".equals(customer.getCooperationStatus()) || "无效客户".equals(customer.getCooperationStatus())) {
                     customer.setCooperationStatus("正常履约");
                     needUpdate = true;
                 }
@@ -331,7 +349,6 @@ public class ContractServiceImpl implements ContractService {
 
         long activeCount = bizContractMapper.selectCount(wrapper);
         if (activeCount == 0) {
-            customer.setCooperationCategory("已合作");
             customer.setCooperationStatus("终止合作");
             bizCustomerMapper.updateById(customer);
             log.info("合同终止且无其他有效合同，同步客户状态为终止合作: customerId={}", customer.getId());
@@ -664,40 +681,59 @@ public class ContractServiceImpl implements ContractService {
         String username = UserContext.getUsername();
         Long tenantId = oldContract.getTenantId();
 
-        Map<String, String[]> fieldMap = new LinkedHashMap<>();
-        fieldMap.put("contractNo", new String[]{"合同编号", oldContract.getContractNo(), newRequest.getContractNo()});
-        fieldMap.put("contractStatus", new String[]{"合同状态", oldContract.getContractStatus(), newRequest.getContractStatus()});
-        fieldMap.put("signDate", new String[]{"签订日期",
+        // 用 LinkedHashMap 保证字段顺序，第三个元素标记是否传了该值（null=未传）
+        Map<String, Object[]> fieldMap = new LinkedHashMap<>();
+        fieldMap.put("合同编号", new Object[]{oldContract.getContractNo(), newRequest.getContractNo()});
+        fieldMap.put("合同状态", new Object[]{oldContract.getContractStatus(), newRequest.getContractStatus()});
+        fieldMap.put("签订日期", new Object[]{
                 oldContract.getSignDate() != null ? oldContract.getSignDate().toString() : "",
-                newRequest.getSignDate() != null ? newRequest.getSignDate().toString() : ""});
-        fieldMap.put("expireDate", new String[]{"到期日期",
+                newRequest.getSignDate()});
+        fieldMap.put("到期日期", new Object[]{
                 oldContract.getExpireDate() != null ? oldContract.getExpireDate().toString() : "",
-                newRequest.getExpireDate() != null ? newRequest.getExpireDate().toString() : ""});
-        fieldMap.put("contractAmount", new String[]{"合同金额",
+                newRequest.getExpireDate()});
+        fieldMap.put("合同金额", new Object[]{
                 oldContract.getContractAmount() != null ? oldContract.getContractAmount().toString() : "",
-                newRequest.getContractAmount() != null ? newRequest.getContractAmount().toString() : ""});
-        fieldMap.put("serviceContent", new String[]{"服务内容", oldContract.getServiceContent(), newRequest.getServiceContent()});
-        fieldMap.put("paymentMethod", new String[]{"付款方式", oldContract.getPaymentMethod(), newRequest.getPaymentMethod()});
-        fieldMap.put("personInCharge", new String[]{"负责人", oldContract.getPersonInCharge(), newRequest.getPersonInCharge()});
-        fieldMap.put("remark", new String[]{"备注", oldContract.getRemark(), newRequest.getRemark()});
+                newRequest.getContractAmount()});
+        fieldMap.put("服务内容", new Object[]{oldContract.getServiceContent(), newRequest.getServiceContent()});
+        fieldMap.put("付款方式", new Object[]{oldContract.getPaymentMethod(), newRequest.getPaymentMethod()});
+        fieldMap.put("负责人", new Object[]{oldContract.getPersonInCharge(), newRequest.getPersonInCharge()});
+        fieldMap.put("备注", new Object[]{oldContract.getRemark(), newRequest.getRemark()});
 
-        for (Map.Entry<String, String[]> entry : fieldMap.entrySet()) {
-            String fieldName = entry.getKey();
-            String[] values = entry.getValue();
-            String oldVal = values[1] != null ? values[1] : "";
-            String newVal = values[2] != null ? values[2] : "";
+        for (Map.Entry<String, Object[]> entry : fieldMap.entrySet()) {
+            String label = entry.getKey();
+            Object[] values = entry.getValue();
+            Object oldRaw = values[0];
+            Object newRaw = values[1];
 
-            if (!oldVal.equals(newVal)) {
-                BizContractModifyLog modifyLog = new BizContractModifyLog();
-                modifyLog.setContractId(contractId);
-                modifyLog.setFieldName(fieldName);
-                modifyLog.setOldValue(oldVal);
-                modifyLog.setNewValue(newVal);
-                modifyLog.setModifyUserId(userId);
-                modifyLog.setModifyUser(username);
-                modifyLog.setModifyTime(LocalDateTime.now());
-                modifyLog.setTenantId(tenantId);
-                bizContractModifyLogMapper.insert(modifyLog);
+            // 前端没传这个字段，跳过
+            if (newRaw == null) {
+                continue;
+            }
+
+            String oldVal = oldRaw != null ? oldRaw.toString() : "";
+            // 日期和金额需要 toString 转换
+            String newVal = newRaw instanceof LocalDate
+                    ? ((LocalDate) newRaw).toString()
+                    : newRaw instanceof BigDecimal
+                            ? ((BigDecimal) newRaw).toString()
+                            : newRaw.toString();
+
+            // 只记录真正变化的字段（都为空则不记录）
+            String oldTrim = oldVal.trim();
+            String newTrim = newVal.trim();
+            if (!oldTrim.isEmpty() || !newTrim.isEmpty()) {
+                if (!oldTrim.equals(newTrim)) {
+                    BizContractModifyLog modifyLog = new BizContractModifyLog();
+                    modifyLog.setContractId(contractId);
+                    modifyLog.setFieldName(label);
+                    modifyLog.setOldValue(oldVal);
+                    modifyLog.setNewValue(newVal);
+                    modifyLog.setModifyUserId(userId);
+                    modifyLog.setModifyUser(username);
+                    modifyLog.setModifyTime(LocalDateTime.now());
+                    modifyLog.setTenantId(tenantId);
+                    bizContractModifyLogMapper.insert(modifyLog);
+                }
             }
         }
     }

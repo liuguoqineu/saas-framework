@@ -48,10 +48,10 @@ public class StatisticsServiceImpl implements StatisticsService {
         List<BizCustomer> allCustomers = customerMapper.selectList(wrapper);
 
         List<BizCustomer> validCustomers = allCustomers.stream()
-                .filter(c -> c.getIsInvalid() == null || c.getIsInvalid() != 1)
+                .filter(c -> !"无效客户".equals(c.getCooperationStatus()))
                 .collect(Collectors.toList());
         List<BizCustomer> invalidCustomers = allCustomers.stream()
-                .filter(c -> c.getIsInvalid() != null && c.getIsInvalid() == 1)
+                .filter(c -> "无效客户".equals(c.getCooperationStatus()))
                 .collect(Collectors.toList());
 
         CustomerStatsVO vo = new CustomerStatsVO();

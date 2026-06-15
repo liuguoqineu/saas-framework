@@ -18,7 +18,7 @@
     <description>SaaS 多租户教学框架</description>
 
     <properties>
-        <java.version>8</java.version>
+        <java.version>17</java.version>
         <mybatis-plus.version>3.5.5</mybatis-plus.version>
         <jjwt.version>0.9.1</jjwt.version>
     </properties>
@@ -93,6 +93,13 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>5.2.5</version>
+        </dependency>
+
+        <!-- OpenPDF - PDF生成导出 -->
+        <dependency>
+            <groupId>com.github.librepdf</groupId>
+            <artifactId>openpdf</artifactId>
+            <version>1.3.30</version>
         </dependency>
 
         <!-- Test -->

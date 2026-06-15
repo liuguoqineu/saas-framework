@@ -22,6 +22,8 @@ public interface UserService {
 
     List<SysUser> listByTenantAndRoleName(String roleName);
 
+    List<SysUser> listByTenantAndPostType(String postType);
+
     /**
      * 新增员工
      * 自动设置 tenant_id 为当前租户ID

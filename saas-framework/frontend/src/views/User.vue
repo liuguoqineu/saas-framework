@@ -34,6 +34,11 @@
             <el-tag>{{ getRoleName(row.roleId) }}</el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="postType" label="岗位类型" width="120">
+          <template #default="{ row }">
+            <el-tag :type="getPostTypeTagType(row.postType)" size="small">{{ getPostTypeLabel(row.postType) }}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
             <el-switch
@@ -85,6 +90,13 @@
         <el-form-item label="角色" prop="roleId">
           <el-select v-model="form.roleId" placeholder="请选择角色" style="width:100%">
             <el-option v-for="r in roleOptions" :key="r.id" :label="r.name" :value="r.id" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="岗位类型" prop="postType">
+          <el-select v-model="form.postType" placeholder="请选择岗位类型" style="width:100%" clearable>
+            <el-option label="研发 (DEV)" value="DEV" />
+            <el-option label="运维 (OPS)" value="OPS" />
+            <el-option label="客服 (CS)" value="CS" />
           </el-select>
         </el-form-item>
         <el-form-item label="状态" v-if="isEdit">
@@ -151,6 +163,7 @@ const form = reactive({
   realName: '',
   password: '',
   roleId: null,
+  postType: '',
   status: 1
 })
 
@@ -162,6 +175,16 @@ const rules = {
 
 function getRoleName(roleId) {
   return roleMap.value[roleId] || `角色${roleId}`
+}
+
+function getPostTypeLabel(postType) {
+  const map = { DEV: '研发', OPS: '运维', CS: '客服' }
+  return map[postType] || postType || '未设置'
+}
+
+function getPostTypeTagType(postType) {
+  const map = { DEV: '', OPS: 'success', CS: 'warning' }
+  return map[postType] || 'info'
 }
 
 async function fetchData() {
@@ -202,6 +225,7 @@ function openEditDialog(row) {
   form.username = row.username
   form.realName = row.realName
   form.roleId = row.roleId
+  form.postType = row.postType || ''
   form.password = ''
   form.status = row.status
   dialogVisible.value = true
@@ -212,6 +236,7 @@ function resetForm() {
   form.realName = ''
   form.password = ''
   form.roleId = null
+  form.postType = ''
   form.status = 1
   formRef.value?.resetFields()
 }
@@ -226,6 +251,7 @@ async function handleSubmit() {
       await userApi.update(editId.value, {
         realName: form.realName,
         roleId: form.roleId,
+        postType: form.postType || null,
         status: form.status
       })
       ElMessage.success('员工修改成功')
@@ -234,7 +260,8 @@ async function handleSubmit() {
         username: form.username,
         realName: form.realName,
         password: form.password || undefined,
-        roleId: form.roleId
+        roleId: form.roleId,
+        postType: form.postType || null
       })
       ElMessage.success('员工创建成功')
     }

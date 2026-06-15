@@ -81,8 +81,14 @@ public class MyBatisPlusConfig {
                 || "biz_repair_process_log".equalsIgnoreCase(tableName)
                 || "biz_contract_reminder".equalsIgnoreCase(tableName)
                 || "sys_operation_log".equalsIgnoreCase(tableName)
-                || "sys_dict".equalsIgnoreCase(tableName)
-                || "sys_dict_item".equalsIgnoreCase(tableName);
+                        || "sys_dict".equalsIgnoreCase(tableName)
+                        || "sys_dict_item".equalsIgnoreCase(tableName)
+                        || "rp_template".equalsIgnoreCase(tableName)
+                        || "rp_approval".equalsIgnoreCase(tableName)
+                        || "rp_config".equalsIgnoreCase(tableName)
+                        || "rp_report".equalsIgnoreCase(tableName)
+                        || "rp_report_revision".equalsIgnoreCase(tableName)
+                        || "biz_check_in".equalsIgnoreCase(tableName);
             }
         });
         interceptor.addInnerInterceptor(tenantInterceptor);

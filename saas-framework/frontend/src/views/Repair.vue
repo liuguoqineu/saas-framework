@@ -96,7 +96,7 @@
 
       <el-pagination v-model:current-page="pagination.page" v-model:page-size="pagination.size"
         :page-sizes="[10, 20, 50, 100]" :total="pagination.total"
-        :layout="paginationLayout" @size-change="handleSearch" @current-change="handleSearch"
+        :layout="paginationLayout" @size-change="handleSearch" @current-change="fetchList"
         style="margin-top: 16px; justify-content: flex-end" />
     </el-card>
 
@@ -236,8 +236,9 @@
           <template #default="{ row }">{{ formatFileSize(row.fileSize) }}</template>
         </el-table-column>
         <el-table-column prop="createTime" label="上传时间" width="170" />
-        <el-table-column label="操作" width="120">
+        <el-table-column label="操作" width="180">
           <template #default="{ row }">
+            <el-button v-if="isImageFile(row.fileType, row.fileName)" size="small" type="primary" @click="previewImage(row)">查看</el-button>
             <el-button size="small" link type="danger" @click="handleDeleteAttachment(row)">删除</el-button>
           </template>
         </el-table-column>
@@ -339,6 +340,41 @@
         <el-button @click="exceptionDialogVisible = false">取消</el-button>
         <el-button type="primary" @click="handleExceptionSubmit" :loading="submitLoading">确定</el-button>
       </template>
+    </el-dialog>
+
+    <el-dialog v-model="imagePreviewVisible" :title="`图片预览 - ${currentPreviewImage?.fileName || ''}`" width="90%" top="5vh" destroy-on-close>
+      <div class="image-preview-container">
+        <div class="image-preview-toolbar">
+          <el-button-group>
+            <el-button size="small" @click="zoomOut">缩小</el-button>
+            <el-button size="small" @click="resetZoom">原始大小</el-button>
+            <el-button size="small" @click="zoomIn">放大</el-button>
+          </el-button-group>
+          <el-button-group style="margin-left: 12px;">
+            <el-button size="small" :disabled="currentImageIndex <= 0" @click="prevImage">上一张</el-button>
+            <el-button size="small" :disabled="currentImageIndex >= previewImages.length - 1" @click="nextImage">下一张</el-button>
+          </el-button-group>
+        </div>
+        <div class="image-preview-content" ref="imagePreviewContentRef" @wheel="handleWheel">
+          <img
+            v-if="currentPreviewImageUrl"
+            :src="currentPreviewImageUrl"
+            :style="{ transform: `scale(${imageScale})` }"
+            class="preview-image"
+          />
+          <div v-else class="preview-error">图片加载失败</div>
+        </div>
+        <div v-if="previewImages.length > 1" class="image-preview-thumbs">
+          <div
+            v-for="(img, index) in previewImages"
+            :key="img.id"
+            :class="['thumb-item', { active: index === currentImageIndex }]"
+            @click="switchImage(index)"
+          >
+            <img :src="getThumbnailUrl(img)" :alt="img.fileName" />
+          </div>
+        </div>
+      </div>
     </el-dialog>
 
     <el-dialog v-model="statsDialogVisible" title="报修统计" width="800px" destroy-on-close>
@@ -535,7 +571,7 @@ async function fetchList() {
 async function fetchCustomerOptions() {
   try {
     const res = await customerApi.page({ page: 1, size: 1000 })
-    customerOptions.value = res.data?.records || []
+    customerOptions.value = (res.data?.records || []).filter(c => c.cooperationStatus !== '无效客户')
   } catch (e) {
     console.error(e)
   }
@@ -543,11 +579,11 @@ async function fetchCustomerOptions() {
 
 async function fetchUserOptions() {
   try {
-    const res = await userApi.list('维修专员')
+    const res = await userApi.list({ postType: 'OPS' })
     userOptions.value = res.data || []
   } catch (e) {
     try {
-      const res = await userApi.page({ page: 1, size: 1000, roleName: '维修专员' })
+      const res = await userApi.page({ page: 1, size: 1000, postType: 'OPS' })
       userOptions.value = res.data?.records || []
     } catch (e2) {
       console.error(e2)
@@ -946,6 +982,103 @@ function formatFileSize(bytes) {
   return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
 }
 
+// 图片预览相关
+const imagePreviewVisible = ref(false)
+const currentPreviewImage = ref(null)
+const currentImageIndex = ref(0)
+const imageScale = ref(1)
+const imagePreviewContentRef = ref(null)
+
+function isImageFile(fileType, fileName) {
+  const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp']
+  const imageTypes = ['图片', 'image', 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', '现场照片', '处理照片']
+
+  if (fileType) {
+    const lowerType = fileType.toLowerCase()
+    if (imageTypes.some(type => lowerType.includes(type.toLowerCase()))) {
+      return true
+    }
+  }
+
+  if (fileName) {
+    const lowerName = fileName.toLowerCase()
+    return imageExtensions.some(ext => lowerName.endsWith(ext))
+  }
+
+  return false
+}
+
+function previewImage(row) {
+  currentPreviewImage.value = row
+  currentImageIndex.value = 0
+
+  const imageAttachments = detailAttachments.value.filter(att => isImageFile(att.fileType, att.fileName))
+  if (imageAttachments.length > 1) {
+    currentImageIndex.value = imageAttachments.findIndex(img => img.id === row.id)
+  }
+
+  imageScale.value = 1
+  imagePreviewVisible.value = true
+}
+
+const previewImages = computed(() => {
+  return detailAttachments.value.filter(att => isImageFile(att.fileType, att.fileName))
+})
+
+const currentPreviewImageUrl = computed(() => {
+  if (!currentPreviewImage.value) return ''
+  const token = localStorage.getItem('token')
+  return `/api/repair/attachment/${currentPreviewImage.value.id}/download?token=${token}`
+})
+
+function getThumbnailUrl(img) {
+  const token = localStorage.getItem('token')
+  return `/api/repair/attachment/${img.id}/download?token=${token}`
+}
+
+function switchImage(index) {
+  currentImageIndex.value = index
+  currentPreviewImage.value = previewImages.value[index]
+  imageScale.value = 1
+}
+
+function prevImage() {
+  if (currentImageIndex.value > 0) {
+    switchImage(currentImageIndex.value - 1)
+  }
+}
+
+function nextImage() {
+  if (currentImageIndex.value < previewImages.value.length - 1) {
+    switchImage(currentImageIndex.value + 1)
+  }
+}
+
+function zoomIn() {
+  if (imageScale.value < 5) {
+    imageScale.value = Math.min(5, imageScale.value + 0.25)
+  }
+}
+
+function zoomOut() {
+  if (imageScale.value > 0.25) {
+    imageScale.value = Math.max(0.25, imageScale.value - 0.25)
+  }
+}
+
+function resetZoom() {
+  imageScale.value = 1
+}
+
+function handleWheel(e) {
+  e.preventDefault()
+  if (e.deltaY < 0) {
+    zoomIn()
+  } else {
+    zoomOut()
+  }
+}
+
 onMounted(() => {
   fetchList()
   fetchCustomerOptions()
@@ -999,5 +1132,79 @@ onMounted(() => {
   .filter-form :deep(.el-form-item .el-date-editor) {
     width: 100% !important;
   }
+}
+
+/* 图片预览样式 */
+.image-preview-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.image-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.image-preview-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  max-height: 60vh;
+  overflow: auto;
+  background: #f5f7fa;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.preview-image {
+  max-width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.preview-error {
+  color: #909399;
+  font-size: 14px;
+}
+
+.image-preview-thumbs {
+  display: flex;
+  gap: 8px;
+  padding: 8px 0;
+  overflow-x: auto;
+  border-top: 1px solid #ebeef5;
+}
+
+.thumb-item {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  overflow: hidden;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+.thumb-item:hover {
+  opacity: 0.9;
+}
+
+.thumb-item.active {
+  border-color: #409eff;
+  opacity: 1;
+}
+
+.thumb-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>

@@ -1,8 +1,12 @@
 <template>
   <div class="login-container">
     <div class="login-card">
-      <h2 class="login-title">CRM客户管理系统</h2>
-      <p class="login-subtitle">请使用您的账号登录</p>
+      <div class="company-header">
+        <img src="/logo.jpg" alt="Logo" class="login-logo" />
+        <h2 class="login-company-name">辽宁福兴奉天数智科技有限公司</h2>
+      </div>
+      <h2 class="login-title">客户管理系统</h2>
+
 
       <el-form ref="formRef" :model="form" :rules="rules" size="large">
         <el-form-item prop="username">
@@ -62,11 +66,12 @@ async function handleLogin() {
 
   loading.value = true
   try {
-    await userStore.login(form.username, form.password)
+    const data = await userStore.login(form.username, form.password)
     ElMessage.success('登录成功')
+
     router.push('/dashboard')
-  } catch {
-    // 错误已在拦截器中处理
+  } catch (error) {
+    console.error('登录失败:', error)
   } finally {
     loading.value = false
   }
@@ -88,6 +93,27 @@ async function handleLogin() {
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.company-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.login-logo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  margin-right: 12px;
+}
+
+.login-company-name {
+  color: #303133;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
 }
 
 .login-title {

@@ -120,7 +120,7 @@ public class FollowUpController {
     @RequirePermission("followup:status")
     @OperationLog(operation = "UPDATE", module = "跟进", description = "变更客户合作状态")
     public Result<?> changeCustomerStatus(@PathVariable Long customerId, @Valid @RequestBody CustomerStatusChangeRequest request) {
-        log.info("变更客户状态: customerId={}, newStatus={}/{}", customerId, request.getNewCooperationCategory(), request.getNewCooperationStatus());
+        log.info("变更客户状态: customerId={}, newStatus={}", customerId, request.getNewCooperationStatus());
         followUpService.changeCustomerStatus(customerId, request);
         return Result.ok("客户状态变更成功");
     }

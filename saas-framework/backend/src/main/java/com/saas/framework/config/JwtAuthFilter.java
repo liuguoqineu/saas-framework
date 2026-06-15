@@ -110,6 +110,15 @@ public class JwtAuthFilter implements Filter {
 
         // 查询用户权限列表并设置
         List<String> permissions = sysRolePermissionMapper.selectPermissionCodesByRoleId(user.getRoleId());
+        // 所有员工默认拥有打卡权限
+        if (permissions != null) {
+            if (!permissions.contains("checkin:add")) {
+                permissions.add("checkin:add");
+            }
+            if (!permissions.contains("checkin:list")) {
+                permissions.add("checkin:list");
+            }
+        }
         UserContext.setPermissions(permissions);
 
         try {

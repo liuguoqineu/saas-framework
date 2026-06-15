@@ -75,7 +75,7 @@
 
       <el-pagination v-model:current-page="pagination.page" v-model:page-size="pagination.size"
         :page-sizes="[10, 20, 50, 100]" :total="pagination.total"
-        :layout="paginationLayout" @size-change="handleSearch" @current-change="handleSearch"
+        :layout="paginationLayout" @size-change="handleSearch" @current-change="fetchList"
         style="margin-top: 16px; justify-content: flex-end" />
     </el-card>
 
@@ -361,7 +361,7 @@ async function fetchList() {
 async function fetchCustomerOptions() {
   try {
     const res = await customerApi.page({ page: 1, size: 1000 })
-    customerOptions.value = res.data?.records || []
+    customerOptions.value = (res.data?.records || []).filter(c => c.cooperationStatus !== '无效客户')
   } catch (e) {
     console.error(e)
   }

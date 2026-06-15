@@ -94,17 +94,7 @@ public class DictServiceImpl implements DictService {
         }
         result.put("businessTypeMap", businessTypeMap);
 
-        result.put("cooperationCategory", getItemsByDictCode("cooperation_category"));
-
-        List<SysDictItem> cooperationStatusItems = getItemsByDictCode("cooperation_status");
-        Map<String, List<SysDictItem>> cooperationStatusMap = new HashMap<>();
-        for (SysDictItem item : cooperationStatusItems) {
-            String parentValue = item.getParentValue();
-            if (parentValue != null && !parentValue.isEmpty()) {
-                cooperationStatusMap.computeIfAbsent(parentValue, k -> new ArrayList<>()).add(item);
-            }
-        }
-        result.put("cooperationStatusMap", cooperationStatusMap);
+        result.put("cooperationStatus", getItemsByDictCode("cooperation_status"));
 
         result.put("maintenanceCategory", getItemsByDictCode("maintenance_category"));
 

@@ -59,13 +59,10 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public IPage<BizCustomer> page(int page, int size, String name, String businessCategory,
-                                    String businessType, String cooperationCategory,
-                                    String cooperationStatus, String region, String contactPerson,
+                                    String businessType, String cooperationStatus,
+                                    String region, String contactPerson,
                                     String maintenanceCategory) {
         LambdaQueryWrapper<BizCustomer> wrapper = new LambdaQueryWrapper<>();
-
-        // 无效客户不出现在分页查询中（包含 isInvalid=0 或 IS NULL 的情况）
-        wrapper.and(w -> w.eq(BizCustomer::getIsInvalid, 0).or().isNull(BizCustomer::getIsInvalid));
 
         if (StringUtils.hasText(name)) {
             wrapper.like(BizCustomer::getName, name);
@@ -75,9 +72,6 @@ public class CustomerServiceImpl implements CustomerService {
         }
         if (StringUtils.hasText(businessType)) {
             wrapper.eq(BizCustomer::getBusinessType, businessType);
-        }
-        if (StringUtils.hasText(cooperationCategory)) {
-            wrapper.eq(BizCustomer::getCooperationCategory, cooperationCategory);
         }
         if (StringUtils.hasText(cooperationStatus)) {
             wrapper.eq(BizCustomer::getCooperationStatus, cooperationStatus);
@@ -92,8 +86,18 @@ public class CustomerServiceImpl implements CustomerService {
             wrapper.eq(BizCustomer::getMaintenanceCategory, maintenanceCategory);
         }
 
+        // 租户隔离
         if (!UserContext.isSuperAdmin()) {
             wrapper.eq(BizCustomer::getTenantId, UserContext.getTenantId());
+        }
+
+        // 客户归属隔离：
+        // - 超级管理员(customer:all)可以看到所有租户的所有客户
+        // - 有 customer:assign 权限的租户管理员可以看到本租户的所有客户
+        // - 普通用户只能看到自己跟进的客户
+        boolean canViewAll = UserContext.isSuperAdmin() || hasPermission("customer:all") || hasPermission("customer:assign");
+        if (!canViewAll) {
+            wrapper.eq(BizCustomer::getFollowUpPersonId, UserContext.getUserId());
         }
 
         wrapper.orderByDesc(BizCustomer::getCreateTime);
@@ -118,16 +122,19 @@ public class CustomerServiceImpl implements CustomerService {
             tenantId = UserContext.getTenantId();
         }
         customer.setTenantId(tenantId != null ? tenantId : 0L);
-        customer.setIsInvalid(0);
-        if (!StringUtils.hasText(request.getCooperationCategory())) {
-            customer.setCooperationCategory("潜在");
-        }
         if (!StringUtils.hasText(request.getCooperationStatus())) {
             customer.setCooperationStatus("中潜力");
         }
 
+        // 自动设置创建人为跟进人（如果未指定跟进人）
+        if (customer.getFollowUpPersonId() == null) {
+            customer.setFollowUpPersonId(UserContext.getUserId());
+            customer.setFollowUpPerson(UserContext.getUsername());
+        }
+
         bizCustomerMapper.insert(customer);
-        log.info("新增客户: id={}, name={}, tenantId={}", customer.getId(), customer.getName(), customer.getTenantId());
+        log.info("新增客户: id={}, name={}, tenantId={}, followUpPerson={}", 
+                customer.getId(), customer.getName(), customer.getTenantId(), customer.getFollowUpPerson());
     }
 
     @Override
@@ -140,6 +147,11 @@ public class CustomerServiceImpl implements CustomerService {
 
         if (!UserContext.isSuperAdmin() && !UserContext.getTenantId().equals(customer.getTenantId())) {
             throw new BusinessException(403, "无权修改其他租户的客户数据");
+        }
+
+        // 当天新增的客户只能当天修改，第二天无法修改
+        if (customer.getCreateTime() != null && !customer.getCreateTime().toLocalDate().equals(java.time.LocalDate.now())) {
+            throw new BusinessException(403, "客户信息仅限新增当天修改，次日不可修改");
         }
 
         recordModifyLogs(id, customer, request);
@@ -177,18 +189,19 @@ public class CustomerServiceImpl implements CustomerService {
             throw new BusinessException(403, "无权操作其他租户的客户数据");
         }
 
-        if (customer.getIsInvalid() == 1) {
+        if ("无效客户".equals(customer.getCooperationStatus())) {
             throw new BusinessException("该客户已被标记为无效");
         }
 
-        customer.setIsInvalid(1);
+        String oldStatus = customer.getCooperationStatus();
+        customer.setCooperationStatus("无效客户");
         bizCustomerMapper.updateById(customer);
 
         BizCustomerModifyLog modifyLog = new BizCustomerModifyLog();
         modifyLog.setCustomerId(id);
-        modifyLog.setFieldName("isInvalid");
-        modifyLog.setOldValue("0");
-        modifyLog.setNewValue("1");
+        modifyLog.setFieldName("cooperationStatus");
+        modifyLog.setOldValue(oldStatus != null ? oldStatus : "");
+        modifyLog.setNewValue("无效客户");
         modifyLog.setModifyUserId(UserContext.getUserId());
         modifyLog.setModifyUser(UserContext.getUsername());
         modifyLog.setModifyTime(LocalDateTime.now());
@@ -196,6 +209,39 @@ public class CustomerServiceImpl implements CustomerService {
         bizCustomerModifyLogMapper.insert(modifyLog);
 
         log.info("标记客户无效: id={}, name={}", id, customer.getName());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void restoreInvalid(Long id) {
+        BizCustomer customer = bizCustomerMapper.selectById(id);
+        if (customer == null) {
+            throw new BusinessException(404, "客户不存在");
+        }
+
+        if (!UserContext.isSuperAdmin() && !UserContext.getTenantId().equals(customer.getTenantId())) {
+            throw new BusinessException(403, "无权操作其他租户的客户数据");
+        }
+
+        if (!"无效客户".equals(customer.getCooperationStatus())) {
+            throw new BusinessException("该客户不是无效状态，无需恢复");
+        }
+
+        customer.setCooperationStatus("中潜力");
+        bizCustomerMapper.updateById(customer);
+
+        BizCustomerModifyLog modifyLog = new BizCustomerModifyLog();
+        modifyLog.setCustomerId(id);
+        modifyLog.setFieldName("cooperationStatus");
+        modifyLog.setOldValue("无效客户");
+        modifyLog.setNewValue("中潜力");
+        modifyLog.setModifyUserId(UserContext.getUserId());
+        modifyLog.setModifyUser(UserContext.getUsername());
+        modifyLog.setModifyTime(LocalDateTime.now());
+        modifyLog.setTenantId(customer.getTenantId());
+        bizCustomerModifyLogMapper.insert(modifyLog);
+
+        log.info("恢复无效客户: id={}, name={}", id, customer.getName());
     }
 
     @Override
@@ -210,18 +256,19 @@ public class CustomerServiceImpl implements CustomerService {
             throw new BusinessException(403, "无权删除其他租户的客户数据");
         }
 
-        if (customer.getIsInvalid() != null && customer.getIsInvalid() == 1) {
-            throw new BusinessException("该客户已被标记为无效");
+        if ("无效客户".equals(customer.getCooperationStatus())) {
+            throw new BusinessException("该客户已被标记为无效，无需重复操作");
         }
 
-        customer.setIsInvalid(1);
+        String oldStatus = customer.getCooperationStatus();
+        customer.setCooperationStatus("无效客户");
         bizCustomerMapper.updateById(customer);
 
         BizCustomerModifyLog modifyLog = new BizCustomerModifyLog();
         modifyLog.setCustomerId(id);
-        modifyLog.setFieldName("isInvalid");
-        modifyLog.setOldValue("0");
-        modifyLog.setNewValue("1");
+        modifyLog.setFieldName("cooperationStatus");
+        modifyLog.setOldValue(oldStatus != null ? oldStatus : "");
+        modifyLog.setNewValue("无效客户");
         modifyLog.setModifyUserId(UserContext.getUserId());
         modifyLog.setModifyUser(UserContext.getUsername());
         modifyLog.setModifyTime(LocalDateTime.now());
@@ -398,21 +445,16 @@ public class CustomerServiceImpl implements CustomerService {
                     customer.setName(name);
                     customer.setBusinessCategory(getCellStringValue(row.getCell(1)));
                     customer.setBusinessType(getCellStringValue(row.getCell(2)));
-                    customer.setCooperationCategory(getCellStringValue(row.getCell(3)));
-                    customer.setCooperationStatus(getCellStringValue(row.getCell(4)));
-                    customer.setAddress(getCellStringValue(row.getCell(5)));
-                    customer.setRegion(getCellStringValue(row.getCell(6)));
-                    customer.setContactPerson(getCellStringValue(row.getCell(7)));
-                    customer.setContactPhone(getCellStringValue(row.getCell(8)));
-                    customer.setGasScale(getCellStringValue(row.getCell(9)));
-                    customer.setSmartGasSystem(getCellStringValue(row.getCell(10)));
-                    customer.setContractInfo(getCellStringValue(row.getCell(11)));
-                    customer.setIsInvalid(0);
+                    customer.setCooperationStatus(getCellStringValue(row.getCell(3)));
+                    customer.setAddress(getCellStringValue(row.getCell(4)));
+                    customer.setRegion(getCellStringValue(row.getCell(5)));
+                    customer.setContactPerson(getCellStringValue(row.getCell(6)));
+                    customer.setContactPhone(getCellStringValue(row.getCell(7)));
+                    customer.setGasScale(getCellStringValue(row.getCell(8)));
+                    customer.setSmartGasSystem(getCellStringValue(row.getCell(9)));
+                    customer.setContractInfo(getCellStringValue(row.getCell(10)));
                     customer.setTenantId(finalTenantId);
 
-                    if (!StringUtils.hasText(customer.getCooperationCategory())) {
-                        customer.setCooperationCategory("潜在");
-                    }
                     if (!StringUtils.hasText(customer.getCooperationStatus())) {
                         customer.setCooperationStatus("中潜力");
                     }
@@ -441,12 +483,11 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public void exportCustomers(HttpServletResponse response, String name, String businessCategory,
-                                 String businessType, String cooperationCategory,
-                                 String cooperationStatus, String region) {
+                                 String businessType, String cooperationStatus,
+                                 String region) {
         LambdaQueryWrapper<BizCustomer> wrapper = new LambdaQueryWrapper<>();
 
-        // 导出也过滤掉无效客户
-        wrapper.eq(BizCustomer::getIsInvalid, 0);
+        wrapper.ne(BizCustomer::getCooperationStatus, "无效客户");
 
         if (StringUtils.hasText(name)) {
             wrapper.like(BizCustomer::getName, name);
@@ -456,9 +497,6 @@ public class CustomerServiceImpl implements CustomerService {
         }
         if (StringUtils.hasText(businessType)) {
             wrapper.eq(BizCustomer::getBusinessType, businessType);
-        }
-        if (StringUtils.hasText(cooperationCategory)) {
-            wrapper.eq(BizCustomer::getCooperationCategory, cooperationCategory);
         }
         if (StringUtils.hasText(cooperationStatus)) {
             wrapper.eq(BizCustomer::getCooperationStatus, cooperationStatus);
@@ -478,7 +516,7 @@ public class CustomerServiceImpl implements CustomerService {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("客户列表");
 
-            String[] headers = {"客户名称", "业务一级分类", "业务二级分类", "合作一级分类", "合作二级分类",
+            String[] headers = {"客户名称", "业务分类", "站点名称", "合作状态",
                     "地址", "区域", "联系人", "联系电话", "用气规模", "智慧燃气系统", "合同信息", "创建时间"};
             Row headerRow = sheet.createRow(0);
             CellStyle headerStyle = workbook.createCellStyle();
@@ -501,16 +539,15 @@ public class CustomerServiceImpl implements CustomerService {
                 row.createCell(0).setCellValue(c.getName() != null ? c.getName() : "");
                 row.createCell(1).setCellValue(c.getBusinessCategory() != null ? c.getBusinessCategory() : "");
                 row.createCell(2).setCellValue(c.getBusinessType() != null ? c.getBusinessType() : "");
-                row.createCell(3).setCellValue(c.getCooperationCategory() != null ? c.getCooperationCategory() : "");
-                row.createCell(4).setCellValue(c.getCooperationStatus() != null ? c.getCooperationStatus() : "");
-                row.createCell(5).setCellValue(c.getAddress() != null ? c.getAddress() : "");
-                row.createCell(6).setCellValue(c.getRegion() != null ? c.getRegion() : "");
-                row.createCell(7).setCellValue(c.getContactPerson() != null ? c.getContactPerson() : "");
-                row.createCell(8).setCellValue(c.getContactPhone() != null ? c.getContactPhone() : "");
-                row.createCell(9).setCellValue(c.getGasScale() != null ? c.getGasScale() : "");
-                row.createCell(10).setCellValue(c.getSmartGasSystem() != null ? c.getSmartGasSystem() : "");
-                row.createCell(11).setCellValue(c.getContractInfo() != null ? c.getContractInfo() : "");
-                row.createCell(12).setCellValue(c.getCreateTime() != null ? c.getCreateTime().toString() : "");
+                row.createCell(3).setCellValue(c.getCooperationStatus() != null ? c.getCooperationStatus() : "");
+                row.createCell(4).setCellValue(c.getAddress() != null ? c.getAddress() : "");
+                row.createCell(5).setCellValue(c.getRegion() != null ? c.getRegion() : "");
+                row.createCell(6).setCellValue(c.getContactPerson() != null ? c.getContactPerson() : "");
+                row.createCell(7).setCellValue(c.getContactPhone() != null ? c.getContactPhone() : "");
+                row.createCell(8).setCellValue(c.getGasScale() != null ? c.getGasScale() : "");
+                row.createCell(9).setCellValue(c.getSmartGasSystem() != null ? c.getSmartGasSystem() : "");
+                row.createCell(10).setCellValue(c.getContractInfo() != null ? c.getContractInfo() : "");
+                row.createCell(11).setCellValue(c.getCreateTime() != null ? c.getCreateTime().toString() : "");
             }
 
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -534,7 +571,6 @@ public class CustomerServiceImpl implements CustomerService {
         if (request.getContactPhone() != null) customer.setContactPhone(request.getContactPhone());
         if (request.getBusinessCategory() != null) customer.setBusinessCategory(request.getBusinessCategory());
         if (request.getBusinessType() != null) customer.setBusinessType(request.getBusinessType());
-        if (request.getCooperationCategory() != null) customer.setCooperationCategory(request.getCooperationCategory());
         if (request.getCooperationStatus() != null) customer.setCooperationStatus(request.getCooperationStatus());
         if (request.getGasScale() != null) customer.setGasScale(request.getGasScale());
         if (request.getSmartGasSystem() != null) customer.setSmartGasSystem(request.getSmartGasSystem());
@@ -555,10 +591,9 @@ public class CustomerServiceImpl implements CustomerService {
         fieldMap.put("region", new String[]{"区域", oldCustomer.getRegion(), newRequest.getRegion()});
         fieldMap.put("contactPerson", new String[]{"联系人", oldCustomer.getContactPerson(), newRequest.getContactPerson()});
         fieldMap.put("contactPhone", new String[]{"联系电话", oldCustomer.getContactPhone(), newRequest.getContactPhone()});
-        fieldMap.put("businessCategory", new String[]{"业务一级分类", oldCustomer.getBusinessCategory(), newRequest.getBusinessCategory()});
-        fieldMap.put("businessType", new String[]{"业务二级分类", oldCustomer.getBusinessType(), newRequest.getBusinessType()});
-        fieldMap.put("cooperationCategory", new String[]{"合作一级分类", oldCustomer.getCooperationCategory(), newRequest.getCooperationCategory()});
-        fieldMap.put("cooperationStatus", new String[]{"合作二级分类", oldCustomer.getCooperationStatus(), newRequest.getCooperationStatus()});
+        fieldMap.put("businessCategory", new String[]{"业务分类", oldCustomer.getBusinessCategory(), newRequest.getBusinessCategory()});
+        fieldMap.put("businessType", new String[]{"站点名称", oldCustomer.getBusinessType(), newRequest.getBusinessType()});
+        fieldMap.put("cooperationStatus", new String[]{"合作状态", oldCustomer.getCooperationStatus(), newRequest.getCooperationStatus()});
         fieldMap.put("gasScale", new String[]{"用气规模", oldCustomer.getGasScale(), newRequest.getGasScale()});
         fieldMap.put("smartGasSystem", new String[]{"智慧燃气系统", oldCustomer.getSmartGasSystem(), newRequest.getSmartGasSystem()});
         fieldMap.put("contractInfo", new String[]{"合同信息", oldCustomer.getContractInfo(), newRequest.getContractInfo()});
@@ -622,5 +657,168 @@ public class CustomerServiceImpl implements CustomerService {
             default:
                 return "";
         }
+    }
+
+    /**
+     * 判断当前用户是否拥有指定权限
+     */
+    private boolean hasPermission(String permission) {
+        List<String> permissions = UserContext.getPermissions();
+        return permissions != null && permissions.contains(permission);
+    }
+
+    @Override
+    public IPage<BizCustomer> publicPool(int page, int size, String name, String businessCategory,
+                                          String businessType, String cooperationStatus, String region) {
+        LambdaQueryWrapper<BizCustomer> wrapper = new LambdaQueryWrapper<>();
+
+        // 只查询未分配跟进人的客户
+        wrapper.isNull(BizCustomer::getFollowUpPersonId);
+
+        if (StringUtils.hasText(name)) {
+            wrapper.like(BizCustomer::getName, name);
+        }
+        if (StringUtils.hasText(businessCategory)) {
+            wrapper.eq(BizCustomer::getBusinessCategory, businessCategory);
+        }
+        if (StringUtils.hasText(businessType)) {
+            wrapper.eq(BizCustomer::getBusinessType, businessType);
+        }
+        if (StringUtils.hasText(cooperationStatus)) {
+            wrapper.eq(BizCustomer::getCooperationStatus, cooperationStatus);
+        }
+        if (StringUtils.hasText(region)) {
+            wrapper.eq(BizCustomer::getRegion, region);
+        }
+
+        // 租户隔离
+        if (!UserContext.isSuperAdmin()) {
+            wrapper.eq(BizCustomer::getTenantId, UserContext.getTenantId());
+        }
+
+        wrapper.orderByDesc(BizCustomer::getCreateTime);
+
+        IPage<BizCustomer> resultPage = bizCustomerMapper.selectPage(new Page<>(page, size), wrapper);
+
+        for (BizCustomer customer : resultPage.getRecords()) {
+            customer.setContractExpireDate(getContractExpireDate(customer.getId()));
+        }
+
+        return resultPage;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void assignCustomer(Long customerId, Long userId, String username) {
+        BizCustomer customer = bizCustomerMapper.selectById(customerId);
+        if (customer == null) {
+            throw new BusinessException(404, "客户不存在");
+        }
+
+        // 权限检查：超级管理员或有 customer:assign 权限的用户可以分配客户
+        if (!UserContext.isSuperAdmin() && !hasPermission("customer:assign")) {
+            throw new BusinessException(403, "无权分配客户");
+        }
+
+        // 租户隔离检查
+        if (!UserContext.isSuperAdmin() && !UserContext.getTenantId().equals(customer.getTenantId())) {
+            throw new BusinessException(403, "无权操作其他租户的客户数据");
+        }
+
+        // 记录修改日志
+        BizCustomerModifyLog modifyLog = new BizCustomerModifyLog();
+        modifyLog.setCustomerId(customerId);
+        modifyLog.setFieldName("followUpPerson");
+        modifyLog.setOldValue(customer.getFollowUpPerson() != null ? customer.getFollowUpPerson() : "未分配");
+        modifyLog.setNewValue(username);
+        modifyLog.setModifyUserId(UserContext.getUserId());
+        modifyLog.setModifyUser(UserContext.getUsername());
+        modifyLog.setModifyTime(LocalDateTime.now());
+        modifyLog.setTenantId(customer.getTenantId());
+        bizCustomerModifyLogMapper.insert(modifyLog);
+
+        // 更新跟进人
+        customer.setFollowUpPersonId(userId);
+        customer.setFollowUpPerson(username);
+        bizCustomerMapper.updateById(customer);
+
+        log.info("分配客户: customerId={}, to userId={}, username={}", customerId, userId, username);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void transferCustomer(Long customerId, Long userId, String username) {
+        BizCustomer customer = bizCustomerMapper.selectById(customerId);
+        if (customer == null) {
+            throw new BusinessException(404, "客户不存在");
+        }
+
+        // 权限检查：超级管理员或有 customer:assign 权限的用户可以转移客户
+        if (!UserContext.isSuperAdmin() && !hasPermission("customer:assign")) {
+            throw new BusinessException(403, "无权转移客户");
+        }
+
+        // 租户隔离检查
+        if (!UserContext.isSuperAdmin() && !UserContext.getTenantId().equals(customer.getTenantId())) {
+            throw new BusinessException(403, "无权操作其他租户的客户数据");
+        }
+
+        // 记录修改日志
+        BizCustomerModifyLog modifyLog = new BizCustomerModifyLog();
+        modifyLog.setCustomerId(customerId);
+        modifyLog.setFieldName("followUpPerson");
+        modifyLog.setOldValue(customer.getFollowUpPerson() != null ? customer.getFollowUpPerson() : "未分配");
+        modifyLog.setNewValue(username);
+        modifyLog.setModifyUserId(UserContext.getUserId());
+        modifyLog.setModifyUser(UserContext.getUsername());
+        modifyLog.setModifyTime(LocalDateTime.now());
+        modifyLog.setTenantId(customer.getTenantId());
+        bizCustomerModifyLogMapper.insert(modifyLog);
+
+        // 更新跟进人
+        customer.setFollowUpPersonId(userId);
+        customer.setFollowUpPerson(username);
+        bizCustomerMapper.updateById(customer);
+
+        log.info("转移客户: customerId={}, from {} to userId={}, username={}", 
+                customerId, customer.getFollowUpPerson(), userId, username);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void reclaimCustomer(Long customerId) {
+        BizCustomer customer = bizCustomerMapper.selectById(customerId);
+        if (customer == null) {
+            throw new BusinessException(404, "客户不存在");
+        }
+
+        // 权限检查：超级管理员或有 customer:assign 权限的用户可以回收客户
+        if (!UserContext.isSuperAdmin() && !hasPermission("customer:assign")) {
+            throw new BusinessException(403, "无权回收客户");
+        }
+
+        // 租户隔离检查
+        if (!UserContext.isSuperAdmin() && !UserContext.getTenantId().equals(customer.getTenantId())) {
+            throw new BusinessException(403, "无权操作其他租户的客户数据");
+        }
+
+        // 记录修改日志
+        BizCustomerModifyLog modifyLog = new BizCustomerModifyLog();
+        modifyLog.setCustomerId(customerId);
+        modifyLog.setFieldName("followUpPerson");
+        modifyLog.setOldValue(customer.getFollowUpPerson() != null ? customer.getFollowUpPerson() : "未分配");
+        modifyLog.setNewValue("未分配");
+        modifyLog.setModifyUserId(UserContext.getUserId());
+        modifyLog.setModifyUser(UserContext.getUsername());
+        modifyLog.setModifyTime(LocalDateTime.now());
+        modifyLog.setTenantId(customer.getTenantId());
+        bizCustomerModifyLogMapper.insert(modifyLog);
+
+        // 清空跟进人
+        customer.setFollowUpPersonId(null);
+        customer.setFollowUpPerson(null);
+        bizCustomerMapper.updateById(customer);
+
+        log.info("回收客户到公共池: customerId={}", customerId);
     }
 }

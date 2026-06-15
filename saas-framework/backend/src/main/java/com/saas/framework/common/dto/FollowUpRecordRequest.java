@@ -30,4 +30,16 @@ public class FollowUpRecordRequest {
 
     @NotNull(message = "跟进状态不能为空")
     private Integer followUpStatus;
+
+    /**
+     * 可选：新合作状态（正常履约/终止合作/高潜力/中潜力/低潜力/无效客户）
+     * 如果需要同步变更客户合作状态，请同时提供 newCooperationStatus 和 changeReason
+     */
+    private String newCooperationStatus;
+
+    /**
+     * 可选：状态变更原因
+     * 当提供了 newCooperationStatus 时，此字段必填
+     */
+    private String changeReason;
 }

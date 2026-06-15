@@ -3,7 +3,7 @@
     <el-card class="welcome-card" shadow="hover">
       <div class="welcome-header">
         <img src="/logo.jpg" alt="Logo" class="welcome-logo" />
-        <h2 class="welcome-title">欢迎使用 CRM 客户管理系统</h2>
+        <h2 class="welcome-title">欢迎使用客户管理系统</h2>
       </div>
       <p class="welcome-desc">高效管理 · 精准营销 · 数据驱动</p>
     </el-card>

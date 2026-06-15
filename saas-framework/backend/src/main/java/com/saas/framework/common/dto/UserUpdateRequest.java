@@ -18,4 +18,6 @@ public class UserUpdateRequest {
     private Long roleId;
 
     private Integer status;
+
+    private String postType;
 }

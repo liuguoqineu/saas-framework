@@ -29,22 +29,9 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public List<Map<String, Object>> getPermissionTree() {
-        // 查询所有权限
         List<SysPermission> allPermissions = sysPermissionMapper.selectList(
                 new LambdaQueryWrapper<SysPermission>().orderByAsc(SysPermission::getSort));
 
-        // 如果当前用户是租户管理员，只返回自己权限范围内的权限
-        if (!UserContext.isSuperAdmin()) {
-            List<String> userPermissions = UserContext.getPermissions();
-            if (userPermissions != null && !userPermissions.isEmpty()) {
-                Set<String> permissionSet = new HashSet<>(userPermissions);
-                allPermissions = allPermissions.stream()
-                        .filter(p -> permissionSet.contains(p.getCode()))
-                        .collect(Collectors.toList());
-            }
-        }
-
-        // 构建树：先找出根节点（parentId = 0），再递归找子节点
         List<Map<String, Object>> tree = new ArrayList<>();
         for (SysPermission perm : allPermissions) {
             if (perm.getParentId() == null || perm.getParentId() == 0) {

@@ -97,7 +97,7 @@ public class FollowUpServiceImpl implements FollowUpService {
 
         BizFollowUpRecord record = new BizFollowUpRecord();
         record.setCustomerId(request.getCustomerId());
-        record.setFollowUpTime(request.getFollowUpTime());
+        record.setFollowUpTime(request.getFollowUpTime() != null ? request.getFollowUpTime() : LocalDateTime.now());
         record.setFollowUpPersonId(UserContext.getUserId());
         record.setFollowUpPerson(UserContext.getUsername());
         record.setFollowUpMethod(request.getFollowUpMethod());
@@ -118,8 +118,52 @@ public class FollowUpServiceImpl implements FollowUpService {
         customer.setFollowUpPerson(UserContext.getUsername());
         customerMapper.updateById(customer);
 
+        log.info("新增跟进记录请求参数: customerId={}, newCooperationStatus={}, changeReason={}",
+                request.getCustomerId(),
+                request.getNewCooperationStatus(),
+                request.getChangeReason());
+
+        boolean shouldChange = shouldChangeCooperationStatus(request);
+        log.info("是否需要变更合作状态: {}", shouldChange);
+
+        if (shouldChange) {
+            changeCooperationStatusForRecord(customer, record.getId(), request);
+        }
+
         log.info("新增跟进记录: id={}, customerId={}", record.getId(), request.getCustomerId());
         return record;
+    }
+
+    private boolean shouldChangeCooperationStatus(FollowUpRecordRequest request) {
+        return StringUtils.hasText(request.getNewCooperationStatus()) && StringUtils.hasText(request.getChangeReason());
+    }
+
+    private void changeCooperationStatusForRecord(BizCustomer customer, Long followUpRecordId, FollowUpRecordRequest request) {
+        BizCustomerStatusLog statusLog = new BizCustomerStatusLog();
+        statusLog.setCustomerId(customer.getId());
+        statusLog.setOldCooperationStatus(customer.getCooperationStatus());
+        statusLog.setNewCooperationStatus(request.getNewCooperationStatus());
+        statusLog.setChangeReason(request.getChangeReason());
+        statusLog.setFollowUpRecordId(followUpRecordId);
+        statusLog.setChangePersonId(UserContext.getUserId());
+        statusLog.setChangePerson(UserContext.getUsername());
+        statusLog.setChangeTime(LocalDateTime.now());
+
+        Long tenantId = TenantContext.getTenantId();
+        if (tenantId == null) {
+            tenantId = UserContext.getTenantId();
+        }
+        statusLog.setTenantId(tenantId != null ? tenantId : 0L);
+
+        customerStatusLogMapper.insert(statusLog);
+
+        customer.setCooperationStatus(request.getNewCooperationStatus());
+        customerMapper.updateById(customer);
+
+        log.info("跟进时自动变更客户状态: customerId={}, followUpRecordId={}, {} -> {}",
+                customer.getId(), followUpRecordId,
+                statusLog.getOldCooperationStatus(),
+                request.getNewCooperationStatus());
     }
 
     @Override
@@ -247,9 +291,7 @@ public class FollowUpServiceImpl implements FollowUpService {
 
         BizCustomerStatusLog statusLog = new BizCustomerStatusLog();
         statusLog.setCustomerId(customerId);
-        statusLog.setOldCooperationCategory(customer.getCooperationCategory());
         statusLog.setOldCooperationStatus(customer.getCooperationStatus());
-        statusLog.setNewCooperationCategory(request.getNewCooperationCategory());
         statusLog.setNewCooperationStatus(request.getNewCooperationStatus());
         statusLog.setChangeReason(request.getChangeReason());
         statusLog.setFollowUpRecordId(request.getFollowUpRecordId());
@@ -265,13 +307,13 @@ public class FollowUpServiceImpl implements FollowUpService {
 
         customerStatusLogMapper.insert(statusLog);
 
-        customer.setCooperationCategory(request.getNewCooperationCategory());
         customer.setCooperationStatus(request.getNewCooperationStatus());
         customerMapper.updateById(customer);
 
-        log.info("变更客户状态: customerId={}, {} -> {}/{}", customerId,
-                customer.getCooperationCategory() + "/" + customer.getCooperationStatus(),
-                request.getNewCooperationCategory(), request.getNewCooperationStatus());
+        log.info("变更客户状态: customerId={}, {} -> {}",
+                customerId,
+                statusLog.getOldCooperationStatus(),
+                request.getNewCooperationStatus());
     }
 
     @Override

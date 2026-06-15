@@ -37,6 +37,12 @@ public class SysUser {
     /** 状态：1-启用，0-禁用 */
     private Integer status;
 
+    /** 岗位类型 */
+    private String postType;
+
+    /** 领导ID */
+    private Long leaderId;
+
     /** 创建时间 */
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;

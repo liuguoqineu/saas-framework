@@ -16,6 +16,9 @@ export const customerApi = {
   markInvalid(id) {
     return request.put(`/customer/${id}/invalid`)
   },
+  restoreInvalid(id) {
+    return request.put(`/customer/${id}/restore`)
+  },
   delete(id) {
     return request.delete(`/customer/${id}`)
   },
@@ -48,7 +51,6 @@ export const customerApi = {
     if (params.name) query.append('name', params.name)
     if (params.businessCategory) query.append('businessCategory', params.businessCategory)
     if (params.businessType) query.append('businessType', params.businessType)
-    if (params.cooperationCategory) query.append('cooperationCategory', params.cooperationCategory)
     if (params.cooperationStatus) query.append('cooperationStatus', params.cooperationStatus)
     if (params.maintenanceCategory) query.append('maintenanceCategory', params.maintenanceCategory)
     query.append('token', token)
@@ -56,6 +58,22 @@ export const customerApi = {
   },
   getDicts() {
     return request.get('/customer/dicts')
+  },
+  // 查询公共客户池（未分配跟进人的客户）
+  publicPool(params) {
+    return request.get('/customer/public-pool', { params })
+  },
+  // 分配客户给销售人员
+  assignCustomer(id, userId, username) {
+    return request.post(`/customer/${id}/assign`, null, { params: { userId, username } })
+  },
+  // 转移客户给另一个销售人员
+  transferCustomer(id, userId, username) {
+    return request.post(`/customer/${id}/transfer`, null, { params: { userId, username } })
+  },
+  // 回收客户到公共池
+  reclaimCustomer(id) {
+    return request.post(`/customer/${id}/reclaim`)
   }
 }
 
@@ -66,23 +84,17 @@ export const businessCategoryMap = {
     { value: '团餐类', label: '团餐类（大企业食堂、高校食堂）' },
     { value: '其他商业类', label: '其他商业类（酒店、商超后厨等）' }
   ],
-  '工业用气': ['大型', '中型', '小型']
+  '民业用气': ['大型', '中型', '小型']
 }
 
-export const cooperationCategoryMap = {
-  '已合作': [
-    { value: '正常履约', label: '正常履约（已签合同，正在使用系统，无逾期）' },
-    { value: '终止合作', label: '终止合作（不再合作，留存历史数据）' }
-  ],
-  '潜在': [
-    { value: '高潜力', label: '高潜力（明确需求，短期内可签约）' },
-    { value: '中潜力', label: '中潜力（有需求但时间不明确）' },
-    { value: '低潜力', label: '低潜力（需求不明确，需长期跟进）' }
-  ],
-  '无效': [
-    { value: '无效客户', label: '无效客户（多次无回应或不符合服务范围）' }
-  ]
-}
+export const cooperationStatusOptions = [
+  { value: '正常履约', label: '正常履约（已签合同，正在使用系统，无逾期）' },
+  { value: '终止合作', label: '终止合作（不再合作，留存历史数据）' },
+  { value: '高潜力', label: '高潜力（明确需求，短期内可签约）' },
+  { value: '中潜力', label: '中潜力（有需求但时间不明确）' },
+  { value: '低潜力', label: '低潜力（需求不明确，需长期跟进）' },
+  { value: '无效客户', label: '无效客户' }
+]
 
 export const regionOptions = []
 

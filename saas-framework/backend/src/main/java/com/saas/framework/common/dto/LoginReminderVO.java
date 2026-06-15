@@ -10,6 +10,7 @@ public class LoginReminderVO {
     private List<ReminderItem> contractReminders;
     private List<ReminderItem> followUpReminders;
     private List<ReminderItem> repairReminders;
+    private List<ReminderItem> reportReminders;
 
     @Data
     public static class ReminderItem {
