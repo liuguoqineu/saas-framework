@@ -37,6 +37,15 @@ public class SysUser {
     /** 状态：1-启用，0-禁用 */
     private Integer status;
 
+    /** 头像URL */
+    private String avatar;
+
+    /** 手机号 */
+    private String phone;
+
+    /** 邮箱 */
+    private String email;
+
     /** 岗位类型 */
     private String postType;
 

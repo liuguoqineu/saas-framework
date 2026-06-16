@@ -5,7 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="51334fea-a382-4fb5-933f-b986423ae62e" name="更改" comment="更改">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/config/JwtAuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/config/JwtAuthFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/config/WebMvcConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/config/WebMvcConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/entity/SysUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/entity/SysUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/AuthServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/AuthServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairExceptionRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairExceptionRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairOrderRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairOrderRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/JwtAuthFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/JwtAuthFilter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/SysUser.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/SysUser.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/AuthServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/AuthServiceImpl.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,7 +37,7 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/1546947215/saas.git&quot;,
+    &quot;url&quot;: &quot;https://github.com/liuguoqineu/saas-framework.git&quot;,
     &quot;accountId&quot;: &quot;141e9b4a-4500-437f-b153-feac7f87c2bd&quot;
   }
 }</component>
@@ -212,6 +222,10 @@
       <workItem from="1779763937508" duration="4366000" />
       <workItem from="1779781121900" duration="8920000" />
       <workItem from="1780881357777" duration="8000" />
+      <workItem from="1781572166632" duration="4608000" />
+      <workItem from="1781577323249" duration="41000" />
+      <workItem from="1781578255030" duration="598000" />
+      <workItem from="1781578907124" duration="804000" />
     </task>
     <servers />
   </component>

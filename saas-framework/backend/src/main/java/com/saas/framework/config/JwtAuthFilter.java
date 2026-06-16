@@ -32,10 +32,12 @@ public class JwtAuthFilter implements Filter {
     /** 不需要认证的路径 */
     private static final List<String> EXCLUDE_PATHS = Arrays.asList(
             "/api/auth/login",
+            "/api/app-version/check",
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/doc.html",
-            "/webjars/**"
+            "/webjars/**",
+            "/uploads/**"
     );
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
