@@ -1,1 +1,0 @@
-import{r}from"./request-BVOKDY1x.js";const u={page(e){return r.get("/user/page",{params:e})},list(e){const t=e?{roleName:e}:{};return r.get("/user/list",{params:t})},create(e){return r.post("/user",e)},update(e,t){return r.put(`/user/${e}`,t)},resetPassword(e){return r.put(`/user/${e}/reset-password`)},delete(e){return r.delete(`/user/${e}`)}};export{u};
