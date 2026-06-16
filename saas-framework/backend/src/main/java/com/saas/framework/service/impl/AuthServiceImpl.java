@@ -106,6 +106,9 @@ public class AuthServiceImpl implements AuthService {
         userInfo.put("id", user.getId());
         userInfo.put("username", user.getUsername());
         userInfo.put("realName", user.getRealName());
+        userInfo.put("avatar", user.getAvatar());
+        userInfo.put("phone", user.getPhone());
+        userInfo.put("email", user.getEmail());
         userInfo.put("roleId", user.getRoleId());
         userInfo.put("roleName", roleName);
         userInfo.put("tenantId", user.getTenantId());
@@ -222,6 +225,9 @@ public class AuthServiceImpl implements AuthService {
         userInfo.put("id", user.getId());
         userInfo.put("username", user.getUsername());
         userInfo.put("realName", user.getRealName());
+        userInfo.put("avatar", user.getAvatar());
+        userInfo.put("phone", user.getPhone());
+        userInfo.put("email", user.getEmail());
         userInfo.put("roleId", user.getRoleId());
         userInfo.put("roleName", roleName);
         userInfo.put("tenantId", user.getTenantId());
