@@ -61,6 +61,48 @@ const routes = [
         meta: { title: '报修管理', permission: 'repair:list' }
       },
       {
+        path: 'purchase',
+        name: 'Purchase',
+        component: () => import('@/views/Purchase.vue'),
+        meta: { title: '采购管理', permission: 'purchase:list' }
+      },
+      {
+        path: 'inventory',
+        name: 'Inventory',
+        component: () => import('@/views/Inventory.vue'),
+        meta: { title: '库存台账', permission: 'inventory:list' }
+      },
+      {
+        path: 'stock-in',
+        name: 'StockIn',
+        component: () => import('@/views/StockIn.vue'),
+        meta: { title: '入库管理', permission: 'stock-in:list' }
+      },
+      {
+        path: 'stock-out',
+        name: 'StockOut',
+        component: () => import('@/views/StockOut.vue'),
+        meta: { title: '出库管理', permission: 'stock-out:list' }
+      },
+      {
+        path: 'device',
+        name: 'Device',
+        component: () => import('@/views/Device.vue'),
+        meta: { title: '设备档案', permission: 'device:list' }
+      },
+      {
+        path: 'device-repair',
+        name: 'DeviceRepair',
+        component: () => import('@/views/DeviceRepair.vue'),
+        meta: { title: '设备维修', permission: 'repair:list' }
+      },
+      {
+        path: 'device-replacement',
+        name: 'DeviceReplacement',
+        component: () => import('@/views/DeviceReplacement.vue'),
+        meta: { title: '更换档案', permission: 'repair:list' }
+      },
+      {
         path: 'check-in',
         name: 'CheckIn',
         component: () => import('@/views/CheckIn.vue'),

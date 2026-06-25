@@ -4,18 +4,156 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="51334fea-a382-4fb5-933f-b986423ae62e" name="更改" comment="更改">
+    <list default="true" id="51334fea-a382-4fb5-933f-b986423ae62e" name="更改" comment="新增设备管理功能，删除打卡功能只保留打卡记录">
       <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/197b9ed4-6cc3-45a1-9cd9-c933682e2d56/storage_v2/_src_/schema/information_schema.FNRwLQ.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/197b9ed4-6cc3-45a1-9cd9-c933682e2d56/storage_v2/_src_/schema/mysql.osA4Bg.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/197b9ed4-6cc3-45a1-9cd9-c933682e2d56/storage_v2/_src_/schema/performance_schema.kIw0nw.meta" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/197b9ed4-6cc3-45a1-9cd9-c933682e2d56/storage_v2/_src_/schema/sys.zb4BAA.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/config/JwtAuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/config/JwtAuthFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/config/WebMvcConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/config/WebMvcConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/entity/SysUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/entity/SysUser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/AuthServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/AuthServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairExceptionRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairExceptionRequest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairOrderRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/common/dto/RepairOrderRequest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/JwtAuthFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/config/JwtAuthFilter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/SysUser.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/SysUser.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/AuthServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/AuthServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/controller/RepairController.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/controller/RepairController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/entity/BizRepairOrder.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/entity/BizRepairOrder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/RepairService.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/RepairService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/RepairServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/src/main/java/com/saas/framework/service/impl/RepairServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/RepairController.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/controller/RepairController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizRepairOrder.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/entity/BizRepairOrder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/RepairService.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/RepairService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/RepairServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/backend/target/classes/com/saas/framework/service/impl/RepairServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Approvals-BTjXlOnU.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Backup-BQR4T-HY.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Backup-DvBa7ghm.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Backup-ccFbfRJ9.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Contract-BJMDzKxE.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Contract-CcUfi62o.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Contract-DKt5wKEo.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Contract-Dvh68NVL.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Customer-3525YWoJ.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Customer-B46C_veM.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Customer-Co4AWEml.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Customer-DRnD6f8Y.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/CustomerDetail-C-DZtsuL.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/CustomerDetail-C7sz5tcm.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/CustomerDetail-ChpQJdAD.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/CustomerDetail-DZ-_KHQa.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Dashboard-BhUm280S.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Dashboard-DB4ovTW8.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Dashboard-DIMjZIoq.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Dashboard-DqZ7j9vQ.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Dashboard-DwW8rKjU.css" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Dashboard-DwW8rKjU.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Layout-Bz1ZmROc.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Layout-CdGlKblU.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Layout-ClhOtlpl.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Layout-DMjx_0GR.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Login-BB02rO0U.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Login-C6jcyNKU.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Login-k9T87Ad3.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Login-wfXff0dF.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/MyReports-CERBwsGU.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/MyReports-CshgUrKS.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/OperationLog-7NiBTfEm.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/OperationLog-CWd_tmF3.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/OperationLog-DR4W3hqz.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Overdue-B5Q_j5FX.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Overdue-BA7zurvq.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Repair-6dEeODVC.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Repair-D8FYFcBm.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Repair-DO1jtrXU.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Repair-Dkopkf9_.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/ReportQuery-DvWrg9zP.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/ReportQuery-DyK62N5M.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Role-BFp1LkaR.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Role-CcoRmaln.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Role-CwRId-3N.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Role-DpM9vE1t.css" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Role-DpM9vE1t.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Statistics--u5rCL4F.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Statistics-DYRshsuR.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Statistics-U-LR2Ghb.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Tenant-BS9FZBFM.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Tenant-CcP1-l3N.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/Tenant-D7aqnEFb.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/User-BiWx38wc.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/User-BpzKMZvB.css" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/User-BpzKMZvB.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/User-CPN8iKU0.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/User-DHNDlMcJ.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/customer-_zT8bjtG.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/customer-m17z0EXq.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/echarts-D5fw03LZ.js" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/echarts-D5fw03LZ.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/followUp-B81Ay953.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/followUp-BxoSeNsu.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/index-4vuwDuhg.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/index-Bvk_MSuD.css" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/index-Bvk_MSuD.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/index-CoJROqdN.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/logo-Bv0r_1vX.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/report-Dyn_MaHj.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/request-BVOKDY1x.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/request-D6SgTwDt.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/role-Br4ybb6_.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/role-C25gEuub.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/user-CMlrNPSU.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/user-CjaEH9oy.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/user-DCZg-gpk.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/assets/user-Dp7fo6Lk.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/dist/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/dist/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/@element-plus_icons-vue.js" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/@element-plus_icons-vue.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/@element-plus_icons-vue.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/@element-plus_icons-vue.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/_metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/axios.js" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/axios.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/axios.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/axios.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-G3PMV62Z.js" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-G3PMV62Z.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-G3PMV62Z.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-G3PMV62Z.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-V7XUQDCA.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-V7XUQDCA.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-XBRQRQT7.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-XBRQRQT7.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-YFT6OQ5R.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/chunk-YFT6OQ5R.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/echarts.js" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/echarts.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/echarts.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/echarts.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-china-area-data.js" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-china-area-data.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-china-area-data.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-china-area-data.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-plus.js" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-plus.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-plus.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-plus.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-plus_dist_locale_zh-cn__mjs.js" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-plus_dist_locale_zh-cn__mjs.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-plus_dist_locale_zh-cn__mjs.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/element-plus_dist_locale_zh-cn__mjs.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/pinia.js" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/pinia.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/pinia.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/pinia.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/vue-router.js" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/vue-router.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/vue-router.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/vue-router.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/vue.js" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/vue.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/vue.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps/vue.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/@element-plus_icons-vue.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/@element-plus_icons-vue.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/axios.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/axios.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/chunk-G3PMV62Z.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/chunk-G3PMV62Z.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/chunk-V7XUQDCA.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/chunk-V7XUQDCA.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/chunk-XBRQRQT7.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/chunk-XBRQRQT7.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/chunk-YFT6OQ5R.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/chunk-YFT6OQ5R.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/echarts.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/echarts.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/element-china-area-data.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/element-china-area-data.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/element-plus.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/element-plus.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/element-plus_dist_locale_zh-cn__mjs.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/element-plus_dist_locale_zh-cn__mjs.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/pinia.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/pinia.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/vue-router.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/vue-router.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/vue.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/node_modules/.vite/deps_temp_d63e2e5f/vue.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/src/api/checkIn.js" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/src/api/checkIn.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/src/router/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/src/views/CheckIn.vue" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/src/views/CheckIn.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/saas-framework/frontend/src/views/Layout.vue" beforeDir="false" afterPath="$PROJECT_DIR$/saas-framework/frontend/src/views/Layout.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,6 +186,10 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -70,16 +212,22 @@
     &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
     &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
     &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;Spring Boot.SaasFrameworkApplication.executor&quot;: &quot;Run&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
     &quot;database.data.extractors.current.export.id&quot;: &quot;Comma-separated (CSV)_id&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/jason/工作/xiangmu/saas/saas-framework/backend/src/main/resources/static&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;G:/gongshixiangmu/saa2&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -90,6 +238,7 @@
     &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;spring.configuration.checksum&quot;: &quot;9d7f02e4f3b6eb2bdbabf1d249816293&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;ts.external.directory.path&quot;: &quot;F:\\IDEA\\IntelliJ IDEA 2025.1.1.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
@@ -112,7 +261,7 @@
     <configuration name="start-all" type="BatchConfigurationType" factoryName="Batch" temporary="true">
       <module name="saas框架" />
       <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="WORKING_DIRECTORY" value="D:\桌面文件\b\saas框架\saas-framework" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../桌面文件/b/saas框架/saas-framework" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SCRIPT_NAME" value="start-all.bat" />
       <option name="PARAMETERS" value="" />
@@ -123,7 +272,7 @@
     <configuration name="start-frontend" type="BatchConfigurationType" factoryName="Batch" temporary="true">
       <module name="saas框架" />
       <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="WORKING_DIRECTORY" value="D:\桌面文件\b\saas框架\saas-framework" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../../桌面文件/b/saas框架/saas-framework" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SCRIPT_NAME" value="start-frontend.bat" />
       <option name="PARAMETERS" value="" />
@@ -225,8 +374,40 @@
       <workItem from="1781572166632" duration="4608000" />
       <workItem from="1781577323249" duration="41000" />
       <workItem from="1781578255030" duration="598000" />
-      <workItem from="1781578907124" duration="804000" />
+      <workItem from="1781578907124" duration="1235000" />
+      <workItem from="1781580165539" duration="8000" />
+      <workItem from="1781591544885" duration="413000" />
+      <workItem from="1781592207470" duration="1132000" />
+      <workItem from="1781593698989" duration="99000" />
+      <workItem from="1781594404999" duration="3411000" />
+      <workItem from="1781665795979" duration="9453000" />
+      <workItem from="1781750697457" duration="10401000" />
+      <workItem from="1782091315082" duration="1018000" />
+      <workItem from="1782092904810" duration="3174000" />
+      <workItem from="1782177126742" duration="1353000" />
+      <workItem from="1782262734251" duration="6129000" />
+      <workItem from="1782348607530" duration="298000" />
+      <workItem from="1782348923851" duration="788000" />
+      <workItem from="1782350424064" duration="7000" />
+      <workItem from="1782350570294" duration="475000" />
     </task>
+    <task id="LOCAL-00001" summary="APP版本管理，个人信息管理接口（手机端）">
+      <option name="closed" value="true" />
+      <created>1781579748604</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1781579748604</updated>
+    </task>
+    <task id="LOCAL-00002" summary="APP版本管理，个人信息管理接口（手机端）">
+      <option name="closed" value="true" />
+      <created>1781579949505</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1781579949505</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -255,6 +436,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="APP版本管理，个人信息管理接口（手机端）" />
+    <option name="LAST_COMMIT_MESSAGE" value="APP版本管理，个人信息管理接口（手机端）" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

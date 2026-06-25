@@ -206,4 +206,24 @@ public class RepairController {
         List<BizRepairOrder> orders = repairService.getUnconfirmedReminders();
         return Result.ok(orders);
     }
+
+    @Operation(summary = "设备故障报修")
+    @PostMapping("/device-repair")
+    @RequirePermission("repair:add")
+    @OperationLog(operation = "CREATE", module = "设备报修", description = "设备故障报修")
+    public Result<BizRepairOrder> deviceRepair(@Valid @RequestBody DeviceRepairRequest request) {
+        log.info("设备故障报修: deviceId={}", request.getDeviceId());
+        BizRepairOrder order = repairService.deviceRepair(request);
+        return Result.ok("设备报修创建成功", order);
+    }
+
+    @Operation(summary = "设备维修处理（含更换记录）")
+    @PutMapping("/{id}/device-process")
+    @RequirePermission("repair:process")
+    @OperationLog(operation = "UPDATE", module = "设备维修", description = "设备维修处理")
+    public Result<?> deviceProcess(@PathVariable Long id, @Valid @RequestBody RepairProcessWithReplacementRequest request) {
+        log.info("设备维修处理: id={}, hasReplacement={}", id, request.getHasReplacement());
+        repairService.deviceProcess(id, request);
+        return Result.ok("维修处理成功");
+    }
 }

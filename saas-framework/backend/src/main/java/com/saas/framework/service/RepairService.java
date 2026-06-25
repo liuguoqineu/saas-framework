@@ -49,4 +49,8 @@ public interface RepairService {
                              String urgency, String repairType);
 
     List<BizRepairOrder> getUnconfirmedReminders();
+
+    BizRepairOrder deviceRepair(DeviceRepairRequest request);
+
+    void deviceProcess(Long id, RepairProcessWithReplacementRequest request);
 }

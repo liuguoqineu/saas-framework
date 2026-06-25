@@ -54,6 +54,41 @@
           <span>报修管理</span>
         </el-menu-item>
 
+        <el-sub-menu v-if="hasPermission('purchase:list') || hasPermission('inventory:list') || hasPermission('stock-in:list') || hasPermission('stock-out:list') || hasPermission('device:list') || hasPermission('repair:list')" index="device">
+          <template #title>
+            <el-icon><Monitor /></el-icon>
+            <span>设备管理</span>
+          </template>
+          <el-menu-item v-if="hasPermission('purchase:list')" index="/purchase">
+            <el-icon><ShoppingCart /></el-icon>
+            <span>采购管理</span>
+          </el-menu-item>
+          <el-menu-item v-if="hasPermission('stock-in:list')" index="/stock-in">
+            <el-icon><Download /></el-icon>
+            <span>入库管理</span>
+          </el-menu-item>
+          <el-menu-item v-if="hasPermission('inventory:list')" index="/inventory">
+            <el-icon><Box /></el-icon>
+            <span>库存台账</span>
+          </el-menu-item>
+          <el-menu-item v-if="hasPermission('stock-out:list')" index="/stock-out">
+            <el-icon><Upload /></el-icon>
+            <span>出库管理</span>
+          </el-menu-item>
+          <el-menu-item v-if="hasPermission('device:list')" index="/device">
+            <el-icon><Cpu /></el-icon>
+            <span>设备档案</span>
+          </el-menu-item>
+          <el-menu-item v-if="hasPermission('repair:list')" index="/device-repair">
+            <el-icon><SetUp /></el-icon>
+            <span>设备维修</span>
+          </el-menu-item>
+          <el-menu-item v-if="hasPermission('repair:list')" index="/device-replacement">
+            <el-icon><RefreshRight /></el-icon>
+            <span>更换档案</span>
+          </el-menu-item>
+        </el-sub-menu>
+
         <el-menu-item v-if="hasPermission('checkin:list')" index="/check-in">
           <el-icon><Clock /></el-icon>
           <span>员工打卡</span>

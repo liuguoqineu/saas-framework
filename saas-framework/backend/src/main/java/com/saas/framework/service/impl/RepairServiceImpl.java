@@ -10,6 +10,7 @@ import com.saas.framework.common.exception.BusinessException;
 import com.saas.framework.entity.*;
 import com.saas.framework.mapper.*;
 import com.saas.framework.service.RepairService;
+import com.saas.framework.service.DeviceTimelineService;
 import com.saas.framework.config.FilePathConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
@@ -45,6 +46,15 @@ public class RepairServiceImpl implements RepairService {
 
     @Resource
     private FilePathConfig filePathConfig;
+
+    @Resource
+    private DeviceMapper deviceMapper;
+
+    @Resource
+    private DeviceTimelineService deviceTimelineService;
+
+    @Resource
+    private com.saas.framework.service.DeviceReplacementService deviceReplacementService;
 
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -743,5 +753,139 @@ public class RepairServiceImpl implements RepairService {
         processLog.setTenantId(tenantId != null ? tenantId : 0L);
 
         repairProcessLogMapper.insert(processLog);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public BizRepairOrder deviceRepair(DeviceRepairRequest request) {
+        // 1. 校验设备存在
+        Device device = deviceMapper.selectById(request.getDeviceId());
+        if (device == null) {
+            throw new BusinessException(404, "关联设备不存在");
+        }
+
+        Long tenantId = TenantContext.getTenantId();
+        if (tenantId == null) {
+            tenantId = UserContext.getTenantId();
+        }
+        Long finalTenantId = tenantId != null ? tenantId : 0L;
+
+        // 2. 创建维修单
+        BizRepairOrder order = new BizRepairOrder();
+        order.setRepairNo(generateRepairNo());
+        order.setDeviceId(request.getDeviceId());
+        order.setDeviceCode(device.getDeviceCode());
+        order.setFaultTime(request.getFaultTime() != null ?
+                LocalDateTime.parse(request.getFaultTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) : null);
+        order.setFaultPart(request.getFaultPart());
+        order.setRepairContent(request.getFaultDescription());
+        order.setFaultDescription(request.getFaultDescription());
+        order.setRepairPhotoBefore(request.getRepairPhotoBefore());
+        order.setUrgency(StringUtils.hasText(request.getUrgency()) ? request.getUrgency() : "普通");
+        order.setStatus("待分配");
+        order.setConfirmStatus(0);
+        order.setIsException(0);
+        order.setHasReplacement(0);
+        order.setCreatorId(UserContext.getUserId());
+        order.setCreatorName(UserContext.getUsername());
+        order.setTenantId(finalTenantId);
+
+        repairOrderMapper.insert(order);
+
+        // 3. 更新设备状态为维修中(3)
+        device.setStatus(3);
+        deviceMapper.updateById(device);
+
+        // 4. 记录设备时间线事件
+        deviceTimelineService.recordEvent(device.getId(), 5, "故障报修",
+                "设备故障报修，维修单号: " + order.getRepairNo(),
+                order.getId(), order.getRepairNo(), UserContext.getUsername(), finalTenantId);
+
+        addProcessLog(order.getId(), "设备报修", null, "待分配",
+                "设备故障报修，设备编号: " + device.getDeviceCode(), order.getTenantId());
+
+        log.info("设备故障报修: id={}, repairNo={}, deviceId={}", order.getId(), order.getRepairNo(), device.getId());
+        return order;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deviceProcess(Long id, RepairProcessWithReplacementRequest request) {
+        // 1. 获取维修单并校验
+        BizRepairOrder order = repairOrderMapper.selectById(id);
+        if (order == null) {
+            throw new BusinessException(404, "报修单不存在");
+        }
+
+        // 校验状态允许处理（已分配、处理中）
+        String currentStatus = order.getStatus();
+        if (!"已分配".equals(currentStatus) && !"处理中".equals(currentStatus) && !"待分配".equals(currentStatus)) {
+            throw new BusinessException("当前状态的报修单不可进行维修处理");
+        }
+
+        String oldStatus = order.getStatus();
+
+        // 2. 更新维修字段
+        if (StringUtils.hasText(request.getProcessMethod())) {
+            order.setProcessMethod(request.getProcessMethod());
+        }
+        if (StringUtils.hasText(request.getFaultReason())) {
+            order.setFaultReason(request.getFaultReason());
+        }
+        if (StringUtils.hasText(request.getRepairStartTime())) {
+            order.setRepairStartTime(LocalDateTime.parse(request.getRepairStartTime(),
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        }
+        if (StringUtils.hasText(request.getRepairEndTime())) {
+            order.setRepairEndTime(LocalDateTime.parse(request.getRepairEndTime(),
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        }
+        if (request.getRepairDuration() != null) {
+            order.setRepairDuration(request.getRepairDuration());
+        }
+        if (StringUtils.hasText(request.getRepairPhotoAfter())) {
+            order.setRepairPhotoAfter(request.getRepairPhotoAfter());
+        }
+        if (request.getHasReplacement() != null) {
+            order.setHasReplacement(request.getHasReplacement());
+        }
+        order.setStatus("待确认");
+        order.setProcessTime(LocalDateTime.now());
+
+        // 3. 如果有更换记录，创建更换记录
+        if (request.getHasReplacement() != null && request.getHasReplacement() == 1) {
+            Long tenantId = order.getTenantId();
+            DeviceReplacement replacement = deviceReplacementService.createReplacement(request, id, tenantId);
+            order.setReplacementId(replacement.getId());
+        }
+
+        repairOrderMapper.updateById(order);
+
+        // 4. 更新设备状态
+        if (order.getDeviceId() != null) {
+            Device device = deviceMapper.selectById(order.getDeviceId());
+            if (device != null) {
+                if (request.getHasReplacement() == null || request.getHasReplacement() == 0) {
+                    // 无更换，恢复为在用
+                    device.setStatus(2);
+                    deviceMapper.updateById(device);
+                }
+                // 有更换时，设备状态由 DeviceReplacementService 处理
+
+                // 5. 记录设备时间线事件
+                String desc = "维修处理完成，处理方式: " + (request.getProcessMethod() != null ? request.getProcessMethod() : "无");
+                if (request.getHasReplacement() != null && request.getHasReplacement() == 1) {
+                    desc += "，含更换记录";
+                }
+                deviceTimelineService.recordEvent(device.getId(), 6, "维修完成",
+                        desc, order.getId(), order.getRepairNo(), UserContext.getUsername(), order.getTenantId());
+            }
+        }
+
+        addProcessLog(order.getId(), "维修处理", oldStatus, "待确认",
+                "维修处理完成" + (request.getHasReplacement() != null && request.getHasReplacement() == 1 ? "（含更换记录）" : ""),
+                order.getTenantId());
+
+        log.info("设备维修处理完成: id={}, repairNo={}, hasReplacement={}", id, order.getRepairNo(), request.getHasReplacement());
     }
 }

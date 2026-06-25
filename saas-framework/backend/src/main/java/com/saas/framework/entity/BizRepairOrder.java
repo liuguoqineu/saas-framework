@@ -2,6 +2,7 @@ package com.saas.framework.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -41,6 +42,17 @@ public class BizRepairOrder {
     private LocalDateTime secondRemindTime;
     private Long creatorId;
     private String creatorName;
+    private Long deviceId;
+    private String deviceCode;
+    private LocalDateTime faultTime;
+    private String faultPart;
+    private LocalDateTime repairStartTime;
+    private LocalDateTime repairEndTime;
+    private BigDecimal repairDuration;
+    private String repairPhotoBefore;
+    private String repairPhotoAfter;
+    private Integer hasReplacement;
+    private Long replacementId;
     private Long tenantId;
 
     @TableField(fill = FieldFill.INSERT)
@@ -51,4 +63,8 @@ public class BizRepairOrder {
 
     @TableLogic
     private Integer deleted;
+
+    /** 更换记录用于展示（非数据库字段） */
+    @TableField(exist = false)
+    private DeviceReplacement replacement;
 }
