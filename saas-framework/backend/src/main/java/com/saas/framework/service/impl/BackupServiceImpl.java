@@ -44,6 +44,9 @@ public class BackupServiceImpl implements BackupService {
     @Value("${spring.datasource.password}")
     private String datasourcePassword;
 
+    @Value("${mysqldump.path:mysqldump}")
+    private String mysqldumpPath;
+
     @Resource
     private FilePathConfig filePathConfig;
 
@@ -63,6 +66,27 @@ public class BackupServiceImpl implements BackupService {
             log.error("解析数据库名称失败", e);
         }
         return "saaslearn";
+    }
+
+    /**
+     * 解析数据库主机地址
+     */
+    private String parseDatabaseHost() {
+        try {
+            String url = datasourceUrl;
+            // jdbc:mysql://host:port/dbname 或 jdbc:mysql://host/dbname
+            int hostStart = url.indexOf("//") + 2;
+            int hostEnd = url.indexOf(":", hostStart);
+            if (hostEnd < 0) {
+                hostEnd = url.indexOf("/", hostStart);
+            }
+            if (hostStart > 1 && hostEnd > hostStart) {
+                return url.substring(hostStart, hostEnd);
+            }
+        } catch (Exception e) {
+            log.error("解析数据库主机失败", e);
+        }
+        return "localhost";
     }
 
     /**
@@ -187,13 +211,14 @@ public class BackupServiceImpl implements BackupService {
      */
     private void executeMysqldump(String filePath, SysBackupRecord record) throws Exception {
         String databaseName = parseDatabaseName();
+        String databaseHost = parseDatabaseHost();
         int databasePort = parseDatabasePort();
 
-        log.info("执行mysqldump备份数据库: {}, 端口: {}", databaseName, databasePort);
+        log.info("执行mysqldump备份数据库: {}, 主机: {}, 端口: {}, 命令: {}", databaseName, databaseHost, databasePort, mysqldumpPath);
 
         ProcessBuilder processBuilder = new ProcessBuilder(
-                "mysqldump",
-                "-h", "localhost",
+                mysqldumpPath,
+                "-h", databaseHost,
                 "-P", String.valueOf(databasePort),
                 "-u", datasourceUsername,
                 "-p" + datasourcePassword,
