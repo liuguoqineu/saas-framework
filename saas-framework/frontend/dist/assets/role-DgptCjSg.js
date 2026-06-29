@@ -1,0 +1,1 @@
+import{r}from"./request-BlGrV1NU.js";const n={getById(e){return r.get(`/role/${e}`)},page(e){return r.get("/role/page",{params:e})},create(e){return r.post("/role",e)},update(e,t){return r.put(`/role/${e}`,t)},delete(e){return r.delete(`/role/${e}`)},getPermissionTree(){return r.get("/permission/tree")}};export{n as r};
