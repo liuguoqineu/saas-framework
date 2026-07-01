@@ -48,13 +48,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public IPage<SysUser> page(int page, int size, String realName) {
-        if (UserContext.isSuperAdmin()) {
-            throw new BusinessException(403, "超级账户不管理员工，请切换到租户账户");
-        }
-
-        Long tenantId = UserContext.getTenantId();
         LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SysUser::getTenantId, tenantId);
+
+        if (UserContext.isSuperAdmin()) {
+            // 超级管理员可查看所有员工（排除自己）
+            wrapper.ne(SysUser::getTenantId, 0);
+        } else {
+            // 租户管理员只能查看本租户员工
+            wrapper.eq(SysUser::getTenantId, UserContext.getTenantId());
+        }
 
         if (StringUtils.hasText(realName)) {
             wrapper.like(SysUser::getRealName, realName);
@@ -112,11 +114,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void create(UserCreateRequest request) {
-        if (UserContext.isSuperAdmin()) {
-            throw new BusinessException(403, "超级账户不管理员工，请切换到租户账户");
+        // 仅超级管理员可直接创建员工，租户管理员需通过员工申请流程
+        if (!UserContext.isSuperAdmin()) {
+            throw new BusinessException(403, "租户管理员无法直接创建员工，请提交员工申请等待超级管理员审核");
         }
 
-        log.info("创建员工: username={}, realName={}", request.getUsername(), request.getRealName());
+        log.info("超级管理员创建员工: username={}, realName={}", request.getUsername(), request.getRealName());
 
         // 检查用户名是否已存在
         SysUser existUser = sysUserMapper.selectByUsername(request.getUsername());
@@ -124,25 +127,23 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("用户名 " + request.getUsername() + " 已存在");
         }
 
-        // 校验选择的角色权限是否在管理员权限范围内
-        Long roleId = request.getRoleId();
-        List<Long> rolePermissionIds = sysRolePermissionMapper.selectPermissionIdsByRoleId(roleId);
-        permissionService.checkPermissionsWithin(rolePermissionIds);
-
         // 创建员工
         SysUser user = new SysUser();
         user.setUsername(request.getUsername());
         // 密码：不提供则默认 123456
         String password = StringUtils.hasText(request.getPassword()) ? request.getPassword() : "123456";
         user.setPassword(passwordEncoder.encode(password));
-        user.setRoleId(roleId);
-        user.setTenantId(UserContext.getTenantId());
+        user.setRoleId(request.getRoleId());
+        // 超级管理员创建员工时需要指定租户
+        user.setTenantId(request.getTenantId() != null ? request.getTenantId() : 0L);
         user.setRealName(request.getRealName());
         user.setPostType(request.getPostType());
+        user.setZhizhiContent(request.getZhizhiContent());
+        user.setZhizhiImageUrl(request.getZhizhiImageUrl());
         user.setStatus(1);
         sysUserMapper.insert(user);
 
-        log.info("员工创建成功: userId={}, username={}", user.getId(), request.getUsername());
+        log.info("员工创建成功: userId={}, username={}, tenantId={}", user.getId(), request.getUsername(), user.getTenantId());
     }
 
     @Override

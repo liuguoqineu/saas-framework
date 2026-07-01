@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * 员工（用户）管理控制器
- * 租户管理员操作本租户员工
+ * 超级管理员可直接创建员工，租户管理员通过申请流程
  */
 @Slf4j
 @RestController

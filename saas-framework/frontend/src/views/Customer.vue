@@ -351,7 +351,7 @@
         <el-form ref="followUpFormRef" :model="followUpForm" :rules="followUpFormRules" label-width="100px">
           <el-form-item label="跟进时间" prop="followUpTime">
             <el-date-picker v-model="followUpForm.followUpTime" type="datetime" placeholder="选择跟进时间"
-              value-format="YYYY-MM-DD HH:mm:ss" style="width: 100%" />
+              value-format="YYYY-MM-DD HH:mm:ss" format="YYYY-MM-DD HH:mm:ss" style="width: 100%" />
           </el-form-item>
           <el-form-item label="跟进方式" prop="followUpMethod">
             <el-select v-model="followUpForm.followUpMethod" placeholder="请选择跟进方式" style="width: 100%">

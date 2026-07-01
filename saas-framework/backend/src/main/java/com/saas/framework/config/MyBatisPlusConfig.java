@@ -88,7 +88,8 @@ public class MyBatisPlusConfig {
                         || "rp_config".equalsIgnoreCase(tableName)
                         || "rp_report".equalsIgnoreCase(tableName)
                         || "rp_report_revision".equalsIgnoreCase(tableName)
-                        || "biz_check_in".equalsIgnoreCase(tableName);
+                        || "biz_check_in".equalsIgnoreCase(tableName)
+                        || "sys_employee_request".equalsIgnoreCase(tableName);
             }
         });
         interceptor.addInnerInterceptor(tenantInterceptor);

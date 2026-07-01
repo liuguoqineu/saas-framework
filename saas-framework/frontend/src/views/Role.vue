@@ -6,7 +6,7 @@
           <span>角色管理</span>
           <div class="header-actions">
             <el-button :icon="Refresh" circle @click="fetchData" title="刷新" />
-            <el-button v-permission="'role:add'" type="primary" @click="openCreateDialog">
+            <el-button v-if="isSuperAdmin" v-permission="'role:add'" type="primary" @click="openCreateDialog">
               <el-icon style="margin-right:4px"><CirclePlus /></el-icon>新增角色
             </el-button>
           </div>
@@ -85,7 +85,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="170" sortable />
-        <el-table-column label="操作" width="220" fixed="right" align="center">
+        <el-table-column v-if="isSuperAdmin" label="操作" width="220" fixed="right" align="center">
           <template #default="{ row }">
             <el-button v-permission="'role:edit'" size="small" type="primary" link @click.stop="openEditDialog(row)">
               编辑
@@ -208,7 +208,7 @@
 
       <template #footer>
         <el-button @click="detailVisible = false">关闭</el-button>
-        <el-button v-permission="'role:edit'" type="primary" plain @click="editFromDetail">编辑角色</el-button>
+        <el-button v-if="isSuperAdmin" v-permission="'role:edit'" type="primary" plain @click="editFromDetail">编辑角色</el-button>
       </template>
     </el-dialog>
   </div>
@@ -217,6 +217,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import { roleApi } from '@/api/role'
+import { useUserStore } from '@/store/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   Refresh, CirclePlus, User, Key, Medal, Monitor,
@@ -235,6 +236,8 @@ const formRef = ref()
 const treeRef = ref()
 const detailData = ref(null)
 const treeExpanded = ref(true)
+const userStore = useUserStore()
+const isSuperAdmin = computed(() => userStore.isSuperAdmin)
 
 const query = reactive({ page: 1, size: 10 })
 const tableDataRecords = ref([])
@@ -465,6 +468,9 @@ async function handleSubmit() {
   submitting.value = true
   try {
     const data = { name: form.name, permissionIds }
+    if (isSuperAdmin.value) {
+      data.tenantId = form.tenantId
+    }
     if (dialogType.value === 'edit') {
       await roleApi.update(editId.value, data)
       ElMessage.success('角色修改成功')

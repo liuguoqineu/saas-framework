@@ -136,7 +136,7 @@
           <el-col :span="12">
             <el-form-item label="报修时间" prop="repairTime">
               <el-date-picker v-model="formData.repairTime" type="datetime" placeholder="请选择报修时间"
-                value-format="YYYY-MM-DD HH:mm:ss" style="width: 100%" />
+                value-format="YYYY-MM-DD HH:mm:ss" format="YYYY-MM-DD HH:mm:ss" style="width: 100%" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -333,7 +333,7 @@
         </el-form-item>
         <el-form-item label="二次处理提醒时间" prop="secondRemindTime">
           <el-date-picker v-model="exceptionForm.secondRemindTime" type="datetime" placeholder="请选择提醒时间"
-            value-format="YYYY-MM-DD HH:mm:ss" style="width: 100%" />
+            value-format="YYYY-MM-DD HH:mm:ss" format="YYYY-MM-DD HH:mm:ss" style="width: 100%" />
         </el-form-item>
       </el-form>
       <template #footer>

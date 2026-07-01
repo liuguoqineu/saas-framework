@@ -3,20 +3,20 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>租户管理</span>
+          <span>公司管理</span>
           <div class="header-actions">
-            <el-button v-permission="'tenant:add'" type="primary" @click="openCreateDialog">创建租户</el-button>
+            <el-button v-permission="'tenant:add'" type="primary" @click="openCreateDialog">创建公司</el-button>
           </div>
         </div>
       </template>
 
       <!-- 搜索栏 -->
       <el-form inline>
-        <el-form-item label="租户名称">
-          <el-input v-model="query.name" placeholder="请输入租户名称" clearable @change="fetchData" />
+        <el-form-item label="公司名称">
+          <el-input v-model="query.name" placeholder="请输入公司名称" clearable @change="fetchData" />
         </el-form-item>
-        <el-form-item label="租户编码">
-          <el-input v-model="query.code" placeholder="请输入租户编码" clearable @change="fetchData" />
+        <el-form-item label="公司编码">
+          <el-input v-model="query.code" placeholder="请输入公司编码" clearable @change="fetchData" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="fetchData">查询</el-button>
@@ -27,8 +27,8 @@
       <!-- 表格 -->
       <el-table :data="tableData.records" v-loading="loading" stripe>
         <el-table-column prop="id" label="ID" width="70" />
-        <el-table-column prop="name" label="租户名称" min-width="140" show-overflow-tooltip />
-        <el-table-column prop="code" label="租户编码" width="120" />
+        <el-table-column prop="name" label="公司名称" min-width="140" show-overflow-tooltip />
+        <el-table-column prop="code" label="公司编码" width="120" />
         <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
             <el-tag :type="row.status === 1 ? 'success' : 'danger'">
@@ -68,12 +68,12 @@
     </el-card>
 
     <!-- 创建租户弹窗 -->
-    <el-dialog v-model="dialogVisible" title="创建租户" width="550px" @close="resetForm">
+    <el-dialog v-model="dialogVisible" title="创建公司" width="550px" @close="resetForm">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="110px">
-        <el-form-item label="租户名称" prop="name">
+        <el-form-item label="公司名称" prop="name">
           <el-input v-model="form.name" placeholder="如：XX科技有限公司" />
         </el-form-item>
-        <el-form-item label="租户编码" prop="code">
+        <el-form-item label="公司编码" prop="code">
           <el-input v-model="form.code" placeholder="如：xxtech" />
         </el-form-item>
         <el-form-item label="管理员用户名">
@@ -86,7 +86,7 @@
 
       <!-- 创建结果显示 -->
       <el-alert v-if="createResult" type="success" :closable="false" style="margin-top:12px">
-        <p>租户创建成功！</p>
+        <p>公司创建成功！</p>
         <p>管理员账号：<strong>{{ createResult.adminUsername }}</strong></p>
         <p>管理员密码：<strong>{{ createResult.adminPassword }}</strong></p>
         <p style="color:#E6A23C">请妥善保管以上信息</p>
@@ -96,6 +96,7 @@
         <el-button @click="dialogVisible = false">关闭</el-button>
         <el-button type="primary" :loading="submitting" @click="handleCreate">
           {{ createResult ? '继续创建' : '确认创建' }}
+
         </el-button>
       </template>
     </el-dialog>
@@ -149,8 +150,8 @@ const form = reactive({
 })
 
 const rules = {
-  name: [{ required: true, message: '请输入租户名称', trigger: 'blur' }],
-  code: [{ required: true, message: '请输入租户编码', trigger: 'blur' }]
+  name: [{ required: true, message: '请输入公司名称', trigger: 'blur' }],
+  code: [{ required: true, message: '请输入公司编码', trigger: 'blur' }]
 }
 
 async function fetchData() {
@@ -192,7 +193,7 @@ async function handleCreate() {
   try {
     const res = await tenantApi.create(form)
     createResult.value = res.data
-    ElMessage.success('租户创建成功')
+    ElMessage.success('公司创建成功')
     fetchData()
   } finally {
     submitting.value = false
@@ -203,13 +204,13 @@ async function toggleStatus(row) {
   const newStatus = row.status === 1 ? 0 : 1
   const action = newStatus === 0 ? '禁用' : '启用'
 
-  await ElMessageBox.confirm(`确认${action}租户「${row.name}」？`, '提示', {
+  await ElMessageBox.confirm(`确认${action}公司「${row.name}」？`, '提示', {
     type: 'warning'
   })
 
   try {
     await tenantApi.updateStatus(row.id, newStatus)
-    ElMessage.success(`租户已${action}`)
+    ElMessage.success(`公司已${action}`)
     fetchData()
   } catch { /* 取消 */ }
 }

@@ -22,10 +22,10 @@
           <span>首页</span>
         </el-menu-item>
 
-        <!-- 租户管理（仅超级管理员可见） -->
+        <!-- 公司管理（仅超级管理员可见） -->
         <el-menu-item v-if="hasPermission('tenant:list')" index="/tenant">
           <el-icon><OfficeBuilding /></el-icon>
-          <span>租户管理</span>
+          <span>公司管理</span>
         </el-menu-item>
 
         <el-menu-item v-if="hasPermission('role:list')" index="/role">
@@ -33,8 +33,8 @@
           <span>角色管理</span>
         </el-menu-item>
 
-        <!-- 员工管理（超级管理员不可见） -->
-        <el-menu-item v-if="!userStore.isSuperAdmin && hasPermission('user:list')" index="/user">
+        <!-- 员工管理 -->
+        <el-menu-item v-if="hasPermission('user:list')" index="/user">
           <el-icon><User /></el-icon>
           <span>员工管理</span>
         </el-menu-item>
@@ -160,7 +160,7 @@
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item disabled>
-                  租户: {{ userStore.isSuperAdmin ? '超级管理员' : userStore.userInfo?.tenantId }}
+                  公司: {{ userStore.isSuperAdmin ? '超级管理员' : userStore.userInfo?.tenantId }}
                 </el-dropdown-item>
                 <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
               </el-dropdown-menu>

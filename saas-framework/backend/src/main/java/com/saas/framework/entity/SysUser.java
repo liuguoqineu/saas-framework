@@ -52,6 +52,12 @@ public class SysUser {
     /** 领导ID */
     private Long leaderId;
 
+    /** 资质证书内容 */
+    private String zhizhiContent;
+
+    /** 资质证书图片URL */
+    private String zhizhiImageUrl;
+
     /** 创建时间 */
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;

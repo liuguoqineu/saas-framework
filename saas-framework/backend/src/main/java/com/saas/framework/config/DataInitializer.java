@@ -73,6 +73,7 @@ public class DataInitializer implements CommandLineRunner {
         log.info("========== 开始检查并初始化默认数据 ==========");
 
         initOperationLogTable();
+        initEmployeeRequestTable();
         initDictTables();
         initSuperRole();
         initSuperAdmin();
@@ -84,15 +85,49 @@ public class DataInitializer implements CommandLineRunner {
         initOperationLogPermissions();
         initFollowUpPermissions();
         initCustomerPermissions();
-        syncSuperRolePermissions();
         initDictData();
         initReportTables();
         initReportPermissions();
         initReportTemplates();
         initCheckInPermissions();
+        initEmployeeRequestPermissions();
+        syncSuperRolePermissions();
 //        initDefaultRoles();
 
         log.info("========== 默认数据初始化完成 ==========");
+    }
+
+    private void initEmployeeRequestTable() {
+        try (Connection conn = dataSource.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute("CREATE TABLE IF NOT EXISTS sys_employee_request (" +
+                    "id BIGINT NOT NULL AUTO_INCREMENT COMMENT '主键ID'," +
+                    "username VARCHAR(50) NOT NULL COMMENT '申请的用户名'," +
+                    "real_name VARCHAR(50) NOT NULL COMMENT '申请的真实姓名'," +
+                    "role_id BIGINT NOT NULL COMMENT '申请的角色ID'," +
+                    "post_type VARCHAR(16) DEFAULT NULL COMMENT '岗位类型'," +
+                    "password VARCHAR(100) DEFAULT NULL COMMENT '申请的密码'," +
+                    "zhizhi_content TEXT DEFAULT NULL COMMENT '资质证书内容'," +
+                    "zhizhi_image_url VARCHAR(500) DEFAULT NULL COMMENT '资质证书图片URL'," +
+                    "tenant_id BIGINT NOT NULL COMMENT '申请的租户ID'," +
+                    "applicant_id BIGINT DEFAULT NULL COMMENT '申请人ID'," +
+                    "applicant_name VARCHAR(50) DEFAULT NULL COMMENT '申请人姓名'," +
+                    "status VARCHAR(16) NOT NULL DEFAULT 'PENDING' COMMENT '状态: PENDING-待审核, APPROVED-已通过, REJECTED-已拒绝, CANCELLED-已撤销'," +
+                    "reviewer_id BIGINT DEFAULT NULL COMMENT '审核人ID'," +
+                    "reviewer_name VARCHAR(50) DEFAULT NULL COMMENT '审核人姓名'," +
+                    "review_comment VARCHAR(500) DEFAULT NULL COMMENT '审核意见'," +
+                    "review_time DATETIME DEFAULT NULL COMMENT '审核时间'," +
+                    "create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'," +
+                    "update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'," +
+                    "PRIMARY KEY (id)," +
+                    "INDEX idx_tenant_id (tenant_id)," +
+                    "INDEX idx_status (status)," +
+                    "INDEX idx_applicant_id (applicant_id)" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='员工申请表'");
+            log.info("员工申请表检查/创建完成");
+        } catch (Exception e) {
+            log.warn("员工申请表创建失败（可能已存在）: {}", e.getMessage());
+        }
     }
 
     private void initOperationLogTable() {
@@ -615,6 +650,19 @@ public class DataInitializer implements CommandLineRunner {
                 log.info("sys_user表添加leader_id字段成功");
             }
 
+            // 添加 sys_user 表资质证书字段
+            var userZhizhiContentRs = conn.getMetaData().getColumns(null, null, "sys_user", "zhizhi_content");
+            if (!userZhizhiContentRs.next()) {
+                stmt.execute("ALTER TABLE sys_user ADD COLUMN zhizhi_content TEXT DEFAULT NULL COMMENT '资质证书内容' AFTER leader_id");
+                log.info("sys_user表添加zhizhi_content字段成功");
+            }
+
+            var userZhizhiImageUrlRs = conn.getMetaData().getColumns(null, null, "sys_user", "zhizhi_image_url");
+            if (!userZhizhiImageUrlRs.next()) {
+                stmt.execute("ALTER TABLE sys_user ADD COLUMN zhizhi_image_url VARCHAR(500) DEFAULT NULL COMMENT '资质证书图片URL' AFTER zhizhi_content");
+                log.info("sys_user表添加zhizhi_image_url字段成功");
+            }
+
             // 确保 rp_report.template_id 允许 NULL 且有默认值（兼容旧库）
             var templateIdRs = conn.getMetaData().getColumns(null, null, "rp_report", "template_id");
             if (templateIdRs.next()) {
@@ -625,6 +673,19 @@ public class DataInitializer implements CommandLineRunner {
                     stmt.execute("ALTER TABLE rp_report MODIFY COLUMN template_id BIGINT DEFAULT NULL COMMENT '模板ID，允许为空支持无模板填报'");
                     log.info("rp_report表template_id字段修改为允许NULL且默认NULL成功");
                 }
+            }
+
+            // 添加员工申请表资质证书字段
+            var zhizhiContentRs = conn.getMetaData().getColumns(null, null, "sys_employee_request", "zhizhi_content");
+            if (!zhizhiContentRs.next()) {
+                stmt.execute("ALTER TABLE sys_employee_request ADD COLUMN zhizhi_content TEXT DEFAULT NULL COMMENT '资质证书内容' AFTER password");
+                log.info("sys_employee_request表添加zhizhi_content字段成功");
+            }
+
+            var zhizhiImageUrlRs = conn.getMetaData().getColumns(null, null, "sys_employee_request", "zhizhi_image_url");
+            if (!zhizhiImageUrlRs.next()) {
+                stmt.execute("ALTER TABLE sys_employee_request ADD COLUMN zhizhi_image_url VARCHAR(500) DEFAULT NULL COMMENT '资质证书图片URL' AFTER zhizhi_content");
+                log.info("sys_employee_request表添加zhizhi_image_url字段成功");
             }
 
             log.info("缺失字段检查/添加完成");
@@ -684,5 +745,14 @@ public class DataInitializer implements CommandLineRunner {
             rpTemplateMapper.insert(template);
         }
         log.info("9套报表模板初始化完成");
+    }
+
+    private void initEmployeeRequestPermissions() {
+        Long systemMenuId = getOrCreatePermission("系统管理", "system", "menu", 0L, 1);
+        Long employeeRequestMenuId = getOrCreatePermission("员工申请审核", "employee-request", "menu", systemMenuId, 5);
+
+        getOrCreatePermission("审核员工申请", "employee-request:review", "button", employeeRequestMenuId, 1);
+
+        log.info("员工申请审核权限初始化完成");
     }
 }

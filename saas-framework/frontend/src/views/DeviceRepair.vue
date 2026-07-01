@@ -90,7 +90,7 @@
           <el-col :span="12">
             <el-form-item label="故障时间" prop="faultTime">
               <el-date-picker v-model="repairForm.faultTime" type="datetime" placeholder="请选择故障时间"
-                value-format="YYYY-MM-DD HH:mm:ss" style="width: 100%" />
+                value-format="YYYY-MM-DD HH:mm:ss" format="YYYY-MM-DD HH:mm:ss" style="width: 100%" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -132,13 +132,13 @@
           <el-col :span="12">
             <el-form-item label="维修开始时间" prop="repairStartTime">
               <el-date-picker v-model="processForm.repairStartTime" type="datetime" placeholder="请选择开始时间"
-                value-format="YYYY-MM-DD HH:mm:ss" style="width: 100%" />
+                value-format="YYYY-MM-DD HH:mm:ss" format="YYYY-MM-DD HH:mm:ss" style="width: 100%" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="维修结束时间" prop="repairEndTime">
               <el-date-picker v-model="processForm.repairEndTime" type="datetime" placeholder="请选择结束时间"
-                value-format="YYYY-MM-DD HH:mm:ss" style="width: 100%" />
+                value-format="YYYY-MM-DD HH:mm:ss" format="YYYY-MM-DD HH:mm:ss" style="width: 100%" />
             </el-form-item>
           </el-col>
         </el-row>

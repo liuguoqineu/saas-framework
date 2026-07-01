@@ -25,4 +25,13 @@ public class UserCreateRequest {
 
     /** 岗位类型 */
     private String postType;
+
+    /** 资质证书内容 */
+    private String zhizhiContent;
+
+    /** 资质证书图片URL */
+    private String zhizhiImageUrl;
+
+    /** 租户ID（超级管理员创建员工时指定） */
+    private Long tenantId;
 }

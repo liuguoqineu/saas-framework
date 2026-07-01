@@ -72,9 +72,10 @@ public class RoleServiceImpl implements RoleService {
     public IPage<SysRole> page(int page, int size) {
         LambdaQueryWrapper<SysRole> wrapper = new LambdaQueryWrapper<>();
 
-        // 租户管理员只能看到本租户角色
+        // 租户管理员只能看到本租户角色 + 平台角色
         if (!UserContext.isSuperAdmin()) {
-            wrapper.eq(SysRole::getTenantId, UserContext.getTenantId());
+            wrapper.and(w -> w.eq(SysRole::getTenantId, UserContext.getTenantId())
+                    .or().eq(SysRole::getTenantId, 0));
         } else {
             // 超级账户可以看到所有角色（包括平台角色和租户角色）
             wrapper.eq(SysRole::getTenantId, 0)
@@ -91,6 +92,11 @@ public class RoleServiceImpl implements RoleService {
     public void create(RoleCreateRequest request) {
         log.info("创建角色: name={}, permissionIds={}", request.getName(), request.getPermissionIds());
 
+        // 只有超级管理员可以创建角色
+        if (!UserContext.isSuperAdmin()) {
+            throw new BusinessException(403, "只有超级管理员可以创建角色");
+        }
+
         // 校验权限范围
         if (request.getPermissionIds() != null && !request.getPermissionIds().isEmpty()) {
             permissionService.checkPermissionsWithin(request.getPermissionIds());
@@ -100,12 +106,8 @@ public class RoleServiceImpl implements RoleService {
         SysRole role = new SysRole();
         role.setName(request.getName());
 
-        // 超级账户创建的角色设为平台角色（tenant_id=0），租户管理员创建的为本租户角色
-        if (UserContext.isSuperAdmin()) {
-            role.setTenantId(0L);
-        } else {
-            role.setTenantId(UserContext.getTenantId());
-        }
+        // 超级管理员创建的角色为平台角色（tenant_id=0），所有租户可用
+        role.setTenantId(0L);
 
         sysRoleMapper.insert(role);
 
@@ -133,9 +135,9 @@ public class RoleServiceImpl implements RoleService {
             throw new BusinessException(404, "角色不存在");
         }
 
-        // 租户所有权校验：非超管只能修改自己租户的角色
-        if (!UserContext.isSuperAdmin() && !UserContext.getTenantId().equals(role.getTenantId())) {
-            throw new BusinessException(403, "无权修改其他租户的角色");
+        // 只有超级管理员可以修改角色
+        if (!UserContext.isSuperAdmin()) {
+            throw new BusinessException(403, "只有超级管理员可以修改角色");
         }
 
         // 校验权限范围
@@ -171,9 +173,9 @@ public class RoleServiceImpl implements RoleService {
             throw new BusinessException(404, "角色不存在");
         }
 
-        // 租户所有权校验：非超管只能删除自己租户的角色
-        if (!UserContext.isSuperAdmin() && !UserContext.getTenantId().equals(role.getTenantId())) {
-            throw new BusinessException(403, "无权删除其他租户的角色");
+        // 只有超级管理员可以删除角色
+        if (!UserContext.isSuperAdmin()) {
+            throw new BusinessException(403, "只有超级管理员可以删除角色");
         }
 
         // 检查是否有用户正在使用此角色

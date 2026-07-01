@@ -158,7 +158,7 @@
     <el-dialog title="新增跟进记录" v-model="followUpDialogVisible" width="600px" @close="resetFollowUpForm">
       <el-form ref="followUpFormRef" :model="followUpForm" :rules="followUpRules" label-width="100px">
         <el-form-item label="跟进时间" prop="followUpTime">
-          <el-date-picker v-model="followUpForm.followUpTime" type="datetime" placeholder="选择跟进时间" style="width:100%" value-format="YYYY-MM-DD HH:mm:ss" />
+          <el-date-picker v-model="followUpForm.followUpTime" type="datetime" placeholder="选择跟进时间" style="width:100%" value-format="YYYY-MM-DD HH:mm:ss" format="YYYY-MM-DD HH:mm:ss" />
         </el-form-item>
         <el-form-item label="跟进人">
           <el-input v-model="followUpForm.followUpPerson" disabled />

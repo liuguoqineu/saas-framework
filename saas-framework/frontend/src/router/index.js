@@ -22,7 +22,7 @@ const routes = [
         path: 'tenant',
         name: 'Tenant',
         component: () => import('@/views/Tenant.vue'),
-        meta: { title: '租户管理', permission: 'tenant:list' }
+        meta: { title: '公司管理', permission: 'tenant:list' }
       },
       {
         path: 'role',

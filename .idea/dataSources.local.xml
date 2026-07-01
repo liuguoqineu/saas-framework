@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="dataSourceStorageLocal" created-in="IU-251.25410.129">
-    <data-source name="@localhost" uuid="3b4505ac-edba-421c-98a2-ea2a106d6de5">
+    <data-source name="@localhost" uuid="60793b83-6707-4c0e-9082-b8f720177779">
       <database-info product="MySQL" version="8.0.42" jdbc-version="4.2" driver-name="MySQL Connector/J" driver-version="mysql-connector-j-9.7.0 (Revision: 0aade1f13bcc98faf7dda5c02e782481eb291f62)" dbms="MYSQL" exact-version="8.0.42" exact-driver-version="9.7">
         <extra-name-characters>$</extra-name-characters>
         <identifier-quote-string>`</identifier-quote-string>
+        <jdbc-catalog-is-schema>true</jdbc-catalog-is-schema>
       </database-info>
       <case-sensitivity plain-identifiers="lower" quoted-identifiers="lower" />
       <secret-storage>master_key</secret-storage>
