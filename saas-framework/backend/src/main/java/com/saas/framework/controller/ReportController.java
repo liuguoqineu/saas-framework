@@ -56,8 +56,9 @@ public class ReportController {
             @RequestParam(required = false) String reportPeriod,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate) {
-        IPage<RpReport> iPage = reportService.page(page, size, userId, deptId, reportType, reportPeriod, status, startDate, endDate);
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) Boolean myOnly) {
+        IPage<RpReport> iPage = reportService.page(page, size, userId, deptId, reportType, reportPeriod, status, startDate, endDate, myOnly);
         return Result.ok(PageResult.of(iPage));
     }
 

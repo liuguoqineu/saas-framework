@@ -61,6 +61,8 @@ export const repairApi = {
     if (params.assigneeName) query.append('assigneeName', params.assigneeName)
     if (params.urgency) query.append('urgency', params.urgency)
     if (params.repairType) query.append('repairType', params.repairType)
+    if (params.deviceCode) query.append('deviceCode', params.deviceCode)
+    if (params.faultPart) query.append('faultPart', params.faultPart)
     return `/api/repair/export?${query.toString()}`
   }
 }
@@ -75,9 +77,12 @@ export const repairTypeOptions = [
 
 export const repairStatusOptions = [
   { value: '未处理', label: '未处理' },
+  { value: '待分配', label: '待分配' },
+  { value: '已分配', label: '已分配' },
   { value: '处理中', label: '处理中' },
   { value: '已解决', label: '已解决' },
-  { value: '无法解决', label: '无法解决' }
+  { value: '无法解决', label: '无法解决' },
+  { value: '待确认', label: '待确认' }
 ]
 
 export const urgencyOptions = [
@@ -87,7 +92,10 @@ export const urgencyOptions = [
 
 export const repairStatusTagType = {
   '未处理': 'danger',
+  '待分配': 'danger',
+  '已分配': 'warning',
   '处理中': 'warning',
   '已解决': 'success',
-  '无法解决': 'info'
+  '无法解决': 'info',
+  '待确认': 'warning'
 }

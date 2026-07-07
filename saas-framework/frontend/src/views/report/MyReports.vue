@@ -183,7 +183,7 @@ const formRef = ref(null)
 const chainVisible = ref(false)
 const chainData = ref([])
 
-const queryForm = reactive({ page: 1, size: 10, reportType: '', reportPeriod: '', status: '' })
+const queryForm = reactive({ page: 1, size: 10, reportType: '', reportPeriod: '', status: '', myOnly: true })
 const formData = reactive({ reportType: '', reportPeriod: '' })
 const reportPeriodDate = ref(null)
 
@@ -236,7 +236,7 @@ const fetchTemplates = async () => {
 }
 
 const handleReset = () => {
-  Object.assign(queryForm, { page: 1, size: 10, reportType: '', reportPeriod: '', status: '' })
+  Object.assign(queryForm, { page: 1, size: 10, reportType: '', reportPeriod: '', status: '', myOnly: true })
   fetchData()
 }
 

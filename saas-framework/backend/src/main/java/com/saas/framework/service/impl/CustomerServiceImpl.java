@@ -127,7 +127,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
 
         // 自动设置创建人为跟进人（如果未指定跟进人）
-        if (customer.getFollowUpPersonId() == null) {
+        if (customer.getFollowUpPersonId() == null && !StringUtils.hasText(customer.getFollowUpPerson())) {
             customer.setFollowUpPersonId(UserContext.getUserId());
             customer.setFollowUpPerson(UserContext.getUsername());
         }
@@ -441,18 +441,45 @@ public class CustomerServiceImpl implements CustomerService {
                         continue;
                     }
 
+                    String businessCategory = getCellStringValue(row.getCell(1));
+                    String businessType = getCellStringValue(row.getCell(2));
+                    String cooperationStatus = getCellStringValue(row.getCell(3));
+                    String address = getCellStringValue(row.getCell(4));
+                    String region = getCellStringValue(row.getCell(5));
+                    String contactPerson = getCellStringValue(row.getCell(6));
+                    String contactPhone = getCellStringValue(row.getCell(7));
+                    String gasScale = getCellStringValue(row.getCell(8));
+                    String smartGasSystem = getCellStringValue(row.getCell(9));
+                    String contractInfo = getCellStringValue(row.getCell(10));
+
+                    // 校验所有文本字段是否包含 < > 字符
+                    String[] textFields = {name, businessCategory, businessType, cooperationStatus,
+                            address, region, contactPerson, contactPhone, gasScale, smartGasSystem, contractInfo};
+                    boolean hasXss = false;
+                    for (String tf : textFields) {
+                        if (tf != null && (tf.contains("<") || tf.contains(">"))) {
+                            hasXss = true;
+                            break;
+                        }
+                    }
+                    if (hasXss) {
+                        errorCount++;
+                        errorMsg.append("第").append(i + 1).append("行: 输入内容不能包含 < > 字符; ");
+                        continue;
+                    }
+
                     BizCustomer customer = new BizCustomer();
                     customer.setName(name);
-                    customer.setBusinessCategory(getCellStringValue(row.getCell(1)));
-                    customer.setBusinessType(getCellStringValue(row.getCell(2)));
-                    customer.setCooperationStatus(getCellStringValue(row.getCell(3)));
-                    customer.setAddress(getCellStringValue(row.getCell(4)));
-                    customer.setRegion(getCellStringValue(row.getCell(5)));
-                    customer.setContactPerson(getCellStringValue(row.getCell(6)));
-                    customer.setContactPhone(getCellStringValue(row.getCell(7)));
-                    customer.setGasScale(getCellStringValue(row.getCell(8)));
-                    customer.setSmartGasSystem(getCellStringValue(row.getCell(9)));
-                    customer.setContractInfo(getCellStringValue(row.getCell(10)));
+                    customer.setBusinessCategory(businessCategory);
+                    customer.setBusinessType(businessType);
+                    customer.setCooperationStatus(cooperationStatus);
+                    customer.setAddress(address);
+                    customer.setRegion(region);
+                    customer.setContactPerson(contactPerson);
+                    customer.setContactPhone(contactPhone);
+                    customer.setGasScale(gasScale);
+                    customer.setSmartGasSystem(smartGasSystem);
+                    customer.setContractInfo(contractInfo);
                     customer.setTenantId(finalTenantId);
 
                     if (!StringUtils.hasText(customer.getCooperationStatus())) {

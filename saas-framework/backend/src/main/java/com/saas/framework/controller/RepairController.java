@@ -40,10 +40,12 @@ public class RepairController {
                                                      @RequestParam(required = false) String status,
                                                      @RequestParam(required = false) String assigneeName,
                                                      @RequestParam(required = false) String urgency,
-                                                     @RequestParam(required = false) String repairType) {
+                                                     @RequestParam(required = false) String repairType,
+                                                     @RequestParam(required = false) String deviceCode,
+                                                     @RequestParam(required = false) String faultPart) {
         log.info("查询报修列表: page={}, size={}, customerName={}, status={}", page, size, customerName, status);
         IPage<BizRepairOrder> iPage = repairService.page(page, size, customerName, repairTimeStart,
-                repairTimeEnd, status, assigneeName, urgency, repairType);
+                repairTimeEnd, status, assigneeName, urgency, repairType, deviceCode, faultPart);
         return Result.ok(PageResult.of(iPage));
     }
 
@@ -192,10 +194,12 @@ public class RepairController {
                                     @RequestParam(required = false) String status,
                                     @RequestParam(required = false) String assigneeName,
                                     @RequestParam(required = false) String urgency,
-                                    @RequestParam(required = false) String repairType) {
+                                    @RequestParam(required = false) String repairType,
+                                    @RequestParam(required = false) String deviceCode,
+                                    @RequestParam(required = false) String faultPart) {
         log.info("Excel导出报修: customerName={}, status={}", customerName, status);
         repairService.exportRepairOrders(response, customerName, repairTimeStart, repairTimeEnd,
-                status, assigneeName, urgency, repairType);
+                status, assigneeName, urgency, repairType, deviceCode, faultPart);
     }
 
     @Operation(summary = "获取未确认报修提醒")

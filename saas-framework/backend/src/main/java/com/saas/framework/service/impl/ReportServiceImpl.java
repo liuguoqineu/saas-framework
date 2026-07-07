@@ -68,15 +68,18 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public IPage<RpReport> page(int page, int size, Long userId, Long deptId, String reportType,
-                                String reportPeriod, String status, String startDate, String endDate) {
+                                String reportPeriod, String status, String startDate, String endDate, Boolean myOnly) {
         LambdaQueryWrapper<RpReport> wrapper = new LambdaQueryWrapper<>();
         if (!UserContext.isSuperAdmin()) {
             wrapper.eq(RpReport::getTenantId, UserContext.getTenantId());
-            if (userId == null && !isTenantManager()) {
-                wrapper.eq(RpReport::getUserId, UserContext.getUserId());
-            }
         }
-        if (userId != null) wrapper.eq(RpReport::getUserId, userId);
+        if (myOnly != null && myOnly) {
+            wrapper.eq(RpReport::getUserId, UserContext.getUserId());
+        } else if (userId != null) {
+            wrapper.eq(RpReport::getUserId, userId);
+        } else if (!UserContext.isSuperAdmin() && !isTenantManager()) {
+            wrapper.eq(RpReport::getUserId, UserContext.getUserId());
+        }
         if (deptId != null) wrapper.eq(RpReport::getDeptId, deptId);
         if (StringUtils.hasText(reportType)) wrapper.eq(RpReport::getReportType, reportType);
         if (StringUtils.hasText(reportPeriod)) wrapper.eq(RpReport::getReportPeriod, reportPeriod);
@@ -379,7 +382,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public void exportExcel(HttpServletResponse response, Long userId, Long deptId, String reportType,
                             String reportPeriod, String status, String startDate, String endDate) {
-        IPage<RpReport> page = page(1, 500, userId, deptId, reportType, reportPeriod, status, startDate, endDate);
+        IPage<RpReport> page = page(1, 500, userId, deptId, reportType, reportPeriod, status, startDate, endDate, null);
         List<RpReport> reports = page.getRecords();
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Reports");

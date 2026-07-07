@@ -79,10 +79,6 @@
             <el-icon><Cpu /></el-icon>
             <span>设备档案</span>
           </el-menu-item>
-          <el-menu-item v-if="hasPermission('repair:list')" index="/device-repair">
-            <el-icon><SetUp /></el-icon>
-            <span>设备维修</span>
-          </el-menu-item>
           <el-menu-item v-if="hasPermission('repair:list')" index="/device-replacement">
             <el-icon><RefreshRight /></el-icon>
             <span>更换档案</span>

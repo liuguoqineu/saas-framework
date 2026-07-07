@@ -131,6 +131,12 @@ public class DeviceServiceImpl implements DeviceService {
             throw new BusinessException("只有状态为在用的设备才能填写安装信息");
         }
 
+        if (request.getInstallDate() != null && request.getUseDate() != null) {
+            if (request.getUseDate().isBefore(request.getInstallDate())) {
+                throw new BusinessException("投用日期不能早于安装日期");
+            }
+        }
+
         // 更新安装信息
         device.setInstallLocation(request.getInstallLocation());
         device.setInstallDate(request.getInstallDate());

@@ -120,7 +120,7 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="出库数量" prop="quantity">
-              <el-input-number v-model="stockOutForm.quantity" :min="1" :max="stockOutForm.maxQty" style="width: 100%" />
+              <el-input-number v-model="stockOutForm.quantity" :min="1" :max="stockOutForm.maxQty || Infinity" style="width: 100%" />
             </el-form-item>
           </el-col>
           <el-col :span="12">

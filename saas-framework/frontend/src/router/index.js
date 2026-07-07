@@ -91,12 +91,6 @@ const routes = [
         meta: { title: '设备档案', permission: 'device:list' }
       },
       {
-        path: 'device-repair',
-        name: 'DeviceRepair',
-        component: () => import('@/views/DeviceRepair.vue'),
-        meta: { title: '设备维修', permission: 'repair:list' }
-      },
-      {
         path: 'device-replacement',
         name: 'DeviceReplacement',
         component: () => import('@/views/DeviceReplacement.vue'),

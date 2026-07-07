@@ -627,7 +627,10 @@ const formData = reactive({
 })
 
 const formRules = {
-  name: [{ required: true, message: '请输入客户名称', trigger: 'blur' }],
+  name: [
+    { required: true, message: '请输入客户名称', trigger: 'blur' },
+    { pattern: /^[^<>]*$/, message: '客户名称不能包含 < > 字符', trigger: 'blur' }
+  ],
   contactPerson: [{ required: true, message: '请输入联系人', trigger: 'blur' }],
   contactPhone: [{ required: true, message: '请输入联系电话', trigger: 'blur' }],
   businessCategory: [{ required: true, message: '请选择业务分类', trigger: 'change' }],

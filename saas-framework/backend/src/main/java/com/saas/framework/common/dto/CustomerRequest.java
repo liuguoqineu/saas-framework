@@ -3,6 +3,7 @@ package com.saas.framework.common.dto;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 /**
  * 客户请求 DTO（新增和修改共用）
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotBlank;
 public class CustomerRequest {
 
     @NotBlank(message = "客户名称不能为空")
+    @Pattern(regexp = "^[^<>]*$", message = "客户名称不能包含 < > 字符")
     private String name;
 
     private String address;

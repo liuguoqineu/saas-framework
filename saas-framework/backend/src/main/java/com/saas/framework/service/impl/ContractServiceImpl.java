@@ -107,6 +107,12 @@ public class ContractServiceImpl implements ContractService {
             throw new BusinessException(404, "关联客户不存在");
         }
 
+        if (request.getSignDate() != null && request.getExpireDate() != null) {
+            if (request.getExpireDate().isBefore(request.getSignDate())) {
+                throw new BusinessException("到期日期不能早于签订日期");
+            }
+        }
+
         Long tenantId = TenantContext.getTenantId();
         if (tenantId == null) {
             tenantId = UserContext.getTenantId();
@@ -188,6 +194,12 @@ public class ContractServiceImpl implements ContractService {
         // 当天新增的合同只能当天修改，第二天无法修改
         if (contract.getCreateTime() != null && !contract.getCreateTime().toLocalDate().equals(java.time.LocalDate.now())) {
             throw new BusinessException(403, "合同信息仅限新增当天修改，次日不可修改");
+        }
+
+        if (request.getExpireDate() != null && contract.getSignDate() != null) {
+            if (request.getExpireDate().isBefore(contract.getSignDate())) {
+                throw new BusinessException("到期日期不能早于签订日期");
+            }
         }
 
         if (StringUtils.hasText(request.getContractNo()) && !request.getContractNo().equals(contract.getContractNo())) {

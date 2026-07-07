@@ -203,8 +203,8 @@ function getTimelineLink(item) {
     case 2: return `/stock-in`  // 入库单 - 跳转到入库页面
     case 3: return `/stock-out` // 出库单 - 跳转到出库页面
     case 4: return null         // 安装 - 无跳转
-    case 5: return `/device-repair` // 报修 - 跳转到设备维修页面
-    case 6: return `/device-repair` // 维修 - 跳转到设备维修页面
+    case 5: return `/repair` // 报修 - 跳转到报修管理页面
+    case 6: return `/repair` // 维修 - 跳转到报修管理页面
     case 7: return `/device-replacement` // 配件更换 - 跳转到更换档案页面
     case 8: return `/device-replacement` // 整机更换 - 跳转到更换档案页面
     case 9: return null         // 报废 - 无跳转
@@ -248,7 +248,20 @@ const installForm = reactive({
 const installRules = {
   installLocation: [{ required: true, message: '请输入安装位置', trigger: 'blur' }],
   installDate: [{ required: true, message: '请选择安装日期', trigger: 'change' }],
-  installPerson: [{ required: true, message: '请输入安装人员', trigger: 'blur' }]
+  installPerson: [{ required: true, message: '请输入安装人员', trigger: 'blur' }],
+  useDate: [{ validator: validateUseDate, trigger: 'change' }]
+}
+
+function validateUseDate(rule, value, callback) {
+  if (!value || !installForm.installDate) {
+    callback()
+    return
+  }
+  if (value < installForm.installDate) {
+    callback(new Error('投用日期不能早于安装日期'))
+  } else {
+    callback()
+  }
 }
 
 function handleInstall(row) {

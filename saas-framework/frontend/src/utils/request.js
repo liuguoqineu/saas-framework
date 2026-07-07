@@ -8,12 +8,27 @@ const request = axios.create({
   timeout: 15000
 })
 
-// 请求拦截器：自动携带 Token
+// 检查字符串中是否包含 < > 字符（XSS 防护）
+function containsAngleBrackets(val) {
+  if (typeof val === 'string') return val.includes('<') || val.includes('>')
+  if (Array.isArray(val)) return val.some(containsAngleBrackets)
+  if (val && typeof val === 'object') return Object.values(val).some(containsAngleBrackets)
+  return false
+}
+
+// 请求拦截器：自动携带 Token + XSS 校验
 request.interceptors.request.use(
   config => {
     const token = localStorage.getItem('token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
+    }
+    // 拦截 JSON 请求体中的 < > 字符（文件上传除外）
+    if (config.data && !(config.data instanceof FormData) && !(config.data instanceof Blob)) {
+      if (containsAngleBrackets(config.data)) {
+        ElMessage.error('输入内容不能包含 < > 字符')
+        return Promise.reject(new Error('输入内容不能包含 < > 字符'))
+      }
     }
     return config
   },

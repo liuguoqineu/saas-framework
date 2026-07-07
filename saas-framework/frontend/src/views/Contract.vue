@@ -310,12 +310,27 @@ const formData = reactive({
 const formRules = computed(() => ({
   customerId: [{ required: true, message: '请选择客户', trigger: 'change' }],
   signDate: [{ required: true, message: '请选择签订日期', trigger: 'change' }],
-  expireDate: [{ required: true, message: '请选择到期日期', trigger: 'change' }],
+  expireDate: [
+    { required: true, message: '请选择到期日期', trigger: 'change' },
+    { validator: validateExpireDate, trigger: 'change' }
+  ],
   ...(isEdit.value ? {
     contractStatus: [{ required: true, message: '请选择合同状态', trigger: 'change' }],
     modifyReason: [{ required: true, message: '请输入修改原因', trigger: 'blur' }]
   } : {})
 }))
+
+function validateExpireDate(rule, value, callback) {
+  if (!value || !formData.signDate) {
+    callback()
+    return
+  }
+  if (value < formData.signDate) {
+    callback(new Error('到期日期不能早于签订日期'))
+  } else {
+    callback()
+  }
+}
 
 const detailDialogVisible = ref(false)
 const detailData = ref({})

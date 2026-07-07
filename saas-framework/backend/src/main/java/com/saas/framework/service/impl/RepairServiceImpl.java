@@ -67,7 +67,7 @@ public class RepairServiceImpl implements RepairService {
     @Override
     public IPage<BizRepairOrder> page(int page, int size, String customerName, String repairTimeStart,
                                        String repairTimeEnd, String status, String assigneeName,
-                                       String urgency, String repairType) {
+                                       String urgency, String repairType, String deviceCode, String faultPart) {
         LambdaQueryWrapper<BizRepairOrder> wrapper = new LambdaQueryWrapper<>();
 
         if (StringUtils.hasText(customerName)) {
@@ -90,6 +90,12 @@ public class RepairServiceImpl implements RepairService {
         }
         if (StringUtils.hasText(repairType)) {
             wrapper.eq(BizRepairOrder::getRepairType, repairType);
+        }
+        if (StringUtils.hasText(deviceCode)) {
+            wrapper.like(BizRepairOrder::getDeviceCode, deviceCode);
+        }
+        if (StringUtils.hasText(faultPart)) {
+            wrapper.like(BizRepairOrder::getFaultPart, faultPart);
         }
 
         if (!UserContext.isSuperAdmin()) {
@@ -607,7 +613,7 @@ public class RepairServiceImpl implements RepairService {
     @Override
     public void exportRepairOrders(HttpServletResponse response, String customerName, String repairTimeStart,
                                     String repairTimeEnd, String status, String assigneeName,
-                                    String urgency, String repairType) {
+                                    String urgency, String repairType, String deviceCode, String faultPart) {
         LambdaQueryWrapper<BizRepairOrder> wrapper = new LambdaQueryWrapper<>();
 
         if (StringUtils.hasText(customerName)) {
@@ -630,6 +636,12 @@ public class RepairServiceImpl implements RepairService {
         }
         if (StringUtils.hasText(repairType)) {
             wrapper.eq(BizRepairOrder::getRepairType, repairType);
+        }
+        if (StringUtils.hasText(deviceCode)) {
+            wrapper.like(BizRepairOrder::getDeviceCode, deviceCode);
+        }
+        if (StringUtils.hasText(faultPart)) {
+            wrapper.like(BizRepairOrder::getFaultPart, faultPart);
         }
 
         if (!UserContext.isSuperAdmin()) {

@@ -14,7 +14,7 @@ public interface RepairService {
 
     IPage<BizRepairOrder> page(int page, int size, String customerName, String repairTimeStart,
                                 String repairTimeEnd, String status, String assigneeName,
-                                String urgency, String repairType);
+                                String urgency, String repairType, String deviceCode, String faultPart);
 
     BizRepairOrder create(RepairOrderRequest request);
 
@@ -46,7 +46,7 @@ public interface RepairService {
 
     void exportRepairOrders(HttpServletResponse response, String customerName, String repairTimeStart,
                              String repairTimeEnd, String status, String assigneeName,
-                             String urgency, String repairType);
+                             String urgency, String repairType, String deviceCode, String faultPart);
 
     List<BizRepairOrder> getUnconfirmedReminders();
 

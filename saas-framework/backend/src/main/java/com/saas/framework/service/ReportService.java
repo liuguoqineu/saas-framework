@@ -19,7 +19,7 @@ public interface ReportService {
 
     RpTemplate getTemplate(Long id);
 
-    IPage<RpReport> page(int page, int size, Long userId, Long deptId, String reportType, String reportPeriod, String status, String startDate, String endDate);
+    IPage<RpReport> page(int page, int size, Long userId, Long deptId, String reportType, String reportPeriod, String status, String startDate, String endDate, Boolean myOnly);
 
     RpReport getReport(Long id);
 
