@@ -18,6 +18,11 @@
             start-placeholder="开始日期" end-placeholder="结束日期" value-format="YYYY-MM-DD"
             style="width: 240px" />
         </el-form-item>
+        <el-form-item label="续费日期">
+          <el-date-picker v-model="filterForm.renewDateRange" type="daterange" range-separator="至"
+            start-placeholder="开始日期" end-placeholder="结束日期" value-format="YYYY-MM-DD"
+            style="width: 240px" />
+        </el-form-item>
         <el-form-item label="合同状态">
           <el-select v-model="filterForm.contractStatus" placeholder="全部" clearable style="width: 120px">
             <el-option v-for="item in contractStatusOptions" :key="item.value" :label="item.label"
@@ -49,9 +54,15 @@
             <span :style="getExpireDateStyle(row.expireDate)">{{ row.expireDate }}</span>
           </template>
         </el-table-column>
+        <el-table-column prop="renewDate" label="续签日期" min-width="110" />
         <el-table-column prop="contractAmount" label="合同金额(元)" min-width="120">
           <template #default="{ row }">
             {{ row.contractAmount ? Number(row.contractAmount).toLocaleString() : '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="serviceFee" label="服务费(元)" min-width="110">
+          <template #default="{ row }">
+            {{ row.serviceFee ? Number(row.serviceFee).toLocaleString() : '-' }}
           </template>
         </el-table-column>
         <el-table-column prop="paymentMethod" label="付款方式" min-width="110" />
@@ -100,6 +111,12 @@
           </el-row>
           <el-row :gutter="20">
             <el-col :span="12">
+              <el-form-item label="服务费" prop="serviceFee">
+                <el-input-number v-model="formData.serviceFee" :min="0" :precision="2" :controls="false"
+                  placeholder="请输入服务费" style="width: 100%" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
               <el-form-item label="合同状态" prop="contractStatus">
                 <el-select v-model="formData.contractStatus" placeholder="请选择合同状态" style="width: 100%">
                   <el-option v-for="item in contractStatusOptions" :key="item.value" :label="item.label"
@@ -107,17 +124,25 @@
                 </el-select>
               </el-form-item>
             </el-col>
+          </el-row>
+          <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="签订日期" prop="signDate">
                 <el-date-picker v-model="formData.signDate" type="date" placeholder="请选择签订日期"
                   value-format="YYYY-MM-DD" style="width: 100%" />
               </el-form-item>
             </el-col>
-          </el-row>
-          <el-row :gutter="20">
             <el-col :span="12">
               <el-form-item label="到期日期" prop="expireDate">
                 <el-date-picker v-model="formData.expireDate" type="date" placeholder="请选择到期日期"
+                  value-format="YYYY-MM-DD" style="width: 100%" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="续签日期" prop="renewDate">
+                <el-date-picker v-model="formData.renewDate" type="date" placeholder="请选择续签日期"
                   value-format="YYYY-MM-DD" style="width: 100%" />
               </el-form-item>
             </el-col>
@@ -174,6 +199,14 @@
               </el-form-item>
             </el-col>
           </el-row>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item label="续签日期" prop="renewDate">
+                <el-date-picker v-model="formData.renewDate" type="date" placeholder="请选择续签日期"
+                  value-format="YYYY-MM-DD" style="width: 100%" />
+              </el-form-item>
+            </el-col>
+          </el-row>
           <el-form-item label="修改原因" prop="modifyReason">
             <el-input v-model="formData.modifyReason" type="textarea" :rows="3" placeholder="请输入修改原因" />
           </el-form-item>
@@ -208,8 +241,12 @@
         <el-descriptions-item label="到期日期">
           <span :style="getExpireDateStyle(detailData.expireDate)">{{ detailData.expireDate }}</span>
         </el-descriptions-item>
+        <el-descriptions-item label="续签日期">{{ detailData.renewDate || '-' }}</el-descriptions-item>
         <el-descriptions-item label="合同金额">
           {{ detailData.contractAmount ? Number(detailData.contractAmount).toLocaleString() + ' 元' : '-' }}
+        </el-descriptions-item>
+        <el-descriptions-item label="服务费">
+          {{ detailData.serviceFee ? Number(detailData.serviceFee).toLocaleString() + ' 元' : '-' }}
         </el-descriptions-item>
         <el-descriptions-item label="付款方式">{{ detailData.paymentMethod }}</el-descriptions-item>
         <el-descriptions-item label="负责人">{{ detailData.personInCharge }}</el-descriptions-item>
@@ -267,6 +304,7 @@ const filterForm = reactive({
   customerName: '',
   signDateRange: null,
   expireDateRange: null,
+  renewDateRange: null,
   contractStatus: ''
 })
 
@@ -297,7 +335,9 @@ const formData = reactive({
   customerName: '',
   signDate: '',
   expireDate: '',
+  renewDate: '',
   contractAmount: null,
+  serviceFee: null,
   serviceContent: '',
   paymentMethod: '',
   personInChargeId: null,
@@ -341,8 +381,12 @@ function getExpireDateStyle(expireDate) {
   if (!expireDate) return {}
   const expire = new Date(expireDate)
   const today = new Date()
+  today.setHours(0, 0, 0, 0)
   const oneMonthLater = new Date()
   oneMonthLater.setMonth(oneMonthLater.getMonth() + 1)
+  if (expire < today) {
+    return { color: '#e6a23c', fontWeight: 'bold' }
+  }
   if (expire <= oneMonthLater && expire >= today) {
     return { color: '#f56c6c', fontWeight: 'bold' }
   }
@@ -361,6 +405,8 @@ async function fetchList() {
       signDateEnd: filterForm.signDateRange?.[1] || undefined,
       expireDateStart: filterForm.expireDateRange?.[0] || undefined,
       expireDateEnd: filterForm.expireDateRange?.[1] || undefined,
+      renewDateStart: filterForm.renewDateRange?.[0] || undefined,
+      renewDateEnd: filterForm.renewDateRange?.[1] || undefined,
       contractStatus: filterForm.contractStatus || undefined
     }
     const res = await contractApi.page(params)
@@ -393,6 +439,7 @@ function handleReset() {
     customerName: '',
     signDateRange: null,
     expireDateRange: null,
+    renewDateRange: null,
     contractStatus: ''
   })
   handleSearch()
@@ -408,7 +455,9 @@ function handleAdd() {
     customerName: '',
     signDate: '',
     expireDate: '',
+    renewDate: '',
     contractAmount: null,
+    serviceFee: null,
     serviceContent: '',
     paymentMethod: '',
     personInChargeId: null,
@@ -435,7 +484,9 @@ async function handleEdit(row) {
       customerName: data.customerName || '',
       signDate: data.signDate || '',
       expireDate: data.expireDate || '',
+      renewDate: data.renewDate || '',
       contractAmount: data.contractAmount,
+      serviceFee: data.serviceFee,
       serviceContent: data.serviceContent || '',
       paymentMethod: data.paymentMethod || '',
       personInChargeId: data.personInChargeId,
@@ -515,6 +566,7 @@ async function handleSubmit() {
       const editData = {
         contractStatus: formData.contractStatus,
         expireDate: formData.expireDate,
+        renewDate: formData.renewDate,
         modifyReason: formData.modifyReason
       }
       await contractApi.update(editId.value, editData)
@@ -555,7 +607,7 @@ async function handleDetail(row) {
 
 function downloadAttachment(row) {
   const token = localStorage.getItem('token')
-  const url = `/api/contract/attachment/${row.id}?token=${token}`
+  const url = `/api/contract/attachment/${row.id}/download?token=${token}`
 
   fetch(url, {
     method: 'GET',
@@ -613,6 +665,8 @@ function handleExport() {
     signDateEnd: filterForm.signDateRange?.[1] || undefined,
     expireDateStart: filterForm.expireDateRange?.[0] || undefined,
     expireDateEnd: filterForm.expireDateRange?.[1] || undefined,
+    renewDateStart: filterForm.renewDateRange?.[0] || undefined,
+    renewDateEnd: filterForm.renewDateRange?.[1] || undefined,
     contractStatus: filterForm.contractStatus || undefined
   }
   const url = contractApi.getExportUrl(params)

@@ -16,7 +16,8 @@ public interface ContractService {
 
     IPage<BizContract> page(int page, int size, String contractNo, String customerName,
                             String signDateStart, String signDateEnd, String expireDateStart,
-                            String expireDateEnd, String contractStatus);
+                            String expireDateEnd, String renewDateStart, String renewDateEnd,
+                            String contractStatus);
 
     BizContract create(ContractRequest request);
 
@@ -50,5 +51,6 @@ public interface ContractService {
 
     void exportContracts(HttpServletResponse response, String contractNo, String customerName,
                          String signDateStart, String signDateEnd, String expireDateStart,
-                         String expireDateEnd, String contractStatus);
+                         String expireDateEnd, String renewDateStart, String renewDateEnd,
+                         String contractStatus);
 }

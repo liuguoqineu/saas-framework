@@ -43,11 +43,13 @@ public class ContractController {
                                                  @RequestParam(required = false) String signDateEnd,
                                                  @RequestParam(required = false) String expireDateStart,
                                                  @RequestParam(required = false) String expireDateEnd,
+                                                 @RequestParam(required = false) String renewDateStart,
+                                                 @RequestParam(required = false) String renewDateEnd,
                                                  @RequestParam(required = false) String contractStatus) {
         log.info("查询合同列表: page={}, size={}, contractNo={}, customerName={}, contractStatus={}",
                 page, size, contractNo, customerName, contractStatus);
         IPage<BizContract> iPage = contractService.page(page, size, contractNo, customerName,
-                signDateStart, signDateEnd, expireDateStart, expireDateEnd, contractStatus);
+                signDateStart, signDateEnd, expireDateStart, expireDateEnd, renewDateStart, renewDateEnd, contractStatus);
         return Result.ok(PageResult.of(iPage));
     }
 
@@ -195,10 +197,12 @@ public class ContractController {
                                  @RequestParam(required = false) String signDateEnd,
                                  @RequestParam(required = false) String expireDateStart,
                                  @RequestParam(required = false) String expireDateEnd,
+                                 @RequestParam(required = false) String renewDateStart,
+                                 @RequestParam(required = false) String renewDateEnd,
                                  @RequestParam(required = false) String contractStatus) {
         log.info("Excel导出合同: contractNo={}, customerName={}, contractStatus={}",
                 contractNo, customerName, contractStatus);
         contractService.exportContracts(response, contractNo, customerName,
-                signDateStart, signDateEnd, expireDateStart, expireDateEnd, contractStatus);
+                signDateStart, signDateEnd, expireDateStart, expireDateEnd, renewDateStart, renewDateEnd, contractStatus);
     }
 }

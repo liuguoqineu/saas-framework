@@ -61,7 +61,8 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public IPage<BizContract> page(int page, int size, String contractNo, String customerName,
                                    String signDateStart, String signDateEnd, String expireDateStart,
-                                   String expireDateEnd, String contractStatus) {
+                                   String expireDateEnd, String renewDateStart, String renewDateEnd,
+                                   String contractStatus) {
         LambdaQueryWrapper<BizContract> wrapper = new LambdaQueryWrapper<>();
 
         if (StringUtils.hasText(contractNo)) {
@@ -81,6 +82,12 @@ public class ContractServiceImpl implements ContractService {
         }
         if (StringUtils.hasText(expireDateEnd)) {
             wrapper.le(BizContract::getExpireDate, LocalDate.parse(expireDateEnd, DATE_FORMATTER));
+        }
+        if (StringUtils.hasText(renewDateStart)) {
+            wrapper.ge(BizContract::getRenewDate, LocalDate.parse(renewDateStart, DATE_FORMATTER));
+        }
+        if (StringUtils.hasText(renewDateEnd)) {
+            wrapper.le(BizContract::getRenewDate, LocalDate.parse(renewDateEnd, DATE_FORMATTER));
         }
         if (StringUtils.hasText(contractStatus)) {
             wrapper.eq(BizContract::getContractStatus, contractStatus);
@@ -574,7 +581,8 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public void exportContracts(HttpServletResponse response, String contractNo, String customerName,
                                 String signDateStart, String signDateEnd, String expireDateStart,
-                                String expireDateEnd, String contractStatus) {
+                                String expireDateEnd, String renewDateStart, String renewDateEnd,
+                                String contractStatus) {
         LambdaQueryWrapper<BizContract> wrapper = new LambdaQueryWrapper<>();
 
         if (StringUtils.hasText(contractNo)) {
@@ -595,6 +603,12 @@ public class ContractServiceImpl implements ContractService {
         if (StringUtils.hasText(expireDateEnd)) {
             wrapper.le(BizContract::getExpireDate, LocalDate.parse(expireDateEnd, DATE_FORMATTER));
         }
+        if (StringUtils.hasText(renewDateStart)) {
+            wrapper.ge(BizContract::getRenewDate, LocalDate.parse(renewDateStart, DATE_FORMATTER));
+        }
+        if (StringUtils.hasText(renewDateEnd)) {
+            wrapper.le(BizContract::getRenewDate, LocalDate.parse(renewDateEnd, DATE_FORMATTER));
+        }
         if (StringUtils.hasText(contractStatus)) {
             wrapper.eq(BizContract::getContractStatus, contractStatus);
         }
@@ -610,8 +624,8 @@ public class ContractServiceImpl implements ContractService {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("合同列表");
 
-            String[] headers = {"合同编号", "客户名称", "签订日期", "到期日期",
-                    "合同金额", "服务内容", "付款方式", "负责人", "合同状态", "备注", "创建时间"};
+            String[] headers = {"合同编号", "客户名称", "签订日期", "到期日期", "续签日期",
+                    "合同金额", "服务费", "服务内容", "付款方式", "负责人", "合同状态", "备注", "创建时间"};
             Row headerRow = sheet.createRow(0);
             CellStyle headerStyle = workbook.createCellStyle();
             Font headerFont = workbook.createFont();
@@ -634,13 +648,15 @@ public class ContractServiceImpl implements ContractService {
                 row.createCell(1).setCellValue(c.getCustomerName() != null ? c.getCustomerName() : "");
                 row.createCell(2).setCellValue(c.getSignDate() != null ? c.getSignDate().toString() : "");
                 row.createCell(3).setCellValue(c.getExpireDate() != null ? c.getExpireDate().toString() : "");
-                row.createCell(4).setCellValue(c.getContractAmount() != null ? c.getContractAmount().toString() : "");
-                row.createCell(5).setCellValue(c.getServiceContent() != null ? c.getServiceContent() : "");
-                row.createCell(6).setCellValue(c.getPaymentMethod() != null ? c.getPaymentMethod() : "");
-                row.createCell(7).setCellValue(c.getPersonInCharge() != null ? c.getPersonInCharge() : "");
-                row.createCell(8).setCellValue(c.getContractStatus() != null ? c.getContractStatus() : "");
-                row.createCell(9).setCellValue(c.getRemark() != null ? c.getRemark() : "");
-                row.createCell(10).setCellValue(c.getCreateTime() != null ? c.getCreateTime().toString() : "");
+                row.createCell(4).setCellValue(c.getRenewDate() != null ? c.getRenewDate().toString() : "");
+                row.createCell(5).setCellValue(c.getContractAmount() != null ? c.getContractAmount().toString() : "");
+                row.createCell(6).setCellValue(c.getServiceFee() != null ? c.getServiceFee().toString() : "");
+                row.createCell(7).setCellValue(c.getServiceContent() != null ? c.getServiceContent() : "");
+                row.createCell(8).setCellValue(c.getPaymentMethod() != null ? c.getPaymentMethod() : "");
+                row.createCell(9).setCellValue(c.getPersonInCharge() != null ? c.getPersonInCharge() : "");
+                row.createCell(10).setCellValue(c.getContractStatus() != null ? c.getContractStatus() : "");
+                row.createCell(11).setCellValue(c.getRemark() != null ? c.getRemark() : "");
+                row.createCell(12).setCellValue(c.getCreateTime() != null ? c.getCreateTime().toString() : "");
             }
 
             response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
@@ -665,8 +681,14 @@ public class ContractServiceImpl implements ContractService {
         if (request.getExpireDate() != null) {
             contract.setExpireDate(request.getExpireDate());
         }
+        if (request.getRenewDate() != null) {
+            contract.setRenewDate(request.getRenewDate());
+        }
         if (request.getContractAmount() != null) {
             contract.setContractAmount(request.getContractAmount());
+        }
+        if (request.getServiceFee() != null) {
+            contract.setServiceFee(request.getServiceFee());
         }
         if (StringUtils.hasText(request.getServiceContent())) {
             contract.setServiceContent(request.getServiceContent());
@@ -703,9 +725,15 @@ public class ContractServiceImpl implements ContractService {
         fieldMap.put("到期日期", new Object[]{
                 oldContract.getExpireDate() != null ? oldContract.getExpireDate().toString() : "",
                 newRequest.getExpireDate()});
+        fieldMap.put("续签日期", new Object[]{
+                oldContract.getRenewDate() != null ? oldContract.getRenewDate().toString() : "",
+                newRequest.getRenewDate()});
         fieldMap.put("合同金额", new Object[]{
                 oldContract.getContractAmount() != null ? oldContract.getContractAmount().toString() : "",
                 newRequest.getContractAmount()});
+        fieldMap.put("服务费", new Object[]{
+                oldContract.getServiceFee() != null ? oldContract.getServiceFee().toString() : "",
+                newRequest.getServiceFee()});
         fieldMap.put("服务内容", new Object[]{oldContract.getServiceContent(), newRequest.getServiceContent()});
         fieldMap.put("付款方式", new Object[]{oldContract.getPaymentMethod(), newRequest.getPaymentMethod()});
         fieldMap.put("负责人", new Object[]{oldContract.getPersonInCharge(), newRequest.getPersonInCharge()});

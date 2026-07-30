@@ -18,7 +18,9 @@ public class BizContract {
     private String customerName;
     private LocalDate signDate;
     private LocalDate expireDate;
+    private LocalDate renewDate;
     private BigDecimal contractAmount;
+    private BigDecimal serviceFee;
     private String serviceContent;
     private String paymentMethod;
     private Long personInChargeId;

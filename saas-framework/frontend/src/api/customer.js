@@ -78,7 +78,7 @@ export const customerApi = {
 }
 
 export const businessCategoryMap = {
-  '加气站类': ['CNG加气站', 'LPG加气站'],
+  '加气站类': ['CNG加气站', 'LPG加气站', 'LNG加气站', 'CNG LNG合建站', '甲烷加气站'],
   '商业用气': [
     { value: '餐饮类', label: '餐饮类（饭店、餐馆）' },
     { value: '团餐类', label: '团餐类（大企业食堂、高校食堂）' },

@@ -53,6 +53,8 @@ export const contractApi = {
     if (params.signDateEnd) query.append('signDateEnd', params.signDateEnd)
     if (params.expireDateStart) query.append('expireDateStart', params.expireDateStart)
     if (params.expireDateEnd) query.append('expireDateEnd', params.expireDateEnd)
+    if (params.renewDateStart) query.append('renewDateStart', params.renewDateStart)
+    if (params.renewDateEnd) query.append('renewDateEnd', params.renewDateEnd)
     if (params.contractStatus) query.append('contractStatus', params.contractStatus)
     return `/api/contract/export?${query.toString()}`
   }

@@ -46,7 +46,7 @@
       <el-table :data="tableData" v-loading="loading" stripe border style="width: 100%">
         <el-table-column prop="name" label="客户名称" min-width="150" show-overflow-tooltip />
         <el-table-column prop="businessCategory" label="业务分类" min-width="100" />
-        <el-table-column prop="businessType" label="站点名称" min-width="110" />
+        <el-table-column prop="businessType" label="充装介质" min-width="110" />
         <el-table-column label="合作状态" min-width="120">
           <template #default="{ row }">
             <el-tag :type="getCooperationTagType(row.cooperationStatus)" size="small">
@@ -127,7 +127,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="站点名称" prop="businessType">
+            <el-form-item label="充装介质" prop="businessType">
               <el-select v-model="formData.businessType" placeholder="请先选择一级分类" style="width: 100%">
                 <el-option v-for="t in formBusinessTypes" :key="getOptValue(t)" :label="getOptLabel(t)" :value="getOptValue(t)" />
               </el-select>
@@ -199,7 +199,7 @@
         <el-descriptions-item label="联系电话">{{ detailData.contactPhone }}</el-descriptions-item>
         <el-descriptions-item label="跟进人">{{ detailData.followUpPerson || '-' }}</el-descriptions-item>
         <el-descriptions-item label="业务分类">{{ detailData.businessCategory || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="站点名称">{{ detailData.businessType || '-' }}</el-descriptions-item>
+        <el-descriptions-item label="充装介质">{{ detailData.businessType || '-' }}</el-descriptions-item>
         <el-descriptions-item label="合作状态">
           <el-tag :type="getCooperationTagType(detailData.cooperationStatus)" size="small">
             {{ detailData.cooperationStatus || '-' }}
@@ -552,8 +552,12 @@ function getExpireDateStyle(expireDate) {
   if (!expireDate) return {}
   const expire = new Date(expireDate)
   const today = new Date()
+  today.setHours(0, 0, 0, 0)
   const oneMonthLater = new Date()
   oneMonthLater.setMonth(oneMonthLater.getMonth() + 1)
+  if (expire < today) {
+    return { color: '#e6a23c', fontWeight: 'bold' }
+  }
   if (expire <= oneMonthLater && expire >= today) {
     return { color: '#f56c6c', fontWeight: 'bold' }
   }
@@ -634,7 +638,7 @@ const formRules = {
   contactPerson: [{ required: true, message: '请输入联系人', trigger: 'blur' }],
   contactPhone: [{ required: true, message: '请输入联系电话', trigger: 'blur' }],
   businessCategory: [{ required: true, message: '请选择业务分类', trigger: 'change' }],
-  businessType: [{ required: true, message: '请选择站点名称', trigger: 'change' }],
+  businessType: [{ required: true, message: '请选择充装介质', trigger: 'change' }],
   regionCodes: [{ required: true, type: 'array', min: 1, message: '请选择客户地址', trigger: 'change' }]
 }
 

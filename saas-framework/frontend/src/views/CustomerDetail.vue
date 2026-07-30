@@ -16,7 +16,7 @@
         <el-descriptions :column="3" border>
           <el-descriptions-item label="客户名称">{{ customer.name }}</el-descriptions-item>
           <el-descriptions-item label="业务分类">{{ customer.businessCategory || '-' }}</el-descriptions-item>
-          <el-descriptions-item label="站点名称">{{ customer.businessType || '-' }}</el-descriptions-item>
+          <el-descriptions-item label="充装介质">{{ customer.businessType || '-' }}</el-descriptions-item>
           <el-descriptions-item label="合作状态"><el-tag :type="getCooperationTagType(customer.cooperationStatus)" size="small">{{ customer.cooperationStatus || '-' }}</el-tag></el-descriptions-item>
           <el-descriptions-item label="联系人">{{ customer.contactPerson || '-' }}</el-descriptions-item>
           <el-descriptions-item label="联系电话">{{ customer.contactPhone || '-' }}</el-descriptions-item>
@@ -272,7 +272,7 @@ const statusChangeRules = {
 const fieldLabelMap = {
   name: '客户名称', address: '地址',
   contactPerson: '联系人', contactPhone: '联系电话',
-  businessCategory: '业务分类', businessType: '站点名称',
+  businessCategory: '业务分类', businessType: '充装介质',
   cooperationStatus: '合作状态',
   gasScale: '用气规模', smartGasSystem: '智慧燃气设备信息',
   contractInfo: '合同信息'
