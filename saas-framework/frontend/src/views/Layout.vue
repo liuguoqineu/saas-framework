@@ -158,6 +158,7 @@
                 <el-dropdown-item disabled>
                   公司: {{ userStore.isSuperAdmin ? '超级管理员' : userStore.userInfo?.tenantId }}
                 </el-dropdown-item>
+                <el-dropdown-item command="changePassword" divided>修改密码</el-dropdown-item>
                 <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -222,6 +223,8 @@ function handleCommand(cmd) {
   if (cmd === 'logout') {
     userStore.logout()
     router.push('/login')
+  } else if (cmd === 'changePassword') {
+    router.push('/change-password')
   }
 }
 </script>

@@ -145,6 +145,12 @@ const routes = [
         meta: { title: '数据看板' }
       },
       {
+        path: 'change-password',
+        name: 'ChangePassword',
+        component: () => import('@/views/ChangePassword.vue'),
+        meta: { title: '修改密码' }
+      },
+      {
         path: 'overdue',
         name: 'Overdue',
         component: () => import('@/views/report/Overdue.vue'),

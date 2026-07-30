@@ -26,6 +26,11 @@
             <el-option v-for="opt in dictMaintenanceCategory" :key="opt.value" :label="opt.label" :value="opt.value" />
           </el-select>
         </el-form-item>
+        <el-form-item label="合同到期">
+          <el-date-picker v-model="filterForm.contractExpiryRange" type="daterange" range-separator="至"
+            start-placeholder="开始日期" end-placeholder="结束日期" value-format="YYYY-MM-DD"
+            style="width: 240px" @change="handleSearch" />
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">查询</el-button>
           <el-button @click="handleReset">重置</el-button>
@@ -43,7 +48,7 @@
         </div>
       </div>
 
-      <el-table :data="tableData" v-loading="loading" stripe border style="width: 100%">
+      <el-table :data="displayData" v-loading="loading" stripe border style="width: 100%">
         <el-table-column prop="name" label="客户名称" min-width="150" show-overflow-tooltip />
         <el-table-column prop="businessCategory" label="业务分类" min-width="100" />
         <el-table-column prop="businessType" label="充装介质" min-width="110" />
@@ -486,7 +491,8 @@ const filterForm = reactive({
   businessType: '',
   cooperationStatus: '',
   contactPerson: '',
-  maintenanceCategory: ''
+  maintenanceCategory: '',
+  contractExpiryRange: null
 })
 
 const pagination = reactive({
@@ -564,6 +570,20 @@ function getExpireDateStyle(expireDate) {
   return {}
 }
 
+const displayData = computed(() => {
+  const range = filterForm.contractExpiryRange
+  if (!range || range.length < 2) return tableData.value
+  const start = new Date(range[0])
+  const end = new Date(range[1])
+  start.setHours(0, 0, 0, 0)
+  end.setHours(23, 59, 59, 999)
+  return tableData.value.filter(row => {
+    if (!row.contractExpireDate) return false
+    const expire = new Date(row.contractExpireDate)
+    return expire >= start && expire <= end
+  })
+})
+
 async function fetchList() {
   loading.value = true
   try {
@@ -599,7 +619,8 @@ function handleReset() {
     businessType: '',
     cooperationStatus: '',
     contactPerson: '',
-    maintenanceCategory: ''
+    maintenanceCategory: '',
+    contractExpiryRange: null
   })
   handleSearch()
 }

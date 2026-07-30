@@ -4,9 +4,9 @@ server:
 spring:
   datasource:
     # ========== 部署到服务器时修改以下配置 ==========
-    url: jdbc:mysql://localhost:3306/web1?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://39.98.221.201:3306/saaslearn?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: 123456
+    password: wolf1234
     # ================================================
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:

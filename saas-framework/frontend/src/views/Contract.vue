@@ -206,6 +206,14 @@
                   value-format="YYYY-MM-DD" style="width: 100%" />
               </el-form-item>
             </el-col>
+            <el-col :span="12">
+              <el-form-item label="付款方式" prop="paymentMethod">
+                <el-select v-model="formData.paymentMethod" placeholder="请选择付款方式" style="width: 100%">
+                  <el-option v-for="item in paymentMethodOptions" :key="item.value" :label="item.label"
+                    :value="item.value" />
+                </el-select>
+              </el-form-item>
+            </el-col>
           </el-row>
           <el-form-item label="修改原因" prop="modifyReason">
             <el-input v-model="formData.modifyReason" type="textarea" :rows="3" placeholder="请输入修改原因" />
@@ -567,6 +575,7 @@ async function handleSubmit() {
         contractStatus: formData.contractStatus,
         expireDate: formData.expireDate,
         renewDate: formData.renewDate,
+        paymentMethod: formData.paymentMethod,
         modifyReason: formData.modifyReason
       }
       await contractApi.update(editId.value, editData)
