@@ -149,11 +149,6 @@ public class CustomerServiceImpl implements CustomerService {
             throw new BusinessException(403, "无权修改其他租户的客户数据");
         }
 
-        // 当天新增的客户只能当天修改，第二天无法修改
-        if (customer.getCreateTime() != null && !customer.getCreateTime().toLocalDate().equals(java.time.LocalDate.now())) {
-            throw new BusinessException(403, "客户信息仅限新增当天修改，次日不可修改");
-        }
-
         recordModifyLogs(id, customer, request);
 
         copyRequestToEntity(request, customer);
@@ -605,6 +600,7 @@ public class CustomerServiceImpl implements CustomerService {
         if (request.getFollowUpPersonId() != null) customer.setFollowUpPersonId(request.getFollowUpPersonId());
         if (request.getFollowUpPerson() != null) customer.setFollowUpPerson(request.getFollowUpPerson());
         if (request.getMaintenanceCategory() != null) customer.setMaintenanceCategory(request.getMaintenanceCategory());
+        if (request.getRemark() != null) customer.setRemark(request.getRemark());
     }
 
     private void recordModifyLogs(Long customerId, BizCustomer oldCustomer, CustomerRequest newRequest) {
@@ -625,6 +621,7 @@ public class CustomerServiceImpl implements CustomerService {
         fieldMap.put("smartGasSystem", new String[]{"智慧燃气系统", oldCustomer.getSmartGasSystem(), newRequest.getSmartGasSystem()});
         fieldMap.put("contractInfo", new String[]{"合同信息", oldCustomer.getContractInfo(), newRequest.getContractInfo()});
         fieldMap.put("followUpPerson", new String[]{"跟进人", oldCustomer.getFollowUpPerson(), newRequest.getFollowUpPerson()});
+        fieldMap.put("remark", new String[]{"客户备注", oldCustomer.getRemark(), newRequest.getRemark()});
 
         for (Map.Entry<String, String[]> entry : fieldMap.entrySet()) {
             String fieldName = entry.getKey();

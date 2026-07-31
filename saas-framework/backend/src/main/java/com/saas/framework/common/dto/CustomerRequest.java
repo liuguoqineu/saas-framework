@@ -44,4 +44,6 @@ public class CustomerRequest {
     private Long followUpPersonId;
 
     private String followUpPerson;
+
+    private String remark;
 }

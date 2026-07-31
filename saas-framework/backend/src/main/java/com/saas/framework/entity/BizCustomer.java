@@ -77,6 +77,9 @@ public class BizCustomer {
     /** 当前跟进人姓名 */
     private String followUpPerson;
 
+    /** 客户备注 */
+    private String remark;
+
     /** 租户ID，用于数据隔离 */
     private Long tenantId;
 

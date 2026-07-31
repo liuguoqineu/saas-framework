@@ -262,6 +262,31 @@
       </el-table>
       <el-empty v-if="detailAttachments.length === 0" description="暂无附件，请点击上方按钮上传" />
 
+      <el-divider content-position="left">跟进记录</el-divider>
+      <el-timeline v-if="detailFollowUpRecords.length > 0">
+        <el-timeline-item v-for="record in detailFollowUpRecords" :key="record.id"
+          :timestamp="formatDateTime(record.followUpTime)" placement="top">
+          <el-card shadow="never" class="follow-up-card">
+            <el-descriptions :column="2" border size="small">
+              <el-descriptions-item label="跟进人" :span="1">{{ record.followUpPerson || '-' }}</el-descriptions-item>
+              <el-descriptions-item label="跟进方式" :span="1">
+                <el-tag size="small">{{ followUpMethodMap[record.followUpMethod] || '未知' }}</el-tag>
+              </el-descriptions-item>
+              <el-descriptions-item label="跟进状态" :span="1">
+                <el-tag :type="record.followUpStatus === 1 ? 'warning' : record.followUpStatus === 2 ? 'success' : 'primary'" size="small">
+                  {{ followUpStatusMap[record.followUpStatus] || '未知' }}
+                </el-tag>
+              </el-descriptions-item>
+              <el-descriptions-item label="下一步计划" :span="2">{{ record.nextPlan || '-' }}</el-descriptions-item>
+              <el-descriptions-item label="跟进内容" :span="2">
+                <div style="white-space:pre-wrap;line-height:1.6">{{ record.followUpContent }}</div>
+              </el-descriptions-item>
+            </el-descriptions>
+          </el-card>
+        </el-timeline-item>
+      </el-timeline>
+      <el-empty v-if="detailFollowUpRecords.length === 0" description="暂无跟进记录" />
+
       <el-divider content-position="left">修改记录</el-divider>
       <el-timeline>
         <el-timeline-item v-for="log in detailModifyLogs" :key="log.id" :timestamp="formatDateTime(log.modifyTime)"
@@ -343,9 +368,6 @@
                 <div style="white-space:pre-wrap;line-height:1.6">{{ record.followUpContent }}</div>
               </el-descriptions-item>
             </el-descriptions>
-            <div class="follow-up-actions" style="margin-top:8px;text-align:right">
-              <el-button v-permission="'followup:delete'" size="small" link type="danger" @click="deleteFollowUpRecord(record.id)">删除</el-button>
-            </div>
           </el-card>
         </el-timeline-item>
       </el-timeline>
@@ -784,17 +806,20 @@ const detailDialogVisible = ref(false)
 const detailData = ref({})
 const detailAttachments = ref([])
 const detailModifyLogs = ref([])
+const detailFollowUpRecords = ref([])
 
 async function handleDetail(row) {
   try {
-    const [detailRes, attRes, logRes] = await Promise.all([
+    const [detailRes, attRes, logRes, followUpRes] = await Promise.all([
       customerApi.detail(row.id),
       customerApi.listAttachments(row.id),
-      customerApi.listModifyLogs(row.id)
+      customerApi.listModifyLogs(row.id),
+      followUpApi.listRecordsByCustomerId(row.id)
     ])
     detailData.value = detailRes.data || {}
     detailAttachments.value = attRes.data || []
     detailModifyLogs.value = logRes.data || []
+    detailFollowUpRecords.value = followUpRes.data || []
     detailDialogVisible.value = true
   } catch (e) {
     console.error(e)

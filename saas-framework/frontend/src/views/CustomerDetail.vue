@@ -275,7 +275,8 @@ const fieldLabelMap = {
   businessCategory: '业务分类', businessType: '充装介质',
   cooperationStatus: '合作状态',
   gasScale: '用气规模', smartGasSystem: '智慧燃气设备信息',
-  contractInfo: '合同信息'
+  contractInfo: '合同信息',
+  remark: '客户备注'
 }
 
 function getFieldLabel(fieldName) {
