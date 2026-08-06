@@ -22,6 +22,11 @@
         <el-form-item label="姓名">
           <el-input v-model="query.realName" placeholder="请输入姓名" clearable @change="fetchData" />
         </el-form-item>
+        <el-form-item label="站点名称" v-if="userStore.isSuperAdmin">
+          <el-select v-model="query.tenantId" placeholder="请输入或选择站点" clearable filterable style="width: 160px" @change="fetchData">
+            <el-option v-for="t in tenantOptions" :key="t.id" :label="t.name" :value="t.id" />
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="fetchData">查询</el-button>
           <el-button @click="resetQuery">重置</el-button>
@@ -43,7 +48,7 @@
             <el-tag :type="getPostTypeTagType(row.postType)" size="small">{{ getPostTypeLabel(row.postType) }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="tenantId" label="所属租户" width="120" v-if="userStore.isSuperAdmin">
+        <el-table-column prop="tenantId" label="站点名称" width="120" v-if="userStore.isSuperAdmin">
           <template #default="{ row }">
             <el-tag type="info">{{ getTenantName(row.tenantId) }}</el-tag>
           </template>
@@ -463,7 +468,7 @@ onMounted(() => {
 })
 onUnmounted(() => { window.removeEventListener('resize', updateScreenWidth) })
 
-const query = reactive({ page: 1, size: 10, realName: '' })
+const query = reactive({ page: 1, size: 10, realName: '', tenantId: null })
 const tableData = reactive({ records: [], total: 0 })
 const roleOptions = ref([])
 const roleMap = ref({})
@@ -558,6 +563,7 @@ async function fetchTenants() {
 
 function resetQuery() {
   query.realName = ''
+  query.tenantId = null
   query.page = 1
   fetchData()
 }

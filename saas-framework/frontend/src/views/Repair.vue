@@ -109,7 +109,7 @@
               <el-button v-permission="'repair:edit'" size="small" type="primary" @click="handleEdit(row)"
                 :disabled="row.status === '已解决' && row.confirmStatus === 1">编辑</el-button>
               <el-button v-permission="'repair:assign'" size="small" type="warning" @click="handleAssign(row)"
-                :disabled="row.status !== '未处理' && row.status !== '无法解决'">分配</el-button>
+                :disabled="row.status !== '未处理' && row.status !== '处理中' && row.status !== '无法解决'">分配</el-button>
               <el-button v-permission="'repair:process'" size="small" type="success" @click="handleProcess(row)"
                 :disabled="row.status !== '处理中'">处理</el-button>
               <el-button v-permission="'repair:delete'" size="small" type="danger"

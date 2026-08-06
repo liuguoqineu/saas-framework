@@ -14,9 +14,9 @@ import java.util.Map;
 public interface UserService {
 
     /**
-     * 分页查询本租户员工
+     * 分页查询员工（超级管理员可按租户筛选）
      */
-    IPage<SysUser> page(int page, int size, String realName);
+    IPage<SysUser> page(int page, int size, String realName, Long tenantId);
 
     List<SysUser> listByTenant();
 

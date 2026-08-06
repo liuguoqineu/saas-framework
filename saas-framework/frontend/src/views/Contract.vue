@@ -225,7 +225,7 @@
             :on-remove="handleFileRemove" ref="uploadRef">
             <el-button size="small" type="primary">选择文件</el-button>
             <template #tip>
-              <div class="el-upload__tip">保存合同后可上传合同扫描件，单文件不超过20MB</div>
+              <div class="el-upload__tip">保存合同后可上传合同扫描件，单文件不超过50MB</div>
             </template>
           </el-upload>
         </el-form-item>
@@ -527,9 +527,9 @@ function handleCustomerChange(customerId) {
 }
 
 function handleFileChange(file, fileListVal) {
-  const maxSize = 20 * 1024 * 1024
+  const maxSize = 50 * 1024 * 1024
   if (file.size > maxSize) {
-    ElMessage.error('文件大小不能超过20MB')
+    ElMessage.error('文件大小不能超过50MB')
     return false
   }
   if (!file.status || file.status === 'ready') {

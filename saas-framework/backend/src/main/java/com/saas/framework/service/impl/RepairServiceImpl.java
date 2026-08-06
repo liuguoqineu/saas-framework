@@ -56,6 +56,9 @@ public class RepairServiceImpl implements RepairService {
     @Resource
     private com.saas.framework.service.DeviceReplacementService deviceReplacementService;
 
+    @Resource
+    private SysUserMapper sysUserMapper;
+
     private static final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -250,24 +253,39 @@ public class RepairServiceImpl implements RepairService {
             throw new BusinessException(404, "报修单不存在");
         }
 
-        if (!STATUS_PENDING.equals(order.getStatus()) && !STATUS_UNRESOLVED.equals(order.getStatus())) {
+        // 允许未处理、处理中、无法解决状态的报修单进行分配/重新分配
+        if (!STATUS_PENDING.equals(order.getStatus())
+                && !STATUS_PROCESSING.equals(order.getStatus())
+                && !STATUS_UNRESOLVED.equals(order.getStatus())) {
             throw new BusinessException("当前状态的报修单不可分配");
         }
 
+        // 查询被分配人的租户ID，同步更新报修单的租户
+        SysUser targetUser = sysUserMapper.selectById(request.getAssigneeId());
+        if (targetUser == null) {
+            throw new BusinessException(404, "被分配人员不存在");
+        }
+
         String oldStatus = order.getStatus();
+        String oldAssignee = order.getAssigneeName() != null ? order.getAssigneeName() : "未分配";
+
         order.setAssigneeId(request.getAssigneeId());
         order.setAssigneeName(request.getAssigneeName());
         order.setAssignerId(UserContext.getUserId());
         order.setAssignerName(UserContext.getUsername());
         order.setAssignTime(LocalDateTime.now());
         order.setStatus(STATUS_PROCESSING);
+        order.setTenantId(targetUser.getTenantId());
 
         repairOrderMapper.updateById(order);
 
+        String logContent = STATUS_PROCESSING.equals(oldStatus)
+                ? "重新分配，从「" + oldAssignee + "」转给运维人员: " + request.getAssigneeName()
+                : "分配给运维人员: " + request.getAssigneeName();
         addProcessLog(order.getId(), "分配", oldStatus, STATUS_PROCESSING,
-                "分配给运维人员: " + request.getAssigneeName(), order.getTenantId());
+                logContent, order.getTenantId());
 
-        log.info("分配报修单: id={}, assignee={}", id, request.getAssigneeName());
+        log.info("分配报修单: id={}, from={}, to={}, tenantId={}", id, oldAssignee, request.getAssigneeName(), targetUser.getTenantId());
     }
 
     @Override

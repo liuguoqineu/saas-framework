@@ -37,9 +37,10 @@ public class UserController {
     @RequirePermission("user:list")
     public Result<PageResult<SysUser>> page(@RequestParam(defaultValue = "1") int page,
                                              @RequestParam(defaultValue = "10") int size,
-                                             @RequestParam(required = false) String realName) {
-        log.info("查询员工列表: page={}, size={}, realName={}", page, size, realName);
-        IPage<SysUser> iPage = userService.page(page, size, realName);
+                                             @RequestParam(required = false) String realName,
+                                             @RequestParam(required = false) Long tenantId) {
+        log.info("查询员工列表: page={}, size={}, realName={}, tenantId={}", page, size, realName, tenantId);
+        IPage<SysUser> iPage = userService.page(page, size, realName, tenantId);
         return Result.ok(PageResult.of(iPage));
     }
 

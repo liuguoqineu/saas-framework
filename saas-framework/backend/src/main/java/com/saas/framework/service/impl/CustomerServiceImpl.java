@@ -15,6 +15,8 @@ import com.saas.framework.mapper.BizCustomerAttachmentMapper;
 import com.saas.framework.mapper.BizCustomerMapper;
 import com.saas.framework.mapper.BizCustomerModifyLogMapper;
 import com.saas.framework.mapper.BizContractMapper;
+import com.saas.framework.mapper.SysUserMapper;
+import com.saas.framework.entity.SysUser;
 import com.saas.framework.service.CustomerService;
 import com.saas.framework.config.FilePathConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +55,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Resource
     private BizContractMapper bizContractMapper;
+
+    @Resource
+    private SysUserMapper sysUserMapper;
 
     @Resource
     private FilePathConfig filePathConfig;
@@ -749,11 +754,19 @@ public class CustomerServiceImpl implements CustomerService {
             throw new BusinessException(403, "无权操作其他租户的客户数据");
         }
 
+        // 查询目标用户的租户ID
+        SysUser targetUser = sysUserMapper.selectById(userId);
+        if (targetUser == null) {
+            throw new BusinessException(404, "目标用户不存在");
+        }
+
+        String oldFollowUpPerson = customer.getFollowUpPerson() != null ? customer.getFollowUpPerson() : "未分配";
+
         // 记录修改日志
         BizCustomerModifyLog modifyLog = new BizCustomerModifyLog();
         modifyLog.setCustomerId(customerId);
         modifyLog.setFieldName("followUpPerson");
-        modifyLog.setOldValue(customer.getFollowUpPerson() != null ? customer.getFollowUpPerson() : "未分配");
+        modifyLog.setOldValue(oldFollowUpPerson);
         modifyLog.setNewValue(username);
         modifyLog.setModifyUserId(UserContext.getUserId());
         modifyLog.setModifyUser(UserContext.getUsername());
@@ -761,12 +774,16 @@ public class CustomerServiceImpl implements CustomerService {
         modifyLog.setTenantId(customer.getTenantId());
         bizCustomerModifyLogMapper.insert(modifyLog);
 
-        // 更新跟进人
+        // 更新跟进人和租户ID（同步到目标用户的租户）
         customer.setFollowUpPersonId(userId);
         customer.setFollowUpPerson(username);
-        bizCustomerMapper.updateById(customer);
+        customer.setTenantId(targetUser.getTenantId());
+        int rows = bizCustomerMapper.updateById(customer);
+        if (rows == 0) {
+            throw new BusinessException("客户分配失败，数据可能已被修改");
+        }
 
-        log.info("分配客户: customerId={}, to userId={}, username={}", customerId, userId, username);
+        log.info("分配客户: customerId={}, to userId={}, username={}, tenantId={}", customerId, userId, username, targetUser.getTenantId());
     }
 
     @Override
@@ -787,11 +804,19 @@ public class CustomerServiceImpl implements CustomerService {
             throw new BusinessException(403, "无权操作其他租户的客户数据");
         }
 
+        // 查询目标用户的租户ID
+        SysUser targetUser = sysUserMapper.selectById(userId);
+        if (targetUser == null) {
+            throw new BusinessException(404, "目标用户不存在");
+        }
+
+        String oldFollowUpPerson = customer.getFollowUpPerson() != null ? customer.getFollowUpPerson() : "未分配";
+
         // 记录修改日志
         BizCustomerModifyLog modifyLog = new BizCustomerModifyLog();
         modifyLog.setCustomerId(customerId);
         modifyLog.setFieldName("followUpPerson");
-        modifyLog.setOldValue(customer.getFollowUpPerson() != null ? customer.getFollowUpPerson() : "未分配");
+        modifyLog.setOldValue(oldFollowUpPerson);
         modifyLog.setNewValue(username);
         modifyLog.setModifyUserId(UserContext.getUserId());
         modifyLog.setModifyUser(UserContext.getUsername());
@@ -799,13 +824,17 @@ public class CustomerServiceImpl implements CustomerService {
         modifyLog.setTenantId(customer.getTenantId());
         bizCustomerModifyLogMapper.insert(modifyLog);
 
-        // 更新跟进人
+        // 更新跟进人和租户ID（同步到目标用户的租户）
         customer.setFollowUpPersonId(userId);
         customer.setFollowUpPerson(username);
-        bizCustomerMapper.updateById(customer);
+        customer.setTenantId(targetUser.getTenantId());
+        int rows = bizCustomerMapper.updateById(customer);
+        if (rows == 0) {
+            throw new BusinessException("客户转移失败，数据可能已被修改");
+        }
 
-        log.info("转移客户: customerId={}, from {} to userId={}, username={}", 
-                customerId, customer.getFollowUpPerson(), userId, username);
+        log.info("转移客户: customerId={}, from {} to userId={}, username={}, tenantId={}",
+                customerId, oldFollowUpPerson, userId, username, targetUser.getTenantId());
     }
 
     @Override

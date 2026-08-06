@@ -47,12 +47,16 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public IPage<SysUser> page(int page, int size, String realName) {
+    public IPage<SysUser> page(int page, int size, String realName, Long tenantId) {
         LambdaQueryWrapper<SysUser> wrapper = new LambdaQueryWrapper<>();
 
         if (UserContext.isSuperAdmin()) {
             // 超级管理员可查看所有员工（排除自己）
             wrapper.ne(SysUser::getTenantId, 0);
+            // 按租户筛选
+            if (tenantId != null) {
+                wrapper.eq(SysUser::getTenantId, tenantId);
+            }
         } else {
             // 租户管理员只能查看本租户员工
             wrapper.eq(SysUser::getTenantId, UserContext.getTenantId());
