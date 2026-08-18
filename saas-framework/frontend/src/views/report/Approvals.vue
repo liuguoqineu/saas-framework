@@ -16,14 +16,16 @@
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" min-width="170"/>
-        <el-table-column label="操作" min-width="280" fixed="right">
+        <el-table-column label="操作" min-width="340" fixed="right">
           <template #default="{row}">
             <template v-if="row.status==='PENDING'">
+              <el-button size="small" @click="viewReport(row.reportId)">查看</el-button>
               <el-button size="small" type="success" @click="approve(row.id)">通过</el-button>
               <el-button size="small" type="danger" @click="showReject(row.id)">驳回</el-button>
               <el-button size="small" @click="viewChain(row.reportId)">审批链</el-button>
             </template>
             <template v-else>
+              <el-button size="small" @click="viewReport(row.reportId)">查看</el-button>
               <el-button size="small" @click="viewChain(row.reportId)">审批链</el-button>
             </template>
           </template>
@@ -108,6 +110,14 @@ const showReject = (id) => { rejectId.value = id; rejectComment.value = ''; reje
 const doReject = async () => {
   if (!rejectComment.value) { ElMessage.warning('请输入驳回原因'); return }
   try { await reportApi.reject(rejectId.value, { comment: rejectComment.value }); ElMessage.success('已驳回'); rejectVisible.value = false; fetchData() } catch (e) { /* handled */ }
+}
+
+const viewReport = async (reportId) => {
+  try {
+    const res = await reportApi.getReport(reportId)
+    const report = res.data || {}
+    ElMessageBox.alert(report.contentText || '暂无内容', `报表 #${report.id || reportId}`)
+  } catch (e) { /* handled */ }
 }
 
 const viewChain = async (reportId) => {

@@ -10,4 +10,7 @@ public interface RpApprovalMapper extends BaseMapper<RpApproval> {
 
     @Select("SELECT a.* FROM rp_approval a INNER JOIN rp_report r ON a.report_id = r.id WHERE a.approver_id = #{approverId} AND a.status = 'PENDING' AND r.deleted = 0 ORDER BY a.create_time DESC")
     List<RpApproval> selectPendingByApproverId(@Param("approverId") Long approverId);
+
+    @Select("SELECT a.* FROM rp_approval a INNER JOIN rp_report r ON a.report_id = r.id WHERE a.status = 'PENDING' AND r.deleted = 0 ORDER BY a.create_time DESC")
+    List<RpApproval> selectAllPending();
 }

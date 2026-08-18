@@ -25,4 +25,9 @@ public class RpReport {
     private LocalDateTime updateTime;
     @TableLogic
     private Integer deleted;
+
+    @TableField(exist = false)
+    private String username;
+    @TableField(exist = false)
+    private String realName;
 }

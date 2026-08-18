@@ -87,8 +87,29 @@ public class ReportServiceImpl implements ReportService {
         if (StringUtils.hasText(startDate)) wrapper.ge(RpReport::getCreateTime, startDate);
         if (StringUtils.hasText(endDate)) wrapper.le(RpReport::getCreateTime, endDate);
         wrapper.orderByDesc(RpReport::getCreateTime);
-        return rpReportMapper.selectPage(new Page<>(page, size), wrapper);
+        IPage<RpReport> result = rpReportMapper.selectPage(new Page<>(page, size), wrapper);
+        fillReportRealnames(result.getRecords());
+        return result;
     }
+
+    private void fillReportRealnames(List<RpReport> reports) {
+        if (reports == null || reports.isEmpty()) {
+            return;
+        }
+        Map<Long, String> realnameMap = reports.stream()
+                .map(RpReport::getUserId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .map(sysUserMapper::selectById)
+                .filter(Objects::nonNull)
+                .filter(user -> user.getId() != null)
+                .collect(Collectors.toMap(
+                        SysUser::getId,
+                        user -> user.getRealName() != null ? user.getRealName() : "",
+                        (left, right) -> left));
+        reports.forEach(report -> report.setRealName(realnameMap.get(report.getUserId())));
+    }
+
 
     @Override
     public RpReport getReport(Long id) {
@@ -256,6 +277,9 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public List<RpApproval> getPendingApprovals() {
+        if (UserContext.isSuperAdmin()) {
+            return rpApprovalMapper.selectAllPending();
+        }
         return rpApprovalMapper.selectPendingByApproverId(UserContext.getUserId());
     }
 
@@ -287,7 +311,7 @@ public class ReportServiceImpl implements ReportService {
     public void approve(Long approvalId) {
         RpApproval approval = rpApprovalMapper.selectById(approvalId);
         if (approval == null) throw new BusinessException(404, "审批任务不存在");
-        if (!approval.getApproverId().equals(UserContext.getUserId())) throw new BusinessException(403, "这不是您的审批任务");
+        if (!UserContext.isSuperAdmin() && !approval.getApproverId().equals(UserContext.getUserId())) throw new BusinessException(403, "这不是您的审批任务");
         if (!"PENDING".equals(approval.getStatus())) throw new BusinessException("该审批任务已处理");
         approval.setStatus("APPROVED");
         approval.setApproveTime(LocalDateTime.now());
@@ -334,7 +358,7 @@ public class ReportServiceImpl implements ReportService {
     public void reject(Long approvalId, ApprovalRequest request) {
         RpApproval approval = rpApprovalMapper.selectById(approvalId);
         if (approval == null) throw new BusinessException(404, "审批任务不存在");
-        if (!approval.getApproverId().equals(UserContext.getUserId())) throw new BusinessException(403, "这不是您的审批任务");
+        if (!UserContext.isSuperAdmin() && !approval.getApproverId().equals(UserContext.getUserId())) throw new BusinessException(403, "这不是您的审批任务");
         if (!"PENDING".equals(approval.getStatus())) throw new BusinessException("该审批任务已处理");
         approval.setStatus("REJECTED");
         approval.setComment(request.getComment());

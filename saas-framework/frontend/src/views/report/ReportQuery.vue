@@ -50,7 +50,9 @@
       </el-form>
       <el-table :data="tableData" v-loading="loading" stripe border style="width: 100%" :header-cell-style="{ textAlign: 'center' }" :cell-style="{ textAlign: 'center' }">
         <el-table-column prop="id" label="编号" min-width="100"/>
-        <el-table-column prop="userId" label="用户" min-width="120"/>
+        <el-table-column prop="realName" label="填报人" min-width="120">
+          <template #default="{row}">{{ row.realName || row.userId || '-' }}</template>
+        </el-table-column>
         <el-table-column prop="reportType" label="类型" min-width="120">
           <template #default="{row}">{{ typeLabel(row.reportType) }}</template>
         </el-table-column>
